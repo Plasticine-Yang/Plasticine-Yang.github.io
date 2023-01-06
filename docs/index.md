@@ -13,7 +13,7 @@ hero:
   actions:
     - theme: brand
       text: 开始起飞
-      link: https://github.com/Plasticine-Yang
+      link: /type-challenges/easy
     - theme: alt
       text: Github
       link: https://github.com/Plasticine-Yang
