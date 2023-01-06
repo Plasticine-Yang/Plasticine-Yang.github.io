@@ -2,11 +2,14 @@ import { defineConfig } from 'vitepress'
 
 import { LOGO_PATH } from './constants'
 
+import { nav } from './nav'
+
 export default defineConfig({
   title: 'Plasticine FE Diary',
   head: [['link', { rel: 'icon', href: LOGO_PATH }]],
   themeConfig: {
     logo: LOGO_PATH,
+    nav,
     socialLinks: [
       {
         icon: 'github',
