@@ -1,5 +1,11 @@
 # plasticine-yang-github-io
 
+## 0.0.4
+
+### Patch Changes
+
+- fix the import path error (#1768)
+
 ## 0.0.3
 
 ### Patch Changes
