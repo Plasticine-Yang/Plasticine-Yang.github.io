@@ -1,0 +1,1 @@
+import{_ as e,c as s,o as t,e as a}from"./app.014e7f96.js";const m=JSON.parse('{"title":"Hard","description":"","frontmatter":{},"headers":[],"relativePath":"type-challenges/hard.md"}'),r={name:"type-challenges/hard.md"},c=a("",2),o=[c];function n(i,l,h,d,_,p){return t(),s("div",null,o)}const g=e(r,[["render",n]]);export{m as __pageData,g as default};
