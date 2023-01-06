@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 import { LOGO_PATH } from './constants'
 
 import { nav } from './nav'
+import { sidebar } from './sidebar'
 
 export default defineConfig({
   title: 'Plasticine FE Diary',
@@ -10,6 +11,7 @@ export default defineConfig({
   themeConfig: {
     logo: LOGO_PATH,
     nav,
+    sidebar,
     socialLinks: [
       {
         icon: 'github',

@@ -1,6 +1,6 @@
 import { DefaultTheme } from 'vitepress'
 
-import { ROUTES } from 'docs/.vitepress/routes'
+import { ROUTES } from '../routes'
 
 import { typeChallenges } from './type-challenges'
 

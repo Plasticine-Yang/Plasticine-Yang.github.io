@@ -1,4 +1,4 @@
-import { ROUTES } from 'docs/.vitepress/routes'
+import { ROUTES } from '../routes'
 import { DefaultTheme } from 'vitepress'
 
 export const typeChallenges: DefaultTheme.SidebarGroup[] = [
