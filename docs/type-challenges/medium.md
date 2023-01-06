@@ -4,7 +4,7 @@
 My [type-challenges](https://github.com/type-challenges/type-challenges) issues submission records, [click to view](https://github.com/type-challenges/type-challenges/issues?q=is%3Aissue+author%3APlasticine-Yang+is%3Aclosed).
 :::
 
-## Omit
+## Omit <Badge type="tip" text="built-in" />
 
 实现 TypeScript 内置的工具类型 `Omit<T, K>`
 
