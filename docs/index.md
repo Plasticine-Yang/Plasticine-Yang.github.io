@@ -15,8 +15,11 @@ hero:
       text: 开始起飞
       link: https://github.com/Plasticine-Yang
     - theme: alt
-      text: About me
+      text: Github
       link: https://github.com/Plasticine-Yang
+    - theme: alt
+      text: 掘金
+      link: https://juejin.cn/user/1324240506200781
 features:
   - icon: 🛣️
     title: 前端之路
