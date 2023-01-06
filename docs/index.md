@@ -1,7 +1,7 @@
 ---
 layout: home
 
-title: Index
+title: Home
 
 hero:
   name: Plasticine
