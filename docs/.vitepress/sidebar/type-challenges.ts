@@ -5,9 +5,9 @@ export const typeChallenges: DefaultTheme.SidebarGroup[] = [
   {
     text: 'TypeScript 类型挑战',
     items: [
-      { link: `${ROUTES.TYPE_CHALLENGES}easy`, text: 'Easy' },
-      { link: `${ROUTES.TYPE_CHALLENGES}medium`, text: 'Medium' },
-      { link: `${ROUTES.TYPE_CHALLENGES}hard`, text: 'Hard' },
+      { text: 'Easy', link: `${ROUTES.TYPE_CHALLENGES}easy` },
+      { text: 'Medium', link: `${ROUTES.TYPE_CHALLENGES}medium` },
+      { text: 'Hard', link: `${ROUTES.TYPE_CHALLENGES}hard` },
     ],
   },
 ]
