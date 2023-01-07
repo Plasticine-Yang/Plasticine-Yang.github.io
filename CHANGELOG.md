@@ -1,5 +1,19 @@
 # plasticine-yang-github-io
 
+## 0.0.6
+
+### Patch Changes
+
+- type-challenges: Tuple to Union
+- type-challenges: Tuple to Enum Object
+- type-challenges: Union to Tuple
+- type-challenges: Union to Intersection
+- type-challenges: fix medium and hard not active nav link
+- type-challenges: Readonly 2
+- type-challenges: DeepReadonly
+- type-challenges: Tuple to Nested Object
+- type-challenges: Tuple to Object
+
 ## 0.0.5
 
 ### Patch Changes
