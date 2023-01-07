@@ -151,8 +151,36 @@ Equal<UnionToTuple<'a' | 'a' | 'a'>, UnionToTuple<'a'>>         // will always b
 
 :::details 查看答案
 
-```TypeScript
+首先要知道一个事实：在 TypeScript 中，函数之间进行交叉运算符操作，使用 `infer` 提取交叉结果的函数返回值时，得到的是最后一个进行交叉运算的函数的返回值，也就是下面这样：
 
+```TypeScript
+type Intersepted = (() => 'a') & (() => 'b') & (() => 'c')
+type Last = Intersepted extends () => infer R ? R : never // 'c'
+```
+
+这样我们就可以先将联合类型转成交叉类型，从而能够得到联合类型的最后一个元素
+
+然后再结合联合类型的分布式特性，逐一将联合类型的最后一个元素提取出来，推入到结果数组中，最后将结果数组返回即可得到答案
+
+```TypeScript
+type UnionToTuple<T, Result extends unknown[] = [], Last = GetUnionLast<T>> = [
+  T,
+] extends [never]
+  ? // return result
+    Result
+  : // remove last element of T and push it into Result
+    UnionToTuple<Exclude<T, Last>, Prepend<Result, Last>>
+
+type GetUnionLast<T> = UnionToIntersectionFn<T> extends () => infer R
+  ? R
+  : never
+type UnionToIntersectionFn<T> = (
+  T extends T ? (x: () => T) => unknown : never
+) extends (x: infer R) => unknown
+  ? R
+  : never
+
+type Prepend<Arr extends unknown[], Item> = [Item, ...Arr]
 ```
 
 :::
