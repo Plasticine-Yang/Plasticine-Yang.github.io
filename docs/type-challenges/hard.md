@@ -4,6 +4,30 @@
 My [type-challenges](https://github.com/type-challenges/type-challenges) issues submission records, [click to view](https://github.com/type-challenges/type-challenges/issues?q=is%3Aissue+author%3APlasticine-Yang+is%3Aclosed).
 :::
 
+## Union to Intersection
+
+将联合类型转成交叉类型
+
+e.g.
+
+```TypeScript
+type I = Union2Intersection<'foo' | 42 | true> // expected to be 'foo' & 42 & true
+```
+
+:::details 查看答案
+
+利用 TypeScript 在 infer 函数参数类型时存在 `contra-variant position`，会进行 `intersection` 操作的特性实现
+
+```TypeScript
+type UnionToIntersection<U> = (
+  U extends U ? (x: U) => unknown : never
+) extends (x: infer R) => unknown
+  ? R
+  : never
+```
+
+:::
+
 ## Tuple to Enum Object
 
 > The enum is an original syntax of TypeScript (it does not exist in JavaScript). So it is converted to like the following form as a result of transpilation:
@@ -73,6 +97,74 @@ type Enum<T extends readonly string[], N extends boolean = false> = N extends tr
 [Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
 
 [Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
+
+[Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
+:::
+
+## Union to Tuple
+
+:::tip
+建议先完成 [Union to Intersection](/type-challenges/hard#union-to-intersection)
+:::
+
+> As we know, union is an unordered structure, but tuple is an ordered, which implies that we are not supposed to preassume any order will be preserved between terms of one union, when unions are created or transformed.
+
+众所周知，联合类型是一种无序结构，但是元组是有序的，这意味着在创建或转换一个联合类型时，我们不应该假设一个联合类型的各个子项之间有任何的顺序。
+
+> Hence in this challenge, any permutation of the elements in the output tuple is acceptable.
+
+因此在这个挑战中，输出的元组中的元素可以是任意顺序的。
+
+> Your type should resolve to one of the following two types, but NOT a union of them!
+
+你的类型应当返回下面两个类型的其中一个，而 **不是** 他们两个组成的联合类型！
+
+```TypeScript
+UnionToTuple<1>           // [1], and correct
+UnionToTuple<'any' | 'a'> // ['any','a'], and correct
+```
+
+或者
+
+```TypeScript
+UnionToTuple<'any' | 'a'> // ['a','any'], and correct
+```
+
+> It shouldn't be a union of all acceptable tuples...
+
+不应该返回所有正确答案组成的联合类型
+
+```TypeScript
+UnionToTuple<'any' | 'a'> // ['a','any'] | ['any','a'], which is incorrect
+```
+
+> And a union could collapes, which means some types could absorb (or be absorbed by) others and there is no way to prevent this absorption. See the following examples:
+
+并且一个联合类型可以折叠，也就是说一些类型可以吸收（或者被吸收）其他的类型，这种吸收现象是与 TypeScript 本身的特性有关，是不可避免的。看下面的例子：
+
+```TypeScript
+Equal<UnionToTuple<any | 'a'>,       UnionToTuple<any>>         // will always be a true
+Equal<UnionToTuple<unknown | 'a'>,   UnionToTuple<unknown>>     // will always be a true
+Equal<UnionToTuple<never | 'a'>,     UnionToTuple<'a'>>         // will always be a true
+Equal<UnionToTuple<'a' | 'a' | 'a'>, UnionToTuple<'a'>>         // will always be a true
+```
+
+:::details 查看答案
+
+```TypeScript
+
+```
+
+:::
+
+:::tip 相关题目
+[Tuple to Union](/type-challenges/medium#tuple-to-union) <Badge type="warning" text="medium" />
+
+[Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
+
+[Union to Intersection](/type-challenges/hard#union-to-intersection) <Badge type="danger" text="hard" />
+
+[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
 
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
