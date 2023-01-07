@@ -4,7 +4,7 @@
 module.exports = {
   extends: ['@commitlint/config-conventional'],
   prompt: {
-    scopes: ['type-challenges'],
+    scopes: ['type-challenges', 'fe-monitor-system'],
   },
   rules: {
     'subject-case': [2, 'never', ['upper-case']],
