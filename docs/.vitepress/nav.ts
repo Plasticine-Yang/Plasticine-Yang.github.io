@@ -15,4 +15,10 @@ export const nav: DefaultTheme.Config['nav'] = [
     link: `${ROUTES.FE_MONITOR_SYSTEM}basic`,
     activeMatch: ROUTES.FE_MONITOR_SYSTEM,
   },
+
+  {
+    text: 'React 源码学习',
+    link: `${ROUTES.REACT_SOURCE_LEARNING}introduction`,
+    activeMatch: ROUTES.REACT_SOURCE_LEARNING,
+  },
 ]
