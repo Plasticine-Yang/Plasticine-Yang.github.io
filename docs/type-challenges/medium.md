@@ -96,6 +96,48 @@ type MyReadonly2<T, K extends keyof T = keyof T> = {
 
 ## Deep Readonly
 
+> Implement a generic `DeepReadonly<T>` which make every parameter of an object - and its sub-objects recursively - readonly.
+
+> You can assume that we are only dealing with Objects in this challenge. Arrays, Functions, Classes and so on do not need to be taken into consideration. However, you can still challenge yourself by covering as many different cases as possible.
+
+实现一个通用的 `DeepReadonly<T>`，它将对象的每一个属性，包括对象的对象的属性都变成 `readonly`。
+
+可以不用考虑数组、函数、类等复杂情况。
+
+e.g.
+
+```TypeScript
+type X = {
+  x: {
+    a: 1
+    b: 'hi'
+  }
+  y: 'hey'
+}
+
+type Expected = {
+  readonly x: {
+    readonly a: 1
+    readonly b: 'hi'
+  }
+  readonly y: 'hey'
+}
+
+type Todo = DeepReadonly<X> // should be same as `Expected`
+```
+
+:::details 查看答案
+
+利用索引类型和非索引类型的区别在于 `keyof T` 是否为 `never` 来区分是否需要递归调用 `DeepReadonly` 去处理
+
+```TypeScript
+type DeepReadonly<T> = {
+  readonly [P in keyof T]: keyof T[P] extends never ? T[P] : DeepReadonly<T[P]>
+}
+```
+
+:::
+
 :::tip 相关题目
 [Readonly](/type-challenges/easy#readonly) <Badge type="tip" text="easy" />
 
