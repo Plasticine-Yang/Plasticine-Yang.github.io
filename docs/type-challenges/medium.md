@@ -177,3 +177,42 @@ type TupleToUnion<T extends unknown[]> = T[number]
 
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
+
+## Tuple to Nested Object
+
+> Given a tuple type `T` that only contains string type, and a type `U`, build an object recursively.
+
+给定一个只包含 `string` 类型的元组 `T` 和一个类型 `U`，递归地构造一个对象。
+
+e.g.
+
+```TypeScript
+type a = TupleToNestedObject<['a'], string> // {a: string}
+type b = TupleToNestedObject<['a', 'b'], number> // {a: {b: number}}
+type c = TupleToNestedObject<[], boolean> // boolean. if the tuple is empty, just return the U type
+```
+
+:::details 查看答案
+
+```TypeScript
+type TupleToNestedObject<T extends readonly string[], U> = T extends [
+  infer First extends string,
+  ...infer Rest,
+]
+  ? {
+      [P in First]: Rest extends string[] ? TupleToNestedObject<Rest, U> : U
+    }
+  : U
+```
+
+:::
+
+:::tip 相关题目
+[Tuple to Union](/type-challenges/medium#tuple-to-union) <Badge type="warning" text="medium" />
+
+[Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
+
+[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
+
+[Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
+:::
