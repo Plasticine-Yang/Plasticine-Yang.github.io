@@ -116,9 +116,9 @@ type TupleNumber = Tuple[number]
 :::tip 相关题目
 [Tuple to Union](/type-challenges/medium#tuple-to-union) <Badge type="warning" text="medium" />
 
-[Tuple to Enum Object](/type-challenges/medium#tuple-to-enum-object) <Badge type="danger" text="hard" />
+[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[Union to Tuple](/type-challenges/medium#union-to-tuple) <Badge type="danger" text="hard" />
+[Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
 
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::

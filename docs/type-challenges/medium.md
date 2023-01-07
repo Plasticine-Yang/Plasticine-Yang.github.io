@@ -100,7 +100,7 @@ type MyReadonly2<T, K extends keyof T = keyof T> = {
 
 > You can assume that we are only dealing with Objects in this challenge. Arrays, Functions, Classes and so on do not need to be taken into consideration. However, you can still challenge yourself by covering as many different cases as possible.
 
-实现一个通用的 `DeepReadonly<T>`，它将对象的每一个属性，包括对象的对象的属性都变成 `readonly`。
+实现一个泛型 `DeepReadonly<T>`，它将对象的每一个属性，包括对象的对象的属性都变成 `readonly`。
 
 可以不用考虑数组、函数、类等复杂情况。
 
@@ -142,4 +142,38 @@ type DeepReadonly<T> = {
 [Readonly](/type-challenges/easy#readonly) <Badge type="tip" text="easy" />
 
 [Readonly 2](/type-challenges/medium#readonly-2) <Badge type="warning" text="medium" />
+:::
+
+## Tuple to Union
+
+> Implement a generic `TupleToUnion<T>` which covers the values of a tuple to its values union.
+
+实现一个泛型 `TupleToUnion<T>`，它返回元组所有值的联合类型。
+
+e.g.
+
+```TypeScript
+type Arr = ['1', '2', '3']
+
+type Test = TupleToUnion<Arr> // expected to be '1' | '2' | '3'
+```
+
+:::details 查看答案
+
+和 [Tuple to Object](/type-challenges/easy#tuple-to-object) 一样。
+
+```TypeScript
+type TupleToUnion<T extends unknown[]> = T[number]
+```
+
+:::
+
+:::tip 相关题目
+[Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
+
+[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
+
+[Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
+
+[Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
