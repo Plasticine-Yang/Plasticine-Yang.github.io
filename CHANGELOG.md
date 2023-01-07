@@ -1,5 +1,14 @@
 # plasticine-yang-github-io
 
+## 0.1.0
+
+### Minor Changes
+
+- commitlint: add fe-monitor-system prompt scope
+- commitlint: add commitlint prompt scope
+- fe-monitor-system: add fe-monitor-system module
+- fe-monitor-system: basic
+
 ## 0.0.6
 
 ### Patch Changes
