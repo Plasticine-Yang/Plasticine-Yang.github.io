@@ -6,9 +6,9 @@ My [type-challenges](https://github.com/type-challenges/type-challenges) issues 
 
 ## Pick <Badge type="info" text="built-in" />
 
-> Construct a type by picking the set of properties `K` from `T`
+> Construct a type by picking the set of properties `K` from `T`.
 
-从类型 T 中选择出属性集 K 构造成一个新的类型
+从类型 T 中选择出属性集 K 构造成一个新的类型。
 
 e.g.
 
