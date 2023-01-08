@@ -9,6 +9,7 @@ export const reactSourceLearning: DefaultTheme.SidebarGroup[] = [
     text: 'React 源码学习',
     items: [
       { text: '介绍', link: `${ROUTES.REACT_SOURCE_LEARNING}introduction` },
+      { text: '项目构建流程', link: `${ROUTES.REACT_SOURCE_LEARNING}build` },
     ],
   },
 
