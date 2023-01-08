@@ -118,3 +118,31 @@ function zigzagLevelOrder(root: TreeNode | null): number[][] {
   return res
 };
 ```
+
+## 513. 找树左下角的值
+
+[题目链接](https://leetcode.cn/problems/find-bottom-left-tree-value/)
+
+最底层最左边的节点也就是层序遍历中最后一层的第一个节点
+
+可以进一步简化，将层序遍历的顺序改为从右到左，这样直接返回最后一次遍历的节点即为左下角节点
+
+```TypeScript
+function findBottomLeftValue(root: TreeNode | null): number {
+  const queue: TreeNode[] = [root]
+  let resNode: TreeNode = root
+
+  while (queue.length !== 0) {
+    const n = queue.length
+    for (let i = 0; i < n; i++) {
+      resNode = queue.shift()
+      // 将遍历顺序改为从右到左 -- 先加入右子节点 再加入左子节点
+      resNode.right && queue.push(resNode.right)
+      resNode.left && queue.push(resNode.left)
+    }
+  }
+
+  // 遍历结束时 resNode 刚好指向左下角节点
+  return resNode.val
+};
+```
