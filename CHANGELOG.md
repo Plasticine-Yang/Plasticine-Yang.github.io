@@ -1,5 +1,14 @@
 # plasticine-yang-github-io
 
+## 0.3.0
+
+### Minor Changes
+
+- feat(algorithm): bfs -- 513. 找树左下角的值
+- feat(algorithm): bfs -- 103. 二叉树的锯齿形层序遍历
+- feat(algorithm): add algorithm module
+- feat(algorithm): bfs -- 二叉树的层序遍历
+
 ## 0.2.0
 
 ### Minor Changes
