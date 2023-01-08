@@ -1,6 +1,6 @@
 # BFS
 
-## 二叉树的层序遍历
+## 102. 二叉树的层序遍历
 
 二叉树的层序遍历可以有两种写法：
 
@@ -79,6 +79,40 @@ function levelOrder(root: TreeNode | null): number[][] {
     // 交替两个数组遍历下一层
     cur = next
     next = []
+  }
+
+  return res
+};
+```
+
+## 103. 二叉树的锯齿形层序遍历
+
+[题目链接](https://leetcode.cn/problems/binary-tree-zigzag-level-order-traversal/)
+
+层序遍历偶数层时将当前层的遍历结果反转后再加入到结果集中
+
+```TypeScript
+function zigzagLevelOrder(root: TreeNode | null): number[][] {
+  if (root === null) return []
+
+  const queue: TreeNode[] = [root]
+  const res: number[][] = []
+
+  // 标记当前层是否是偶数层
+  let isEven = false
+  while (queue.length !== 0) {
+    const values: number[] = []
+    const n = queue.length
+    for (let i = 0; i < n; i++) {
+      const node = queue.shift()
+      values.push(node.val)
+      node.left && queue.push(node.left)
+      node.right && queue.push(node.right)
+    }
+
+    isEven && values.reverse()
+    isEven = !isEven
+    res.push(values)
   }
 
   return res
