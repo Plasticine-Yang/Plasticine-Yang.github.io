@@ -5,9 +5,11 @@ module.exports = {
   extends: ['@commitlint/config-conventional'],
   prompt: {
     scopes: [
+      'index',
       'type-challenges',
       'fe-monitor-system',
       'react-source-learning',
+      'algorithm',
       'commitlint',
     ],
   },
