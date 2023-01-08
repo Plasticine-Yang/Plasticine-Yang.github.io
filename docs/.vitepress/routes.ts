@@ -7,4 +7,7 @@ export enum ROUTES {
 
   /** @description React 源码学习 */
   REACT_SOURCE_LEARNING = '/react-source-learning/',
+
+  /** @description 算法 */
+  ALGORITHM = '/algorithm/',
 }

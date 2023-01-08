@@ -21,4 +21,10 @@ export const nav: DefaultTheme.Config['nav'] = [
     link: `${ROUTES.REACT_SOURCE_LEARNING}introduction`,
     activeMatch: ROUTES.REACT_SOURCE_LEARNING,
   },
+
+  {
+    text: '算法',
+    link: `${ROUTES.ALGORITHM}binary-tree/bfs`,
+    activeMatch: ROUTES.ALGORITHM,
+  },
 ]
