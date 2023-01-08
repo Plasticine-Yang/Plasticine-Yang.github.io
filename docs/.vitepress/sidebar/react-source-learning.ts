@@ -20,7 +20,12 @@ export const reactSourceLearning: DefaultTheme.SidebarGroup[] = [
 
   {
     text: 'react-reconciler',
-    items: [{ text: 'fiber', link: `${REACT_RECONCILER_PATH}/fiber` }],
+    items: [
+      {
+        text: '初探 reconciler',
+        link: `${REACT_RECONCILER_PATH}/preliminary-exploration`,
+      },
+    ],
     collapsible: true,
   },
 ]
