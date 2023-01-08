@@ -1,5 +1,17 @@
 # plasticine-yang-github-io
 
+## 0.2.0
+
+### Minor Changes
+
+- react-source-learning: finish preliminary-exploration.md
+- react-source-learning: add react-source-learning module
+- react-source-learning: change sidebar name JSX to jsx
+- vitepress: change inline codeblock color as brand color
+- prettier: remove arrowParens and endOfLine
+- react-source-learning: refactor directory structure
+- react-source-learning: finish build.md
+
 ## 0.1.0
 
 ### Minor Changes
