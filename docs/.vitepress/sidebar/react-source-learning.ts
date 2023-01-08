@@ -14,7 +14,7 @@ export const reactSourceLearning: DefaultTheme.SidebarGroup[] = [
 
   {
     text: 'react',
-    items: [{ text: 'JSX', link: `${REACT_PATH}/jsx` }],
+    items: [{ text: 'jsx', link: `${REACT_PATH}/jsx` }],
     collapsible: true,
   },
 
