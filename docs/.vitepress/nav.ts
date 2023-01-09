@@ -18,7 +18,7 @@ export const nav: DefaultTheme.Config['nav'] = [
 
   {
     text: 'React 源码学习',
-    link: `${ROUTES.REACT_SOURCE_LEARNING}introduction`,
+    link: `${ROUTES.REACT_SOURCE_LEARNING}/plasticine-react/introduction`,
     activeMatch: ROUTES.REACT_SOURCE_LEARNING,
   },
 
