@@ -1,5 +1,13 @@
 # plasticine-yang-github-io
 
+## 0.3.1
+
+### Patch Changes
+
+- feat(type-challenges): add ts playground entry for every challenge
+- refactor(react-source-learning): use unified entry -- plasticine-react
+- feat(react-source-learning): how-to-trigger-update.md
+
 ## 0.3.0
 
 ### Minor Changes
