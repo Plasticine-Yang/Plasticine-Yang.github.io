@@ -1,6 +1,8 @@
 # 介绍
 
-为了更好地学习 React 源码，我正打算实现一个 Mini React，它的名字叫 [plasticine-react](https://github.com/plasticine-yang/plasticine-react)，欢迎 star~
+为了更好地学习 React 源码，我正打算实现一个 Mini React，它的名字叫 [plasticine-react](https://github.com/plasticine-yang/plasticine-react)
+
+该项目是我学习卡颂大神的 [从 0 实现 React 18](https://appjiz2zqrn2142.h5.xiaoeknow.com/v1/goods/goods_detail/p_638035c1e4b07b05581d25db?type=3) 并结合配套书籍 [《React 设计原理》](https://item.jd.com/13576643.html) 完成的，这门课程以及这本书都特别棒，强烈推荐大家购买！！同时也欢迎 star 我的 `plasticine-react`~
 
 后续的源码分析都是基于我的 `plasticine-react` 项目分析的，该项目的代码都是参照 react 本身的源码，但是由于 react 是用 Flow 编写的
 
