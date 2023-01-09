@@ -6,6 +6,8 @@ My [type-challenges](https://github.com/type-challenges/type-challenges) issues 
 
 ## Union to Intersection
 
+[练习](https://tsch.js.org/55/play)
+
 将联合类型转成交叉类型
 
 e.g.
@@ -29,6 +31,8 @@ type UnionToIntersection<U> = (
 :::
 
 ## Tuple to Enum Object
+
+[练习](https://tsch.js.org/472/play)
 
 > The enum is an original syntax of TypeScript (it does not exist in JavaScript). So it is converted to like the following form as a result of transpilation:
 
@@ -102,6 +106,8 @@ type Enum<T extends readonly string[], N extends boolean = false> = N extends tr
 :::
 
 ## Union to Tuple
+
+[练习](https://tsch.js.org/730/play)
 
 :::tip
 建议先完成 [Union to Intersection](/type-challenges/hard#union-to-intersection)

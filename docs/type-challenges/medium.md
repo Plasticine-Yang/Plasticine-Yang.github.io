@@ -6,6 +6,8 @@ My [type-challenges](https://github.com/type-challenges/type-challenges) issues 
 
 ## Omit <Badge type="info" text="built-in" />
 
+[练习](https://tsch.js.org/3/play)
+
 > Construct a type by picking all properties from `T` and then removing `K`.
 
 选择类型 T 中所有属性与 K 做差集运算后的剩余属性集构成新的类型。
@@ -47,6 +49,8 @@ type MyOmit<T, K> = {
 :::
 
 ## Readonly 2
+
+[练习](https://tsch.js.org/8/play)
 
 > `K` specify the set of properties of `T` that should set to Readonly. When `K` is not provided, it should make all properties readonly just like the normal `Readonly<T>`.
 
@@ -95,6 +99,8 @@ type MyReadonly2<T, K extends keyof T = keyof T> = {
 :::
 
 ## Deep Readonly
+
+[练习](https://tsch.js.org/9/play)
 
 > Implement a generic `DeepReadonly<T>` which make every parameter of an object - and its sub-objects recursively - readonly.
 
@@ -146,6 +152,8 @@ type DeepReadonly<T> = {
 
 ## Tuple to Union
 
+[练习](https://tsch.js.org/10/play)
+
 > Implement a generic `TupleToUnion<T>` which covers the values of a tuple to its values union.
 
 实现一个泛型 `TupleToUnion<T>`，它返回元组所有值的联合类型。
@@ -179,6 +187,8 @@ type TupleToUnion<T extends unknown[]> = T[number]
 :::
 
 ## Tuple to Nested Object
+
+[练习](https://tsch.js.org/3188/play)
 
 > Given a tuple type `T` that only contains string type, and a type `U`, build an object recursively.
 

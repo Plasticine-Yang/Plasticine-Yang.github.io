@@ -6,6 +6,8 @@ My [type-challenges](https://github.com/type-challenges/type-challenges) issues 
 
 ## Pick <Badge type="info" text="built-in" />
 
+[练习](https://tsch.js.org/4/play)
+
 > Construct a type by picking the set of properties `K` from `T`.
 
 从类型 T 中选择出属性集 K 构造成一个新的类型。
@@ -42,6 +44,8 @@ type MyPick<T, K extends keyof T> = {
 :::
 
 ## Readonly <Badge type="info" text="built-in" />
+
+[练习](https://tsch.js.org/7/play)
 
 > Constructs a type with all properties of T set to readonly, meaning the properties of the constructed type cannot be reassigned.
 
@@ -81,6 +85,8 @@ type MyReadonly<T> = {
 :::
 
 ## Tuple to Object
+
+[练习](https://tsch.js.org/11/play)
 
 > Given an array, transform it into an object type and the key/value must be in the provided array.
 
