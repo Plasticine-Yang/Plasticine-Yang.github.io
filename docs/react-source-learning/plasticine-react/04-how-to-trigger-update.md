@@ -189,7 +189,7 @@ function processUpdateQueue<State>(
 
 最后再说一下 `FiberRootNode` 和 `HostRootFiber` 的关系，如下图所示：
 
-![FiberRootNode 和 HostRootFiber 之间的关系](./images/FiberRootNode和HostRootFiber之间的关系.jpg)
+![FiberRootNode和HostRootFiber之间的关系](./images/FiberRootNode和HostRootFiber之间的关系.jpg)
 
 ## 实现 FiberRootNode
 
@@ -469,3 +469,30 @@ function prepareFreshStack(root: FiberRootNode) {
   workInProgress = createWorkInProgress(root.current, {})
 }
 ```
+
+## 总结
+
+最后我们来总结一下 `ReactDOM.createRoot(container).render(<App />)` 的流程以及所有实现的函数的功能
+
+![createRoot和render的流程](images/createRoot和render的流程.jpg)
+
+`fiber-reconciler.ts`
+
+- `createContainer`: 执行 createRoot 的时候会调用该函数初始化 FiberRootNode 和 hostRootFiber，并将 hostRootFiber 和更新机制关联起来
+- `updateContainer`: 执行 FiberRootNode 的 render 方法的时候会执行该函数，为待更新的 element 创建 Update 对象，并将其加入到 hostRootFiber.updateQueue 中
+
+`update-queue.ts`
+
+- `createUpdate`: 创建 Update 实例
+- `createUpdateQueue`: 创建 UpdateQueue 实例
+- `enqueueUpdate`: 将 update 加入到 updateQueue 中
+- `processUpdateQueue`: 消费一个 Update 对象 -- 将 baseState 交给 Update 消费后返回新的 state
+
+`work-loop.ts`
+
+- `scheduleUpdateOnFiber`: 对传入的 fiber 调度其 updateQueue
+- `markUpdateFromFiberToRoot`: 从传入的 fiber 出发，寻找其所在 fiber tree 的 FiberRootNode
+
+`fiber.ts`
+
+- `createWorkInProgress`: 用于 prepareFreshStack 中根据 FiberRootNode 创建 workInProgress，也就是 hostRootFiber，由于 react 双缓冲的特性，所以应当返回 current.alternate
