@@ -1,5 +1,12 @@
 # plasticine-yang-github-io
 
+## 0.3.2
+
+### Patch Changes
+
+- feat(react-source-learning): 04-how-to-trigger-update -- add `总结` section
+- feat(react-source-learning): 05-first-screen-rendering.md
+
 ## 0.3.1
 
 ### Patch Changes
