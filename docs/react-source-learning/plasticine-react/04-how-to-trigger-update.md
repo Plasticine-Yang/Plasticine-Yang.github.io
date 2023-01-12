@@ -1,5 +1,9 @@
 # 如何触发更新流程？
 
+:::tip
+本篇文章对应代码可以到 [02_how_to_trigger_update](https://github.com/plasticine-yang/plasticine-react/tree/02_how_to_trigger_update) 分支查看
+:::
+
 ## 前言
 
 上一篇文章中，我们在 `work-loop.ts` 中实现了 `renderRoot`，但是并没有调用方去调用它，那么这个函数在什么时候被谁调用呢？
@@ -496,3 +500,7 @@ function prepareFreshStack(root: FiberRootNode) {
 `fiber.ts`
 
 - `createWorkInProgress`: 用于 prepareFreshStack 中根据 FiberRootNode 创建 workInProgress，也就是 hostRootFiber，由于 react 双缓冲的特性，所以应当返回 current.alternate
+
+:::tip
+本篇文章对应代码可以到 [02_how_to_trigger_update](https://github.com/plasticine-yang/plasticine-react/tree/02_how_to_trigger_update) 分支查看
+:::
