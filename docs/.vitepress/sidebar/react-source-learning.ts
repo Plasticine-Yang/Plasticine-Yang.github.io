@@ -18,6 +18,10 @@ export const reactSourceLearning: DefaultTheme.SidebarGroup[] = [
         text: '04-如何触发更新流程？',
         link: `${ROUTE_PLASTICINE_REACT}/04-how-to-trigger-update`,
       },
+      {
+        text: '05-实现首屏渲染',
+        link: `${ROUTE_PLASTICINE_REACT}/05-first-screen-rendering`,
+      },
     ],
   },
 ]
