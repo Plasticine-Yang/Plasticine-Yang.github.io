@@ -7,6 +7,10 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
     items: [
       { text: '基础知识', link: `${ROUTES.FE_MONITOR_SYSTEM}basic` },
       {
+        text: '架构设计',
+        link: `${ROUTES.FE_MONITOR_SYSTEM}architecture-design`,
+      },
+      {
         text: '性能指标',
         link: `${ROUTES.FE_MONITOR_SYSTEM}performance-indicators`,
       },
