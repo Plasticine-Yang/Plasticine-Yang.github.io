@@ -1,8 +1,44 @@
 # 同向双指针
 
-## 方法论
+## 解题模板
 
-- 窗口大小固定的叫滑动窗口，不固定的叫双指针
+### 模板一：在窗口缩小阶段更新 res
+
+```TypeScript
+// 处理 base case
+
+while (left < n && right < n) {
+  // 窗口扩大阶段
+
+  while (窗口缩小的条件) {
+    // 窗口缩小阶段 -- 在这里面更新 res
+
+    left++
+  }
+
+  right++
+}
+```
+
+### 模板二：在窗口扩大阶段更新 res
+
+```TypeScript
+// 处理 base case
+
+while (left < n && right < n) {
+  // 窗口扩大阶段
+
+  while (窗口缩小的条件) {
+    // 窗口缩小阶段
+
+    left++
+  }
+
+  // 窗口扩大阶段 -- 在这里面更新 res
+
+  right++
+}
+```
 
 ## 209. 长度最小的子数组
 
@@ -86,9 +122,11 @@ function minSubArrayLen(target: number, nums: number[]): number {
 
 每次 sum 比 target 大的时候就更新一下 res，最坏情况下，也就是数组最后一个元素本身就比 target 大，此时答案是 1，但其实总的遍历次数也只是 n 次而已，因为 left 和 right 前进的时候并不存在嵌套的遍历过程，所以总的时间复杂度是 `O(n)`
 
+也就是说在窗口缩小的时候更新 res，因此套用模板一
+
 ```TypeScript
 /**
- * @description 双指针
+ * @description 双指针 -- 套用模板一：在窗口缩小阶段更新 res
  */
 function minSubArrayLen(target: number, nums: number[]): number {
   const n = nums.length
@@ -109,6 +147,8 @@ function minSubArrayLen(target: number, nums: number[]): number {
     sum += nums[right]
 
     while (sum >= target) {
+      // 窗口缩小阶段
+
       // 为什么是 `right - left + 1`？
       // 假设 left 和 right 此时都指向同一个值，那么答案此时就是 1，所以需要 +1
       res = Math.min(right - left + 1, res)
@@ -120,5 +160,50 @@ function minSubArrayLen(target: number, nums: number[]): number {
   }
 
   return res === n + 1 ? 0 : res
+}
+```
+
+## 713. 乘积小于 K 的子数组
+
+[题目链接](https://leetcode.cn/problems/subarray-product-less-than-k/)
+
+此题如果在窗口缩小的时候才更新 res 会导致漏掉部分情况，比如：
+
+`nums = [10,5,2,6], k = 100`
+
+初始时窗口是 `[0,0]`，此时窗口内元素是 10，严格小于 k，因此应当更新 res，如果不更新会导致其被漏掉，所以我们应当在窗口扩大阶段更新 res，套用模板二
+
+```TypeScript
+/**
+ * @description 双指针 -- 套用模板二：在窗口扩张阶段更新 res
+ */
+function numSubarrayProductLessThanK(nums: number[], k: number): number {
+  // base case -- k <= 1 无解，除 0 外的任意数的乘积都不会严格小于 1
+  if (k <= 1) return 0
+
+  const n = nums.length
+
+  let left = 0
+  let right = 0
+
+  // 窗口内的乘积
+  let prod = 1
+  let res = 0
+
+  while (left < n && right < n) {
+    prod *= nums[right]
+
+    while (prod >= k) {
+      // 窗口缩小阶段
+      prod /= nums[left]
+      left++
+    }
+
+    // 窗口扩张阶段 -- 更新 res
+    res += right - left + 1
+    right++
+  }
+
+  return res
 }
 ```
