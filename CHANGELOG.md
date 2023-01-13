@@ -1,5 +1,20 @@
 # plasticine-yang-github-io
 
+## 0.3.3
+
+### Patch Changes
+
+- feat(type-challenges): easy -- 268 - If
+- feat(type-challenges): easy -- 189 - Awaited
+- feat(type-challenges): easy -- 18 - Length of Tuple
+- feat(type-challenges): easy -- 533 - Concat
+- fix(type-challenges): fix related question link error
+- feat(type-challenges): easy -- First of Array
+- feat(type-challenges): add question template
+- feat(type-challenges): medium -- Pop
+- feat(type-challenges): add question index for title
+- feat(type-challenges): medium -- Last of Array
+
 ## 0.3.2
 
 ### Patch Changes
