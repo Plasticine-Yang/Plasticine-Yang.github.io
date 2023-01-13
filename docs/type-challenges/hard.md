@@ -91,6 +91,14 @@ type Enum<T extends readonly string[], N extends boolean = false> = N extends tr
   : {
     readonly [P in T[number]as PascalCase<P>]: P
   }
+
+// or
+
+type Enum<T extends readonly string[], N extends boolean = false> = {
+  readonly [P in T[number] as PascalCase<P>]: N extends true
+    ? ExtractIndexByValue<T, P>
+    : P
+}
 ```
 
 :::
