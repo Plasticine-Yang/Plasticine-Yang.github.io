@@ -271,3 +271,35 @@ type If<C extends boolean, T, F> = C extends true
 ```
 
 :::
+
+## 533 - Concat
+
+[练习](https://tsch.js.org/533/play)
+
+> Implement the JavaScript `Array.concat` function in the type system. A type takes the two arguments. The output should be a new array that includes inputs in ltr order
+
+在类型系统中实现 JavaScript 的 `Array.concat` 函数。会接受两个类型参数，输出应当是一个按照输入参数从左到右排序的新数组。
+
+e.g.
+
+```TypeScript
+type Result = Concat<[1], [2]> // expected to be [1, 2]
+```
+
+:::details 查看答案
+
+```TypeScript
+type Concat<T extends any[], U extends any[]> = T extends [...infer FirstArr]
+  ? U extends [...infer SecondArr]
+    ? [...FirstArr, ...SecondArr]
+    : never
+  : never
+```
+
+:::
+
+:::tip 相关题目
+[3057 - Push](/type-challenges/easy#_3057-push) <Badge type="tip" text="easy" />
+
+[3060 - Unshift](/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
+:::
