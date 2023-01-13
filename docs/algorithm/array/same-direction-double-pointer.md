@@ -2,7 +2,7 @@
 
 ## 解题模板
 
-### 模板一：在窗口缩小阶段更新 res
+### 模板一：在窗口缩小时更新 res
 
 ```TypeScript
 // 处理 base case
@@ -16,11 +16,13 @@ while (left < n && right < n) {
     left++
   }
 
+  // 窗口缩小完后
+
   right++
 }
 ```
 
-### 模板二：在窗口扩大阶段更新 res
+### 模板二：在窗口缩小之后更新 res
 
 ```TypeScript
 // 处理 base case
@@ -34,7 +36,7 @@ while (left < n && right < n) {
     left++
   }
 
-  // 窗口扩大阶段 -- 在这里面更新 res
+  // 窗口缩小完后 -- 在这里面更新 res
 
   right++
 }
@@ -122,7 +124,7 @@ function minSubArrayLen(target: number, nums: number[]): number {
 
 每次 sum 比 target 大的时候就更新一下 res，最坏情况下，也就是数组最后一个元素本身就比 target 大，此时答案是 1，但其实总的遍历次数也只是 n 次而已，因为 left 和 right 前进的时候并不存在嵌套的遍历过程，所以总的时间复杂度是 `O(n)`
 
-也就是说在窗口缩小的时候更新 res，因此套用模板一
+也就是说每次窗口缩小的时候就需要更新 res，因此套用模板一
 
 ```TypeScript
 /**
@@ -171,11 +173,15 @@ function minSubArrayLen(target: number, nums: number[]): number {
 
 `nums = [10,5,2,6], k = 100`
 
-初始时窗口是 `[0,0]`，此时窗口内元素是 10，严格小于 k，因此应当更新 res，如果不更新会导致其被漏掉，所以我们应当在窗口扩大阶段更新 res，套用模板二
+初始时窗口是 `[0,0]`，此时窗口内元素是 10，严格小于 k，因此应当更新 res，如果不更新会导致其被漏掉，所以我们应当在窗口扩大阶段更新 res
+
+假设现在窗口遍历到 `[0,2]`，那么窗口内元素为 `[10,5,2]`，元素乘积为 100，需要缩小窗口，我们需要等窗口缩小后才更新 res
+
+窗口扩大阶段更新 res 其实也涵盖在模板二中了，所以这题应当套用模板二
 
 ```TypeScript
 /**
- * @description 双指针 -- 套用模板二：在窗口扩张阶段更新 res
+ * @description 双指针 -- 套用模板二：在窗口缩小后更新 res
  */
 function numSubarrayProductLessThanK(nums: number[], k: number): number {
   // base case -- k <= 1 无解，除 0 外的任意数的乘积都不会严格小于 1
