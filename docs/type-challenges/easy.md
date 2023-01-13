@@ -186,3 +186,29 @@ type Length<T extends readonly unknown[]> = T['length']
 ```
 
 :::
+
+## 43 - Exclude <Badge type="info" text="built-in" />
+
+> Implement the built-in `Exclude<T, U>`
+
+实现内置类型 `Exclude<T, U>`
+
+> Exclude from `T` those types that are assignable to `U`
+
+排除联合类型 `T` 中包含联合类型 `U` 的那部分，也就是两个联合类型做差集运算
+
+[练习](https://tsch.js.org/43/play)
+
+e.g.
+
+```TypeScript
+type Result = MyExclude<'a' | 'b' | 'c', 'a'> // 'b' | 'c'
+```
+
+:::details 查看答案
+
+```TypeScript
+type MyExclude<T, U> = T extends U ? never : T
+```
+
+:::
