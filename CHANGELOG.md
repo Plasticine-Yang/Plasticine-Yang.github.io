@@ -1,5 +1,15 @@
 # plasticine-yang-github-io
 
+## 0.3.5
+
+### Patch Changes
+
+- feat(algorithm): medium -- 713. 乘积小于 K 的子数组
+- feat(algorithm): medium -- 3. 无重复字符的最长子串
+- feat(algorithm): medium -- 209. 长度最小的子数组
+- feat(vitepress): enable lastUpdated option
+- feat(algorithm): add problem template
+
 ## 0.3.4
 
 ### Patch Changes
