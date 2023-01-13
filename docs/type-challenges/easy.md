@@ -245,10 +245,29 @@ type MyAwaited<T> = T extends PromiseLike<infer R>
 
 :::
 
-:::tip 相关题目
-[easy](/type-challenges/easy#) <Badge type="tip" text="easy" />
+## 268 - If
 
-[medium](/type-challenges/medium#) <Badge type="warning" text="medium" />
+[练习](https://tsch.js.org/268/play)
 
-[hard](/type-challenges/hard#) <Badge type="danger" text="hard" />
+> Implement the util type `If<C, T, F>` which accepts condition `C`, a truthy value `T`, and a falsy value `F`. `C` is expected to be either `true` or `false` while `T` and `F` can be any type.
+
+实现工具类型 `If<C, T, F>`，它接受类型 `C` 作为条件，一个真值类型 `T` 和一个假值类型 `F`。`C` 需要是 `true` 或者 `false`，且它为 `true` 时会返回类型 `T`，为 `false` 时会返回 `F`
+
+e.g.
+
+```TypeScript
+type A = If<true, 'a', 'b'>  // expected to be 'a'
+type B = If<false, 'a', 'b'> // expected to be 'b'
+```
+
+:::details 查看答案
+
+```TypeScript
+type If<C extends boolean, T, F> = C extends true
+  ? T
+  : C extends false
+  ? F
+  : never
+```
+
 :::
