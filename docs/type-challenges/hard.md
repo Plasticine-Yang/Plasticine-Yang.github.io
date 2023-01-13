@@ -113,7 +113,7 @@ type Enum<T extends readonly string[], N extends boolean = false> = {
 [3188 - Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
-## 730 - Union to Tuple
+## 730 - Union to Tuple <Badge type="danger" text="Unintelligible" />
 
 [练习](https://tsch.js.org/730/play)
 
