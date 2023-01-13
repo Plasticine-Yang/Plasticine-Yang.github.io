@@ -160,3 +160,29 @@ type First<T extends any[]> = T extends [infer FirstEl, ...any]
 :::tip 相关题目
 [medium](/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
 :::
+
+## 18 - Length of Tuple
+
+> For given a tuple, you need create a generic `Length<T>`, pick the length of the tuple
+
+给你一个元组，你需要实现一个泛型 `Length<T>`，返回元组的长度
+
+[练习](https://tsch.js.org/18/play)
+
+e.g.
+
+```TypeScript
+type tesla = ['tesla', 'model 3', 'model X', 'model Y']
+type spaceX = ['FALCON 9', 'FALCON HEAVY', 'DRAGON', 'STARSHIP', 'HUMAN SPACEFLIGHT']
+
+type teslaLength = Length<tesla>  // expected 4
+type spaceXLength = Length<spaceX> // expected 5
+```
+
+:::details 查看答案
+
+```TypeScript
+type Length<T extends readonly unknown[]> = T['length']
+```
+
+:::
