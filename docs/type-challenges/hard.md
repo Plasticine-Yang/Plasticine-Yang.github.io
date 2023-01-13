@@ -104,13 +104,13 @@ type Enum<T extends readonly string[], N extends boolean = false> = {
 :::
 
 :::tip 相关题目
-[Tuple to Union](/type-challenges/medium#tuple-to-union) <Badge type="warning" text="medium" />
+[Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
+[Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
+[Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 
-[Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
+[Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
 ## 730 - Union to Tuple
@@ -200,13 +200,13 @@ type Prepend<Arr extends unknown[], Item> = [Item, ...Arr]
 :::
 
 :::tip 相关题目
-[Tuple to Union](/type-challenges/medium#tuple-to-union) <Badge type="warning" text="medium" />
+[Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
+[Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[Union to Intersection](/type-challenges/hard#union-to-intersection) <Badge type="danger" text="hard" />
+[Union to Intersection](/type-challenges/hard#_55-union-to-intersection) <Badge type="danger" text="hard" />
 
-[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
+[Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
+[Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::

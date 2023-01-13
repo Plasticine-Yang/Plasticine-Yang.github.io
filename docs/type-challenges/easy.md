@@ -40,7 +40,7 @@ type MyPick<T, K extends keyof T> = {
 :::
 
 :::tip 相关题目
-[Omit](/type-challenges/medium#omit) <Badge type="warning" text="medium" />
+[Omit](/type-challenges/medium#_3-omit) <Badge type="warning" text="medium" />
 :::
 
 ## 7 - Readonly <Badge type="info" text="built-in" />
@@ -79,9 +79,9 @@ type MyReadonly<T> = {
 :::
 
 :::tip 相关题目
-[Readonly 2](/type-challenges/medium#readonly-2) <Badge type="warning" text="medium" />
+[Readonly 2](/type-challenges/medium#_8-readonly-2) <Badge type="warning" text="medium" />
 
-[Deep Readonly](/type-challenges/medium#deep-readonly) <Badge type="warning" text="medium" />
+[Deep Readonly](/type-challenges/medium#_9-deep-readonly) <Badge type="warning" text="medium" />
 :::
 
 ## 11 - Tuple to Object
@@ -120,13 +120,13 @@ type TupleNumber = Tuple[number]
 :::
 
 :::tip 相关题目
-[Tuple to Union](/type-challenges/medium#tuple-to-union) <Badge type="warning" text="medium" />
+[Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
+[Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
+[Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 
-[Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
+[Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
 ## 14 - First of Array
@@ -158,5 +158,5 @@ type First<T extends any[]> = T extends [infer FirstEl, ...any]
 :::
 
 :::tip 相关题目
-[medium](/type-challenges/medium#last-of-array) <Badge type="warning" text="medium" />
+[medium](/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
 :::

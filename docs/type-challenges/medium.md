@@ -45,7 +45,7 @@ type MyOmit<T, K> = {
 :::
 
 :::tip 相关题目
-[Pick](/type-challenges/easy#pick) <Badge type="tip" text="easy" />
+[Pick](/type-challenges/easy#_4-pick) <Badge type="tip" text="easy" />
 :::
 
 ## 8 - Readonly 2
@@ -93,9 +93,9 @@ type MyReadonly2<T, K extends keyof T = keyof T> = {
 :::
 
 :::tip 相关题目
-[Readonly](/type-challenges/easy#readonly) <Badge type="tip" text="easy" />
+[Readonly](/type-challenges/easy#_7-readonly) <Badge type="tip" text="easy" />
 
-[Deep Readonly](/type-challenges/medium#deep-readonly) <Badge type="warning" text="medium" />
+[Deep Readonly](/type-challenges/medium#_9-deep-readonly) <Badge type="warning" text="medium" />
 :::
 
 ## 9 - Deep Readonly
@@ -145,9 +145,9 @@ type DeepReadonly<T> = {
 :::
 
 :::tip 相关题目
-[Readonly](/type-challenges/easy#readonly) <Badge type="tip" text="easy" />
+[Readonly](/type-challenges/easy#_7-readonly) <Badge type="tip" text="easy" />
 
-[Readonly 2](/type-challenges/medium#readonly-2) <Badge type="warning" text="medium" />
+[Readonly 2](/type-challenges/medium#_8-readonly-2) <Badge type="warning" text="medium" />
 :::
 
 ## 10 - Tuple to Union
@@ -177,13 +177,13 @@ type TupleToUnion<T extends unknown[]> = T[number]
 :::
 
 :::tip 相关题目
-[Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
+[Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
+[Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
+[Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 
-[Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
+[Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
 ## 15 - Last of Array
@@ -213,9 +213,9 @@ type Last<T extends any[]> = T extends [...any[], infer Last] ? Last : never
 :::
 
 :::tip 相关题目
-[easy](/type-challenges/easy#first-of-array) <Badge type="tip" text="easy" />
+[easy](/type-challenges/easy#_4-first-of-array) <Badge type="tip" text="easy" />
 
-[medium](/type-challenges/medium#pop) <Badge type="warning" text="medium" />
+[medium](/type-challenges/medium#_16-pop) <Badge type="warning" text="medium" />
 :::
 
 ## 3188 - Tuple to Nested Object
@@ -250,11 +250,11 @@ type TupleToNestedObject<T extends readonly string[], U> = T extends [
 :::
 
 :::tip 相关题目
-[Tuple to Union](/type-challenges/medium#tuple-to-union) <Badge type="warning" text="medium" />
+[Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[Tuple to Object](/type-challenges/easy#tuple-to-object) <Badge type="tip" text="easy" />
+[Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[Tuple to Enum Object](/type-challenges/hard#tuple-to-enum-object) <Badge type="danger" text="hard" />
+[Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[Union to Tuple](/type-challenges/hard#union-to-tuple) <Badge type="danger" text="hard" />
+[Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 :::
