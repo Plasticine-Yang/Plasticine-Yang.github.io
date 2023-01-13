@@ -8,6 +8,7 @@ import { sidebar } from './sidebar'
 export default defineConfig({
   title: 'Plasticine FE Diary',
   head: [['link', { rel: 'icon', href: LOGO_PATH }]],
+  lastUpdated: true,
   themeConfig: {
     logo: LOGO_PATH,
     nav,
