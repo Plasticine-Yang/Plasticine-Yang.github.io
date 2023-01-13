@@ -212,3 +212,43 @@ type MyExclude<T, U> = T extends U ? never : T
 ```
 
 :::
+
+## 189 - Awaited <Badge type="info" text="built-in" />
+
+[练习](https://tsch.js.org/189/play)
+
+> If we have a type which is wrapped type like Promise. How we can get a type which is inside the wrapped type?
+
+如果我们有一个类型包裹在 `Promise` 里面。我们要怎么获取这个被包裹的类型呢？
+
+> For example: if we have `Promise<ExampleType>` how to get ExampleType?
+
+比如：如果我们有 `Promise<ExampleType>`，要如何获取 `ExampleType`？
+
+e.g.
+
+```TypeScript
+type ExampleType = Promise<string>
+
+type Result = MyAwaited<ExampleType> // string
+```
+
+:::details 查看答案
+
+```TypeScript
+type MyAwaited<T> = T extends PromiseLike<infer R>
+  ? R extends PromiseLike<any>
+    ? MyAwaited<R>
+    : R
+  : never
+```
+
+:::
+
+:::tip 相关题目
+[easy](/type-challenges/easy#) <Badge type="tip" text="easy" />
+
+[medium](/type-challenges/medium#) <Badge type="warning" text="medium" />
+
+[hard](/type-challenges/hard#) <Badge type="danger" text="hard" />
+:::
