@@ -186,6 +186,38 @@ type TupleToUnion<T extends unknown[]> = T[number]
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
+## 15 - Last of Array
+
+[练习](https://tsch.js.org/15/play)
+
+> Implement a generic `Last<T>` that takes an Array `T` and returns its last element.
+
+实现一个接收一个数组类型 `T` 并且返回它的最后一个元素类型的泛型 `Last<T>`。
+
+e.g.
+
+```TypeScript
+type arr1 = ['a', 'b', 'c']
+type arr2 = [3, 2, 1]
+
+type tail1 = Last<arr1> // expected to be 'c'
+type tail2 = Last<arr2> // expected to be 1
+```
+
+:::details 查看答案
+
+```TypeScript
+type Last<T extends any[]> = T extends [...any[], infer Last] ? Last : never
+```
+
+:::
+
+:::tip 相关题目
+[easy](/type-challenges/easy#first-of-array) <Badge type="tip" text="easy" />
+
+[medium](/type-challenges/medium#pop) <Badge type="warning" text="medium" />
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
