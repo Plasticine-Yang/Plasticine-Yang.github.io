@@ -1,8 +1,6 @@
-# 题目模板
-
 ## Title
 
-[练习](https://tsch.js.org/11/play)
+[练习](https://tsch.js.org/1/play)
 
 e.g.
 
