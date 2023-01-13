@@ -218,6 +218,38 @@ type Last<T extends any[]> = T extends [...any[], infer Last] ? Last : never
 [medium](/type-challenges/medium#_16-pop) <Badge type="warning" text="medium" />
 :::
 
+## 16 - Pop
+
+[练习](https://tsch.js.org/16/play)
+
+> Implement a generic `Pop<T>` that takes an Array `T` and returns an Array without it's last element.
+
+实现一个泛型 `Pop<T>`，其接收一个数组类型 `T` 并返回一个数组类型，返回的数组类型中不包括 `T` 的最后一个元素。
+
+e.g.
+
+```TypeScript
+type arr1 = ['a', 'b', 'c', 'd']
+type arr2 = [3, 2, 1]
+
+type re1 = Pop<arr1> // expected to be ['a', 'b', 'c']
+type re2 = Pop<arr2> // expected to be [3, 2]
+```
+
+:::details 查看答案
+
+```TypeScript
+type Pop<T extends any[]> = T extends [...infer Fronts, any] ? Fronts : []
+```
+
+:::
+
+:::tip 相关题目
+[easy](/type-challenges/easy#_14-first-of-array) <Badge type="tip" text="easy" />
+
+[medium](/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
