@@ -213,3 +213,40 @@ function numSubarrayProductLessThanK(nums: number[], k: number): number {
   return res
 }
 ```
+
+## 3. 无重复字符的最长子串
+
+[题目链接](https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/)
+
+这题需要在字符进入窗口时就记录字串长度，但也需要保证窗口内无重复子串才行，也就是说要在窗口缩小到没有重复子串后才更新 res，因此套用模板二
+
+```TypeScript
+/**
+ * @description 双指针 -- 套用模板二：窗口扩大阶段更新 res
+ */
+function lengthOfLongestSubstring(s: string): number {
+  const n = s.length
+  let left = 0
+  let right = 0
+  let res = 0
+  const counter: Record<string, number> = {}
+
+  while (left < n && right < n) {
+    const char = s.charAt(right)
+    counter[char] = counter[char] === undefined ? 1 : counter[char] + 1
+
+    // 窗口缩小条件：出现重复字符时
+    while (counter[char] > 1) {
+      counter[s.charAt(left)] -= 1
+      left++
+    }
+
+    // 窗口扩大阶段更新 res
+    res = Math.max(right - left + 1, res)
+
+    right++
+  }
+
+  return res
+}
+```
