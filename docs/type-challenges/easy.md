@@ -128,3 +128,35 @@ type TupleNumber = Tuple[number]
 
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
+
+## First of Array
+
+[练习](https://tsch.js.org/14/play)
+
+> Implement a generic `First<T>` that takes an Array `T` and returns its first element's type.
+
+实现一个接收一个数组类型 `T` 且返回它的第一个元素类型的泛型 `First<T>`。
+
+e.g.
+
+```TypeScript
+type arr1 = ['a', 'b', 'c']
+type arr2 = [3, 2, 1]
+
+type head1 = First<arr1> // expected to be 'a'
+type head2 = First<arr2> // expected to be 3
+```
+
+:::details 查看答案
+
+```TypeScript
+type First<T extends any[]> = T extends [infer FirstEl, ...any]
+  ? FirstEl
+  : never
+```
+
+:::
+
+:::tip 相关题目
+[medium](/type-challenges/medium#last-of-array) <Badge type="warning" text="medium" />
+:::
