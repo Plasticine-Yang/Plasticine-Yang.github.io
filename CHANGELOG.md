@@ -1,5 +1,11 @@
 # plasticine-yang-github-io
 
+## 0.3.6
+
+### Patch Changes
+
+- refactor: extract template of type-challenges and algorithm to templates directory
+
 ## 0.3.5
 
 ### Patch Changes
