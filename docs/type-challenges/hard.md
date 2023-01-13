@@ -4,7 +4,7 @@
 My [type-challenges](https://github.com/type-challenges/type-challenges) issues submission records, [click to view](https://github.com/type-challenges/type-challenges/issues?q=is%3Aissue+author%3APlasticine-Yang+is%3Aclosed).
 :::
 
-## Union to Intersection
+## 55 - Union to Intersection
 
 [练习](https://tsch.js.org/55/play)
 
@@ -30,7 +30,7 @@ type UnionToIntersection<U> = (
 
 :::
 
-## Tuple to Enum Object
+## 472 - Tuple to Enum Object
 
 [练习](https://tsch.js.org/472/play)
 
@@ -113,7 +113,7 @@ type Enum<T extends readonly string[], N extends boolean = false> = {
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
-## Union to Tuple
+## 730 - Union to Tuple
 
 [练习](https://tsch.js.org/730/play)
 

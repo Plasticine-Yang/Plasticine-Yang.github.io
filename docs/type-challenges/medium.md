@@ -4,7 +4,7 @@
 My [type-challenges](https://github.com/type-challenges/type-challenges) issues submission records, [click to view](https://github.com/type-challenges/type-challenges/issues?q=is%3Aissue+author%3APlasticine-Yang+is%3Aclosed).
 :::
 
-## Omit <Badge type="info" text="built-in" />
+## 3 - Omit <Badge type="info" text="built-in" />
 
 [练习](https://tsch.js.org/3/play)
 
@@ -48,7 +48,7 @@ type MyOmit<T, K> = {
 [Pick](/type-challenges/easy#pick) <Badge type="tip" text="easy" />
 :::
 
-## Readonly 2
+## 8 - Readonly 2
 
 [练习](https://tsch.js.org/8/play)
 
@@ -98,7 +98,7 @@ type MyReadonly2<T, K extends keyof T = keyof T> = {
 [Deep Readonly](/type-challenges/medium#deep-readonly) <Badge type="warning" text="medium" />
 :::
 
-## Deep Readonly
+## 9 - Deep Readonly
 
 [练习](https://tsch.js.org/9/play)
 
@@ -150,7 +150,7 @@ type DeepReadonly<T> = {
 [Readonly 2](/type-challenges/medium#readonly-2) <Badge type="warning" text="medium" />
 :::
 
-## Tuple to Union
+## 10 - Tuple to Union
 
 [练习](https://tsch.js.org/10/play)
 
@@ -186,7 +186,7 @@ type TupleToUnion<T extends unknown[]> = T[number]
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
-## Tuple to Nested Object
+## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
 

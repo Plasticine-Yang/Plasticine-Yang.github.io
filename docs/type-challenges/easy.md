@@ -4,7 +4,7 @@
 My [type-challenges](https://github.com/type-challenges/type-challenges) issues submission records, [click to view](https://github.com/type-challenges/type-challenges/issues?q=is%3Aissue+author%3APlasticine-Yang+is%3Aclosed).
 :::
 
-## Pick <Badge type="info" text="built-in" />
+## 4 - Pick <Badge type="info" text="built-in" />
 
 [练习](https://tsch.js.org/4/play)
 
@@ -43,7 +43,7 @@ type MyPick<T, K extends keyof T> = {
 [Omit](/type-challenges/medium#omit) <Badge type="warning" text="medium" />
 :::
 
-## Readonly <Badge type="info" text="built-in" />
+## 7 - Readonly <Badge type="info" text="built-in" />
 
 [练习](https://tsch.js.org/7/play)
 
@@ -84,7 +84,7 @@ type MyReadonly<T> = {
 [Deep Readonly](/type-challenges/medium#deep-readonly) <Badge type="warning" text="medium" />
 :::
 
-## Tuple to Object
+## 11 - Tuple to Object
 
 [练习](https://tsch.js.org/11/play)
 
@@ -129,7 +129,7 @@ type TupleNumber = Tuple[number]
 [Tuple to Nested Object](/type-challenges/medium#tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
-## First of Array
+## 14 - First of Array
 
 [练习](https://tsch.js.org/14/play)
 
