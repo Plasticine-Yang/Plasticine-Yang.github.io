@@ -1,5 +1,11 @@
 # plasticine-yang-github-io
 
+## 0.3.7
+
+### Patch Changes
+
+- feat(fe-monitor-system): add architecture-design.md
+
 ## 0.3.6
 
 ### Patch Changes
