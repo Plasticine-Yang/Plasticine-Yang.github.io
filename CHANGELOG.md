@@ -1,5 +1,12 @@
 # plasticine-yang-github-io
 
+## 0.3.4
+
+### Patch Changes
+
+- fix(type-challenges): fix the name of related questions
+- feat(type-challenges): add `Unintelligible` badge for `730 - Union to Tuple`
+
 ## 0.3.3
 
 ### Patch Changes
