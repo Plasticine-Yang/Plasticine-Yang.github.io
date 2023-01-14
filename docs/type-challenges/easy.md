@@ -303,3 +303,42 @@ type Concat<T extends any[], U extends any[]> = T extends [...infer FirstArr]
 
 [3060 - Unshift](/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
 :::
+
+## 898 - Includes
+
+[练习](https://tsch.js.org/898/play)
+
+> Implement the JavaScript `Array.includes` function in the type system. A type takes the two arguments. The output should be a boolean `true` or `false`.
+
+在类型系统中实现 JavaScript 的 `Array.includes` 函数。你实现的类型需要接受两个参数，输出应当是一个 boolean。
+
+e.g.
+
+```TypeScript
+type isPillarMen = Includes<['Kars', 'Esidisi', 'Wamuu', 'Santana'], 'Dio'> // expected to be `false`
+```
+
+:::details 查看答案
+
+利用 `extends + infer` 提取数组的单个元素类型，并利用内置的 `Equal` 类型进行比较
+
+```TypeScript
+type Includes<T extends readonly any[], U> = T extends [
+  infer First,
+  ...infer Rest,
+]
+  ? Equal<First, U> extends true
+    ? true
+    : Includes<Rest, U>
+  : false
+```
+
+也可以手动实现 `Equal<X, Y>` 工具类型，本质上是利用函数返回值的协变特性进行两个类型是否相等的比较
+
+```TypeScript
+type MyEqual<X, Y> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2)
+  ? true
+  : false
+```
+
+:::
