@@ -1,5 +1,17 @@
 # plasticine-yang-github-io
 
+## 0.3.8
+
+### Patch Changes
+
+- feat(type-challenges): medium -- 2 - Get Return Type
+- feat(type-challenges): easy -- 3060 - Unshift
+- feat(type-challenges): easy -- 3312 - Parameters
+- feat(type-challenges): easy -- 3057 - Push
+- feat(type-challenges): medium -- 12 - Chainable Options
+- feat(type-challenges): easy -- 898 - Includes
+- feat(type-challenges): add summary.md
+
 ## 0.3.7
 
 ### Patch Changes
