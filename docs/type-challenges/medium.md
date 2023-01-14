@@ -215,6 +215,76 @@ type TupleToUnion<T extends unknown[]> = T[number]
 [3188 - Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
+## 12 - Chainable Options
+
+[练习](https://tsch.js.org/1/play)
+
+> Chainable options are commonly used in Javascript. But when we switch to TypeScript, can you properly type it?
+
+在 JavaScript 中经常会使用可链式调用的选项。但是在 TypeScript 中你能实现它的类型吗？
+
+> In this challenge, you need to type an object or a class - whatever you like - to provide two function `option(key, value)` and `get()`. In `option`, you can extend the current config type by the given key and value. We should about to access the final result via `get`.
+
+在这个挑战中，你需要为一个对象或者类提供两个函数选项 -- `(key, value)` 和 `get()`。在选项中，你可以用给定的 key 和 value 限制当前的配置类型。我们将通过 `get` 获取最终结果。
+
+e.g.
+
+```TypeScript
+declare const config: Chainable
+
+const result = config
+  .option('foo', 123)
+  .option('name', 'type-challenges')
+  .option('bar', { value: 'Hello World' })
+  .get()
+
+// expect the type of result to be:
+interface Result {
+  foo: number
+  name: string
+  bar: {
+    value: string
+  }
+}
+```
+
+> You don't need to write any js/ts logic to handle the problem - just in type level.
+
+你不需要编写任何 js/ts 逻辑去解决这个问题，只需要在类型层面上解决即可。
+
+> You can assume that `key` only accepts `string` and the `value` can be anything - just leave it as-is. Same `key` won't be passed twice.
+
+你可以假设 `key` 只能是 `string` 且 `value` 可以是 `any`。同一个 `key` 不会传入两次。
+
+:::details 查看答案
+
+```TypeScript
+type Chainable<T extends Record<string, any> = {}> = {
+  option<Key extends string, Value extends any>(
+    key: Key,
+    value: Value,
+  ): Chainable<
+    {
+      // 排除已经存在的 option，使用新的 option 的类型
+      [P in keyof T as P extends Key ? never : P]: T[P]
+    } & {
+      [P in Key]: Value
+    }
+  >
+  get(): T
+}
+```
+
+:::
+
+:::tip 相关题目
+[easy](/type-challenges/easy#) <Badge type="tip" text="easy" />
+
+[medium](/type-challenges/medium#) <Badge type="warning" text="medium" />
+
+[hard](/type-challenges/hard#) <Badge type="danger" text="hard" />
+:::
+
 ## 15 - Last of Array
 
 [练习](https://tsch.js.org/15/play)
