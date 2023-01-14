@@ -4,6 +4,35 @@
 My [type-challenges](https://github.com/type-challenges/type-challenges) issues submission records, [click to view](https://github.com/type-challenges/type-challenges/issues?q=is%3Aissue+author%3APlasticine-Yang+is%3Aclosed).
 :::
 
+## 2 - Get Return Type <Badge type="info" text="built-in" />
+
+[练习](https://tsch.js.org/2/play)
+
+> Implement the built-in `ReturnType<T>` generic without using it.
+
+实现内置的 `ReturnType<T>` 类型。
+
+e.g.
+
+```TypeScript
+const fn = (v: boolean) => {
+  if (v)
+    return 1
+  else
+    return 2
+}
+
+type a = MyReturnType<typeof fn> // should be "1 | 2"
+```
+
+:::details 查看答案
+
+```TypeScript
+type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never
+```
+
+:::
+
 ## 3 - Omit <Badge type="info" text="built-in" />
 
 [练习](https://tsch.js.org/3/play)
