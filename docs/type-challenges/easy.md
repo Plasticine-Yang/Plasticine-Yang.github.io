@@ -398,3 +398,29 @@ type Unshift<T extends unknown[], U> = [U, ...T]
 
 [3057 - Push](/type-challenges/easy#_3057-push) <Badge type="tip" text="easy" />
 :::
+
+## 3312 - Parameters <Badge type="info" text="built-in" />
+
+[练习](https://tsch.js.org/3312/play)
+
+> Implement the built-in Parameters generic without using it.
+
+实现内置的 `Parameters` 类型。
+
+e.g.
+
+```TypeScript
+const foo = (arg1: string, arg2: number): void => {}
+
+type FunctionParamsType = MyParameters<typeof foo> // [arg1: string, arg2: number]
+```
+
+:::details 查看答案
+
+```TypeScript
+type MyParameters<T extends (...args: any[]) => any> = T extends (...args: infer Args extends any[]) => any
+  ? Args
+  : never
+```
+
+:::
