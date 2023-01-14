@@ -6,7 +6,7 @@ export const nav: DefaultTheme.Config['nav'] = [
 
   {
     text: 'TypeScript 类型挑战',
-    link: `${ROUTES.TYPE_CHALLENGES}easy`,
+    link: `${ROUTES.TYPE_CHALLENGES}summary`,
     activeMatch: ROUTES.TYPE_CHALLENGES,
   },
 
