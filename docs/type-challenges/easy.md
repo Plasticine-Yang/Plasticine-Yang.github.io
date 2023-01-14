@@ -370,3 +370,31 @@ type Push<T extends unknown[], U> = [...T, U]
 
 [3060 - Unshift](/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
 :::
+
+## 3060 - Unshift
+
+[练习](https://tsch.js.org/3060/play)
+
+> Implement the type version of `Array.unshift`.
+
+实现泛型版本的 `Array.unshift`。
+
+e.g.
+
+```TypeScript
+type Result = Unshift<[1, 2], 0> // [0, 1, 2,]
+```
+
+:::details 查看答案
+
+```TypeScript
+type Unshift<T extends unknown[], U> = [U, ...T]
+```
+
+:::
+
+:::tip 相关题目
+[533 - Concat](/type-challenges/easy#_533-concat) <Badge type="tip" text="easy" />
+
+[3057 - Push](/type-challenges/easy#_3057-push) <Badge type="tip" text="easy" />
+:::
