@@ -342,3 +342,31 @@ type MyEqual<X, Y> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends 
 ```
 
 :::
+
+## 3057 - Push
+
+[练习](https://tsch.js.org/3057/play)
+
+> Implement the generic version of `Array.push`.
+
+实现泛型版本的 `Array.push`。
+
+e.g.
+
+```TypeScript
+type Result = Push<[1, 2], '3'> // [1, 2, '3']
+```
+
+:::details 查看答案
+
+```TypeScript
+type Push<T extends unknown[], U> = [...T, U]
+```
+
+:::
+
+:::tip 相关题目
+[533 - Concat](/type-challenges/easy#_533-concat) <Badge type="tip" text="easy" />
+
+[3060 - Unshift](/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
+:::
