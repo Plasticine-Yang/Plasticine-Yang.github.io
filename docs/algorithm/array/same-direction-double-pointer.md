@@ -165,6 +165,14 @@ function minSubArrayLen(target: number, nums: number[]): number {
 }
 ```
 
+时间复杂度：`O(n)`
+
+假设最坏情况下，right 一直往右移动到末尾，此时仍然没有求出解，那么 left 也没必要继续右移了，sum 只会比所有值求和更小，所以时间复杂度是 `O(n)`
+
+---
+
+空间复杂度：`O(1)`
+
 ## 713. 乘积小于 K 的子数组
 
 [题目链接](https://leetcode.cn/problems/subarray-product-less-than-k/)
