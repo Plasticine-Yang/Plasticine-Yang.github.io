@@ -11,16 +11,8 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
         link: `${ROUTES.FE_MONITOR_SYSTEM}architecture-design`,
       },
       {
-        text: '性能指标',
-        link: `${ROUTES.FE_MONITOR_SYSTEM}performance-indicators`,
-      },
-      {
-        text: 'JS 错误监控原理',
-        link: `${ROUTES.FE_MONITOR_SYSTEM}js-error-monitoring-principle`,
-      },
-      {
-        text: '网络请求监控原理',
-        link: `${ROUTES.FE_MONITOR_SYSTEM}network-request-monitoring-principle`,
+        text: '错误监控',
+        link: `${ROUTES.FE_MONITOR_SYSTEM}error-monitor`,
       },
     ],
   },

@@ -14,6 +14,7 @@ export const algorithm: DefaultTheme.SidebarGroup[] = [
     text: '数组',
     items: [
       { text: '同向双指针', link: `${ARRAY}/same-direction-double-pointer` },
+      { text: '相向双指针', link: `${ARRAY}/oppsite-direction-double-pointer` },
     ],
   },
 ]
