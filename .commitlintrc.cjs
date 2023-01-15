@@ -6,6 +6,7 @@ module.exports = {
   prompt: {
     scopes: [
       'index',
+      'templates',
       'type-challenges',
       'fe-monitor-system',
       'react-source-learning',
