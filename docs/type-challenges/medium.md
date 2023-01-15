@@ -387,6 +387,59 @@ type ExtractTypeOfPromise<T> = T extends PromiseLike<infer R>
 
 :::
 
+## 62 - Type Lookup
+
+[练习](https://tsch.js.org/62/play)
+
+> Sometimes, you may want to lookup for a type in a union to by their attributes.
+
+有时候，你可能想获取一个联合类型中的指定属性。
+
+> In this challenge, we would like to get the corresponding `type` by searching for the common type field in the union `Cat | Dog`. In other words, we will expect to get `Dog` for `LookUp<Dog | Cat, 'dog'>` and `Cat` for `LookUp<Dog | Cat, 'cat'>` in the following example.
+
+在这个挑战中，我们想通过在联合类型 `Cat | Dog` 中搜索普通的 `type` 字段去获取相关的类型。换句话说，在下面的例子中，对于 `LookUp<Dog | Cat>, 'dog'`，我们希望获取到 `Dog`；对于 `LookUp<Dog | Cat, 'cat'>` 则应返回 `Cat`。
+
+e.g.
+
+```TypeScript
+interface Cat {
+  type: 'cat'
+  breeds: 'Abyssinian' | 'Shorthair' | 'Curl' | 'Bengal'
+}
+
+interface Dog {
+  type: 'dog'
+  breeds: 'Hound' | 'Brittany' | 'Bulldog' | 'Boxer'
+  color: 'brown' | 'white' | 'black'
+}
+
+type MyDogType = LookUp<Cat | Dog, 'dog'> // expected to be `Dog`
+```
+
+:::details 查看答案
+
+```TypeScript
+type LookUp<U, T> = U extends U
+  ? U extends {
+      type: infer R
+    } & Record<any, any>
+    ? T extends R
+      ? U
+      : never
+    : never
+  : never
+```
+
+:::
+
+:::tip 相关题目
+[easy](/type-challenges/easy#) <Badge type="tip" text="easy" />
+
+[medium](/type-challenges/medium#) <Badge type="warning" text="medium" />
+
+[hard](/type-challenges/hard#) <Badge type="danger" text="hard" />
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
