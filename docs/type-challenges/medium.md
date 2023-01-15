@@ -349,6 +349,44 @@ type Pop<T extends any[]> = T extends [...infer Fronts, any] ? Fronts : []
 [15 - Last of Array](/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
 :::
 
+## 20 - Promise.all
+
+[练习](https://tsch.js.org/20/play)
+
+> Type the function `PromiseAll` that accepts an array of PromiseLike objects, the returning value should be `Promise<T>` where `T` is the resolved result array.
+
+实现 `PromiAll` 类型，它接受一个元素类型为 PromiseLike 对象的数组作为参数，返回值应当为 `Promise<T>`，`T` 是 resolved 的结果数组。
+
+e.g.
+
+```TypeScript
+const promise1 = Promise.resolve(3);
+const promise2 = 42;
+const promise3 = new Promise<string>((resolve, reject) => {
+  setTimeout(resolve, 100, 'foo');
+});
+
+// expected to be `Promise<[number, 42, string]>`
+const p = PromiseAll([promise1, promise2, promise3] as const)
+```
+
+:::details 查看答案
+
+```TypeScript
+declare function PromiseAll<T extends any[]>(
+  values: readonly [...T],
+): Promise<{
+  [P in keyof T]: ExtractTypeOfPromise<T[P]>
+}>
+
+/** @description 递归提取 PromiseLike<T> 中的 T */
+type ExtractTypeOfPromise<T> = T extends PromiseLike<infer R>
+  ? ExtractTypeOfPromise<R>
+  : T
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
