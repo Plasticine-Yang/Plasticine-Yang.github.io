@@ -266,3 +266,13 @@ function lengthOfLongestSubstring(s: string): number {
   return res
 }
 ```
+
+时间复杂度：`O(n)`
+
+:::details 原因分析
+和 [209. 长度最小的子数组](#_209-长度最小的子数组) 的分析思路类似，最坏情况下 `right` 每右移一次，`left` 就右移一次，也就是说两者总共移动了 `(n-1) + (n-1) === 2n - 2` 次，所以时间复杂度为 `O(n)`
+:::
+
+---
+
+空间复杂度：`O(1)`
