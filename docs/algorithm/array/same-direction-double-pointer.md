@@ -95,9 +95,11 @@ function minSubArrayLen(target: number, nums: number[]): number {
 
 时间复杂度：`O(n^2)`
 
+:::details 原因分析
 `left` 从 0 遍历到 n，最坏情况下，每轮遍历的时候 `right` 都会从 `left + 1` 遍历到 `n + 1`
 
 即 n 次循环中分别有 `n, n-1, n-2, n-3 ... 1` 次循环，取最坏的一次，也就是 `O(n^2)`
+:::
 
 ---
 
@@ -167,7 +169,9 @@ function minSubArrayLen(target: number, nums: number[]): number {
 
 时间复杂度：`O(n)`
 
+:::details 原因分析
 最坏情况下，`right` 右移一次，`left` 也立刻跟着右移一次，那么总共移动了 `(n-1) + (n-1) === 2n - 2` 次，所以时间复杂度为 `O(n)`
+:::
 
 ---
 
