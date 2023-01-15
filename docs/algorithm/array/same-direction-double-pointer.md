@@ -167,7 +167,7 @@ function minSubArrayLen(target: number, nums: number[]): number {
 
 时间复杂度：`O(n)`
 
-假设最坏情况下，right 一直往右移动到末尾，此时仍然没有求出解，那么 left 也没必要继续右移了，sum 只会比所有值求和更小，所以时间复杂度是 `O(n)`
+最坏情况下，`right` 右移一次，`left` 也立刻跟着右移一次，那么总共移动了 `(n-1) + (n-1) === 2n - 2` 次，所以时间复杂度为 `O(n)`
 
 ---
 
