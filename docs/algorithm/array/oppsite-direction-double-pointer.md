@@ -29,3 +29,11 @@ function twoSum(numbers: number[], target: number): number[] {
   return [left + 1, right + 1]
 }
 ```
+
+时间复杂度：`O(n)`
+
+假设最坏情况下，left 一直不移动，一直都是 right 往左移动，那么 right 需要移动 `n-2` 次，也就是 `O(n)`
+
+---
+
+空间复杂度：`O(1)`
