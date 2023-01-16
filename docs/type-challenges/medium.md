@@ -463,9 +463,9 @@ type TrimLeft<S extends string> = S extends `${infer Whitespace}${infer Rest}`
 :::
 
 :::tip 相关题目
-[108 - Trim](/type-challenges/easy#_108-trim) <Badge type="tip" text="medium" />
+[108 - Trim](/type-challenges/medium#_108-trim) <Badge type="tip" text="medium" />
 
-[4803 - Trim Right](/type-challenges/easy#_4803-trim-right) <Badge type="tip" text="medium" />
+[4803 - Trim Right](/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
 :::
 
 ## 108 - Trim
