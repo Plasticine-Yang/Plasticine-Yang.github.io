@@ -496,6 +496,30 @@ type Trim<S extends string> = S extends `${Whitespace}${infer Rest}` | `${infer 
 [4803 - Trim Right](/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
 :::
 
+## 110 - Capitalize
+
+[练习](https://tsch.js.org/110/play)
+
+> Implement `Capitalize<T>` which converts the first letter of a string to uppercase and leave the rest as-is.
+
+实现 `Capitalize<T>`，它会将字符串的第一个字符转为大写并让其余字符保持原样。
+
+e.g.
+
+```TypeScript
+type capitalized = Capitalize<'hello world'> // expected to be 'Hello world'
+```
+
+:::details 查看答案
+
+```TypeScript
+type MyCapitalize<S extends string> = S extends `${infer First}${infer Rest}`
+  ? `${Uppercase<First>}${Rest}`
+  : S
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
