@@ -468,6 +468,36 @@ type TrimLeft<S extends string> = S extends `${infer Whitespace}${infer Rest}`
 [4803 - Trim Right](/type-challenges/easy#_4803-trim-right) <Badge type="tip" text="medium" />
 :::
 
+## 108 - Trim
+
+[练习](https://tsch.js.org/108/play)
+
+> Implement `Trim<T>` which takes an exact string type and returns a new string with the whitespace from both ends removed.
+
+实现 `TrimLeft<T>`，它接受一个准确的字符串类型作为参数，并返回一个新的字符串，若该字符串两端有空白字符则需要将这些空白字符移除。
+
+e.g.
+
+```TypeScript
+type trimmed = Trim<'  Hello World  '> // expected to be 'Hello World'
+```
+
+:::details 查看答案
+
+```TypeScript
+type Trim<S extends string> = S extends `${Whitespace}${infer Rest}` | `${infer Rest}${Whitespace}`
+  ? Trim<Rest>
+  : S
+```
+
+:::
+
+:::tip 相关题目
+[106 - Trim Left](/type-challenges/medium#_106-trim-left) <Badge type="tip" text="medium" />
+
+[4803 - Trim Right](/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
