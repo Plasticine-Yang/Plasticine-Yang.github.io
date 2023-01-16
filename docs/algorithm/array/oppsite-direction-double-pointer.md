@@ -74,7 +74,6 @@ function threeSum(nums: number[]): number[][] {
       const z = nums[right]
       const sum = y + z
 
-      if (i === 1) console.log(left, right, sum, target)
       if (sum === target) {
         // 更新 res
         res.push([x, y, z])
@@ -256,5 +255,198 @@ function threeSum(nums: number[]): number[][] {
   }
 
   return res
+}
+```
+
+## 18. 四数之和
+
+[题目链接](https://leetcode.cn/problems/4sum/description/)
+
+和 [15. 三数之和](#_15-三数之和) 类似，遍历数组每个元素，然后调用 `threeSum` 得到结果后，将当前元素推入即可
+
+```TypeScript{53,72}
+function fourSum(nums: number[], target: number): number[][] {
+  nums.sort((a, b) => a - b)
+
+  const moveLeft = (_nums: number[], left: number, right: number) => {
+    left++
+    while (left < right && _nums[left] === _nums[left - 1]) left++
+    return left
+  }
+
+  const moveRight = (_nums: number[], left: number, right: number) => {
+    right--
+    while (right > left && _nums[right] === _nums[right + 1]) right--
+    return right
+  }
+
+  /** @description 两数之和 */
+  const twoSum = (_nums: number[], _target: number): number[][] => {
+    const n = _nums.length
+    const res: number[][] = []
+    let left = 0
+    let right = n - 1
+
+    while (left < right) {
+      const x = _nums[left]
+      const y = _nums[right]
+      const sum = _nums[left] + _nums[right]
+
+      if (sum === _target) {
+        res.push([x, y])
+
+        left = moveLeft(_nums, left, right)
+        right = moveRight(_nums, left, right)
+      } else if (sum < _target) {
+        left = moveLeft(_nums, left, right)
+      } else if (sum > _target) {
+        right = moveRight(_nums, left, right)
+      }
+    }
+
+    return res
+  }
+
+  const threeSum = (_nums: number[], _target: number): number[][] => {
+    const n = _nums.length
+    const res: number[][] = []
+
+    for (let i = 0; i < n; i++) {
+      if (i >= 1 && _nums[i] === _nums[i - 1]) continue
+
+      const x = _nums[i]
+      const twoSumTarget = _target - x
+
+      const twoSumRes = twoSum(_nums.slice(i + 1), twoSumTarget)
+      if (twoSumRes.length > 0) {
+        const threeSumRes = twoSumRes.map(item => [...item, x])
+        res.push(...threeSumRes)
+      }
+    }
+
+    return res
+  }
+
+  const n = nums.length
+  const res: number[][] = []
+
+  for (let i = 0; i < n; i++) {
+    if (i >= 1 && nums[i] === nums[i - 1]) continue
+
+    const x = nums[i]
+    const threeSumTarget = target - x
+
+    const threeSumRes = threeSum(nums.slice(i + 1), threeSumTarget)
+    if (threeSumRes.length > 0) {
+      const fourSumRes = threeSumRes.map(item => [...item, x])
+      res.push(...fourSumRes)
+    }
+  }
+
+  return res
+}
+```
+
+:::danger 注意
+`fourSum` 调用 `threeSum` 以及 `threeSum` 调用 `twoSum` 时，传入的数组需要截取当前遍历的元素的下一个元素到末尾才行，这样做是为了防止结果重复
+:::
+
+时间复杂度：`O(n^3)`
+
+:::details 原因分析
+
+- 遍历所有元素 -- `O(n)` => 整体 `O(n^3)`
+
+  - 每轮遍历中调用 `threeSum` -- `O(n^2)`
+
+:::
+
+---
+
+空间复杂度：`O(1)`
+
+### 扩展到 nSum
+
+从 `fourSum` 和 `threeSum` 的代码中可以看出高度的相似性，因此可以考虑抽象成 `nSum` 解法
+
+```TypeScript
+function nSum(nums: number[], n: number, target: number) {
+  nums.sort((a, b) => a - b)
+  return _nSum(nums, n, target)
+}
+
+function _nSum(nums: number[], n: number, target: number): number[][] {
+  const length = nums.length
+  const res: number[][] = []
+
+  /**
+   * base case 1
+   *   n 至少得是 2，也就是至少得是个两数之和问题
+   *   且 nums.length 至少得 >= n
+   */
+  if (n < 2 || length < n) return res
+
+  if (n === 2) {
+    // n === 2 -- 两数之和
+    return twoSum(nums, target)
+  } else {
+    // n > 2 -- 遍历数组 并递归调用 (n-1)Sum 的算法
+    for (let i = 0; i < length; i++) {
+      // 避免重复
+      if (i >= 1 && nums[i] === nums[i - 1]) continue
+
+      const x = nums[i]
+      const nMinusOneTarget = target - x
+
+      const nMinusOneRes = _nSum(nums.slice(i + 1), n - 1, nMinusOneTarget)
+      if (nMinusOneRes.length > 0) {
+        const nSumRes = nMinusOneRes.map(item => [...item, x])
+        res.push(...nSumRes)
+      }
+    }
+  }
+
+  return res
+}
+
+function twoSum(nums: number[], target: number): number[][] {
+  const n = nums.length
+  const res: number[][] = []
+  let left = 0
+  let right = n - 1
+
+  while (left < right) {
+    const x = nums[left]
+    const y = nums[right]
+    const sum = x + y
+
+    if (sum === target) {
+      res.push([x, y])
+
+      left++
+      while (left < right && nums[left] === nums[left - 1]) left++
+
+      right--
+      while (right > left && nums[right] === nums[right + 1]) right--
+    } else if (sum < target) {
+      left++
+      while (left < right && nums[left] === nums[left - 1]) left++
+    } else if (sum > target) {
+      right--
+      while (right > left && nums[right] === nums[right + 1]) right--
+    }
+  }
+
+  return res
+}
+```
+
+核心在于：调用 `_nums` 之前要先对数组升序排序
+
+现在我们可以解决任意 sum 问题了，比如 `4Sum`
+
+```TypeScript
+function fourSum(nums: number[], target: number): number[][] {
+  return nSum(nums, 4, target)
 }
 ```
