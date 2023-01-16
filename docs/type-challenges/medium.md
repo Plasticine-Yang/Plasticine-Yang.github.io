@@ -432,6 +432,42 @@ type LookUp<U, T> = U extends U
 
 :::
 
+## 106 - Trim Left
+
+[练习](https://tsch.js.org/106/play)
+
+> Implement `TrimLeft<T>` which takes an exact string type and returns a new string with the whitespace beginning removed.
+
+实现 `TrimLeft<T>`，它接受一个准确的字符串类型作为参数，并返回一个新的字符串，若该字符串以空白字符开头则需要将其移除。
+
+e.g.
+
+```TypeScript
+type trimed = TrimLeft<'  Hello World  '> // expected to be 'Hello World  '
+```
+
+:::details 查看答案
+
+```TypeScript
+type TrimLeft<S extends string> = S extends `${infer Whitespace}${infer Rest}`
+  ? Whitespace extends ' '
+    ? TrimLeft<Rest>
+    : Whitespace extends '\n'
+      ? TrimLeft<Rest>
+      : Whitespace extends '\t'
+        ? TrimLeft<Rest>
+        : S
+  : S
+```
+
+:::
+
+:::tip 相关题目
+[108 - Trim](/type-challenges/easy#_108-trim) <Badge type="tip" text="easy" />
+
+[4803 - Trim Right](/type-challenges/easy#_4803-trim-right) <Badge type="tip" text="easy" />
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
