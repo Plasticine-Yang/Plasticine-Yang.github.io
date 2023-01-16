@@ -449,6 +449,8 @@ type trimed = TrimLeft<'  Hello World  '> // expected to be 'Hello World  '
 :::details 查看答案
 
 ```TypeScript
+type Whitespace = ' ' | '\n' | '\t'
+
 type TrimLeft<S extends string> = S extends `${Whitespace}${infer Rest}`
   ? TrimLeft<Rest>
   : S
@@ -479,6 +481,8 @@ type trimmed = Trim<'  Hello World  '> // expected to be 'Hello World'
 :::details 查看答案
 
 ```TypeScript
+type Whitespace = ' ' | '\n' | '\t'
+
 type Trim<S extends string> = S extends `${Whitespace}${infer Rest}` | `${infer Rest}${Whitespace}`
   ? Trim<Rest>
   : S
@@ -531,4 +535,36 @@ type TupleToNestedObject<T extends readonly string[], U> = T extends [
 [472 - Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
 [730 - Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
+:::
+
+## 4803 - Trim Right
+
+[练习](https://tsch.js.org/4803/play)
+
+> Implement `TrimRight<T>` which takes an exact string type and returns a new string with the whitespace ending removed.
+
+实现 `TrimRight<T>`，它接受一个准确的字符串类型作为参数，并返回一个新的字符串，若该字符串以空白字符结尾则需要将其移除。
+
+e.g.
+
+```TypeScript
+type Trimed = TrimRight<'   Hello World    '> // expected to be '   Hello World'
+```
+
+:::details 查看答案
+
+```TypeScript
+type Whitespace = ' ' | '\n' | '\t'
+
+type TrimRight<S extends string> = S extends `${infer Rest}${Whitespace}`
+  ? TrimRight<Rest>
+  : S
+```
+
+:::
+
+:::tip 相关题目
+[108 - Trim](/type-challenges/medium#_108-trim) <Badge type="tip" text="medium" />
+
+[4803 - Trim Right](/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
 :::
