@@ -449,14 +449,8 @@ type trimed = TrimLeft<'  Hello World  '> // expected to be 'Hello World  '
 :::details 查看答案
 
 ```TypeScript
-type TrimLeft<S extends string> = S extends `${infer Whitespace}${infer Rest}`
-  ? Whitespace extends ' '
-    ? TrimLeft<Rest>
-    : Whitespace extends '\n'
-      ? TrimLeft<Rest>
-      : Whitespace extends '\t'
-        ? TrimLeft<Rest>
-        : S
+type TrimLeft<S extends string> = S extends `${Whitespace}${infer Rest}`
+  ? TrimLeft<Rest>
   : S
 ```
 
