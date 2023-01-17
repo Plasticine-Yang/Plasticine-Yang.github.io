@@ -548,6 +548,34 @@ type Replace<
 
 :::
 
+## 119 - ReplaceAll
+
+[练习](https://tsch.js.org/119/play)
+
+> Implement `ReplaceAll<S, From, To>` which replace the all the substring `From` with `To` in the given string `S`
+
+实现 `ReplaceAll<S, From, To>`，你需要将 `S` 中所有的 `From` 子串替换成 `To`
+
+e.g.
+
+```TypeScript
+type replaced = ReplaceAll<'t y p e s', ' ', ''> // expected to be 'types'
+```
+
+:::details 查看答案
+
+```TypeScript
+type ReplaceAll<
+  S extends string,
+  From extends string,
+  To extends string,
+> = S extends `${infer Left}${From extends '' ? never : From}${infer Right}`
+  ? `${Left}${To}${ReplaceAll<Right, From, To>}`
+  : S
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
