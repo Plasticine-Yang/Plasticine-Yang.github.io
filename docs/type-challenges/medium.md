@@ -520,6 +520,34 @@ type MyCapitalize<S extends string> = S extends `${infer First}${infer Rest}`
 
 :::
 
+## 116 - Replace
+
+[练习](https://tsch.js.org/116/play)
+
+> Implement `Replace<S, From, To>` which replace the string `From` with `To` once in the given string `S`
+
+实现 `Replace<S, From, To>`，你需要将 `S` 中的 `From` 替换成 `To`
+
+e.g.
+
+```TypeScript
+type Replace<
+  S extends string,
+  From extends string,
+  To extends string,
+> = S extends `${infer Left}${From extends '' ? never : From}${infer Right}`
+  ? `${Left}${To}${Right}`
+  : S
+```
+
+:::details 查看答案
+
+```TypeScript
+
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
