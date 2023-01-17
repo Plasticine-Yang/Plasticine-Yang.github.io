@@ -1,4 +1,4 @@
-# 初探 reconciler
+# 初探 react-reconciler
 
 :::tip
 本篇文章对应代码可以到 [01_preliminary_exploration](https://github.com/plasticine-yang/plasticine-react/tree/01_preliminary_exploration) 分支查看
