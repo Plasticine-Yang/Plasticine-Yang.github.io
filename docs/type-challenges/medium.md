@@ -531,6 +531,12 @@ type MyCapitalize<S extends string> = S extends `${infer First}${infer Rest}`
 e.g.
 
 ```TypeScript
+type replaced = Replace<'types are fun!', 'fun', 'awesome'> // expected to be 'types are awesome!'
+```
+
+:::details 查看答案
+
+```TypeScript
 type Replace<
   S extends string,
   From extends string,
@@ -538,12 +544,6 @@ type Replace<
 > = S extends `${infer Left}${From extends '' ? never : From}${infer Right}`
   ? `${Left}${To}${Right}`
   : S
-```
-
-:::details 查看答案
-
-```TypeScript
-
 ```
 
 :::
