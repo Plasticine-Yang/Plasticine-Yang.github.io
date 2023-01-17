@@ -526,7 +526,7 @@ type MyCapitalize<S extends string> = S extends `${infer First}${infer Rest}`
 
 > Implement `Replace<S, From, To>` which replace the string `From` with `To` once in the given string `S`
 
-实现 `Replace<S, From, To>`，你需要将 `S` 中的 `From` 替换成 `To`
+实现 `Replace<S, From, To>`，你需要将 `S` 中的 `From` 替换成 `To`。
 
 e.g.
 
@@ -554,7 +554,7 @@ type Replace<
 
 > Implement `ReplaceAll<S, From, To>` which replace the all the substring `From` with `To` in the given string `S`
 
-实现 `ReplaceAll<S, From, To>`，你需要将 `S` 中所有的 `From` 子串替换成 `To`
+实现 `ReplaceAll<S, From, To>`，你需要将 `S` 中所有的 `From` 子串替换成 `To`。
 
 e.g.
 
@@ -572,6 +572,35 @@ type ReplaceAll<
 > = S extends `${infer Left}${From extends '' ? never : From}${infer Right}`
   ? `${Left}${To}${ReplaceAll<Right, From, To>}`
   : S
+```
+
+:::
+
+## 191 - Append Argument
+
+[练习](https://tsch.js.org/191/play)
+
+> For given function type `Fn`, and any type `A` (any in this context means we don't restrict the type, and I don't have in mind any type 😉) create a generic type which will take `Fn` as the first argument, `A` as the second, and will produce function type `G` which will be the same as `Fn` but with appended argument `A` as a last one.
+
+对于给定的函数类型 `Fn` 和 any 类型的 `A`，创建一个接受 `Fn` 作为第一个参数，`A` 作为第二个参数的泛型，并生成函数类型 `G`，和 `Fn` 相比，它的参数中多了一个 `A` 作为最后一个参数。
+
+e.g.
+
+```TypeScript
+type Fn = (a: number, b: string) => number
+
+type Result = AppendArgument<Fn, boolean>
+// expected be (a: number, b: string, x: boolean) => number
+```
+
+:::details 查看答案
+
+```TypeScript
+type AppendArgument<Fn, A> = Fn extends (...args: infer Args) => infer R
+  ? Args extends [...infer Head]
+    ? (...args: [...Head, A]) => R
+    : never
+  : never
 ```
 
 :::
