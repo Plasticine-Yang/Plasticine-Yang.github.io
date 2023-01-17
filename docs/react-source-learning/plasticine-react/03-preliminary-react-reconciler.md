@@ -1,7 +1,7 @@
 # 初探 react-reconciler
 
 :::tip
-本篇文章对应代码可以到 [01_preliminary_exploration](https://github.com/plasticine-yang/plasticine-react/tree/01_preliminary_exploration) 分支查看
+本篇文章对应代码可以到 [01_preliminary_react_reconciler](https://github.com/plasticine-yang/plasticine-react/tree/01_preliminary_react_reconciler) 分支查看
 :::
 
 本篇文章中我们会来初探一下 react-reconciler 这个包的原理，这就要从 fiber 讲起了
@@ -330,5 +330,5 @@ function completeUnitOfWork(unitOfWork: FiberNode) {
 至于 `completeWork` 具体会做什么，我们留到下篇文章讲解~
 
 :::tip
-本篇文章对应代码可以到 [01_preliminary_exploration](https://github.com/plasticine-yang/plasticine-react/tree/01_preliminary_exploration) 分支查看
+本篇文章对应代码可以到 [01_preliminary_react_reconciler](https://github.com/plasticine-yang/plasticine-react/tree/01_preliminary_react_reconciler) 分支查看
 :::
