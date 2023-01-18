@@ -11,6 +11,7 @@ module.exports = {
       'fe-monitor-system',
       'react-source-learning',
       'algorithm',
+      'nest',
       'commitlint',
     ],
   },
