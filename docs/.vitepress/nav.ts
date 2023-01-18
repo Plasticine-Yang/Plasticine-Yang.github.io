@@ -27,4 +27,15 @@ export const nav: DefaultTheme.Config['nav'] = [
     link: `${ROUTES.ALGORITHM}binary-tree/bfs`,
     activeMatch: ROUTES.ALGORITHM,
   },
+
+  {
+    text: '后端',
+    activeMatch: ROUTES.BACKEND,
+    items: [
+      {
+        text: 'NestJS',
+        link: `${ROUTES.BACKEND}nest/basic`,
+      },
+    ],
+  },
 ]

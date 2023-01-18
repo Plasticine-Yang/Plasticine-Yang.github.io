@@ -10,4 +10,7 @@ export enum ROUTES {
 
   /** @description 算法 */
   ALGORITHM = '/algorithm/',
+
+  /** @description 后端 */
+  BACKEND = '/backend/',
 }
