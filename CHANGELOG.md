@@ -1,5 +1,12 @@
 # plasticine-yang-github-io
 
+## 0.3.12
+
+### Patch Changes
+
+- feat(react-source-learning): 03 -- add preface
+- feat(react-source-learning): add 06-preliminary-react-dom.md
+
 ## 0.3.11
 
 ### Patch Changes
