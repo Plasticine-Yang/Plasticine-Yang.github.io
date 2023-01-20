@@ -17,7 +17,7 @@ export const reactSourceLearning: DefaultTheme.SidebarGroup[] = [
     text: 'render 阶段',
     items: [
       {
-        text: '03-初探 reconciler',
+        text: '03-初探 react-reconciler',
         link: `${ROUTE_PLASTICINE_REACT}/03-preliminary-react-reconciler`,
       },
       {

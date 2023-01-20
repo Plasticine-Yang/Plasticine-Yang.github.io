@@ -4,9 +4,18 @@
 本篇文章对应代码可以到 [01_preliminary_react_reconciler](https://github.com/plasticine-yang/plasticine-react/tree/01_preliminary_react_reconciler) 分支查看
 :::
 
-本篇文章中我们会来初探一下 react-reconciler 这个包的原理，这就要从 fiber 讲起了
+## 前言
 
-fiber 作为连接 `ReactElement` 和真实宿主环境渲染元素的桥梁，有着十分重要的作用，首先我们来看看一个 FiberNode 都有些什么属性叭~
+本篇文章中我们会来初探一下 `react-reconciler` 这个包的原理，其运行时在 React 中被称为 `render` 阶段，其作用是什么呢？
+
+上层用户编写了 jsx 后会被 `babel + jsx_runtime` 转换成 `ReactElement`，而 `react-reconciler` 的处理目标就是 ReactElement
+
+- mount 时会为 ReactElement 生成一颗完整的 fiber tree，并为 fiber 打上副作用 flags 标记
+- update 时会对比新的 ReactElement 和其对应的旧 fiber，进行一个 diff 算法，再打上新的副作用 flags 标记
+
+无论是 mount 还是 update，最终都会得到一颗完整的 fiber tree，存放在 FiberRootNode 的 finishedWork 属性上，然后交给下一个阶段 -- `commit` 阶段处理，去将 UI 真正渲染到宿主环境中
+
+从上面这一简要概括可以知道，连接 ReactElement 和真实宿主环境 UI 的核心是 fiber，其作为连接 ReactElement 和真实宿主环境 UI 的桥梁，有着十分重要的作用，所以就让我们从 fiber 开始讲起叭~
 
 ## FiberNode
 
