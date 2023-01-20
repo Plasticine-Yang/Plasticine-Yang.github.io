@@ -1,5 +1,9 @@
 # 初探 react-dom
 
+:::tip
+本篇文章对应代码可以到 [04_preliminary_react_dom](https://github.com/Plasticine-Yang/plasticine-react/tree/04_preliminary_react_dom) 分支查看
+:::
+
 ## 前言
 
 前面我们实现的初版 `react-reconciler`，其运行时在 React 中被称为 `render` 阶段，它已经能够将传入的具有单节点的 JSX 转换成对应的 fiber tree
@@ -579,3 +583,7 @@ ReactDOM.createRoot(document.querySelector<HTMLDivElement>('#root')).render(el)
 ![react-dom初版渲染效果](images/react-dom初版渲染效果.jpg)
 
 可以看到能够顺利渲染，至此我们的初版 `react-dom` 就实现完啦~
+
+:::tip
+本篇文章对应代码可以到 [04_preliminary_react_dom](https://github.com/Plasticine-Yang/plasticine-react/tree/04_preliminary_react_dom) 分支查看
+:::
