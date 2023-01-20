@@ -1,5 +1,11 @@
 # plasticine-yang-github-io
 
+## 0.3.13
+
+### Patch Changes
+
+- feat: update brand color and logo
+
 ## 0.3.12
 
 ### Patch Changes
