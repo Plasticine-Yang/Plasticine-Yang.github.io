@@ -5,9 +5,9 @@ export const nav: DefaultTheme.Config['nav'] = [
   { text: '首页', link: '/' },
 
   {
-    text: 'TypeScript 类型挑战',
-    link: `${ROUTES.TYPE_CHALLENGES}summary`,
-    activeMatch: ROUTES.TYPE_CHALLENGES,
+    text: 'React 源码学习',
+    link: `${ROUTES.REACT_SOURCE_LEARNING}/plasticine-react/introduction`,
+    activeMatch: ROUTES.REACT_SOURCE_LEARNING,
   },
 
   {
@@ -17,9 +17,9 @@ export const nav: DefaultTheme.Config['nav'] = [
   },
 
   {
-    text: 'React 源码学习',
-    link: `${ROUTES.REACT_SOURCE_LEARNING}/plasticine-react/introduction`,
-    activeMatch: ROUTES.REACT_SOURCE_LEARNING,
+    text: 'TypeScript 类型挑战',
+    link: `${ROUTES.TYPE_CHALLENGES}summary`,
+    activeMatch: ROUTES.TYPE_CHALLENGES,
   },
 
   {
@@ -37,5 +37,11 @@ export const nav: DefaultTheme.Config['nav'] = [
         link: `${ROUTES.BACKEND}nest/basic`,
       },
     ],
+  },
+
+  {
+    text: 'Rust',
+    link: `${ROUTES.RUST}introduction`,
+    activeMatch: ROUTES.RUST,
   },
 ]

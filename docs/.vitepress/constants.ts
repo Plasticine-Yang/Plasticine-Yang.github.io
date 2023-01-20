@@ -1,1 +1,1 @@
-export const LOGO_PATH = '/avatar.png'
+export const LOGO_PATH = '/logo.svg'

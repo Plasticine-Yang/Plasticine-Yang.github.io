@@ -6,6 +6,7 @@ import { algorithm } from './algorithm'
 import { backend } from './backend'
 import { feMonitorSystem } from './fe-monitor-system'
 import { reactSourceLearning } from './react-source-learning'
+import { rust } from './rust'
 import { typeChallenges } from './type-challenges'
 
 export const sidebar: DefaultTheme.Config['sidebar'] = {
@@ -14,4 +15,5 @@ export const sidebar: DefaultTheme.Config['sidebar'] = {
   [ROUTES.REACT_SOURCE_LEARNING]: reactSourceLearning,
   [ROUTES.ALGORITHM]: algorithm,
   [ROUTES.BACKEND]: backend,
+  [ROUTES.RUST]: rust,
 }

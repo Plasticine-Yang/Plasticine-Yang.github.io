@@ -13,4 +13,7 @@ export enum ROUTES {
 
   /** @description 后端 */
   BACKEND = '/backend/',
+
+  /** @description Rust */
+  RUST = '/rust/'
 }
