@@ -3,7 +3,7 @@ import { DefaultTheme } from 'vitepress'
 
 const NEST = `${ROUTES.BACKEND}nest`
 
-export const backend: DefaultTheme.SidebarGroup[] = [
+export const nest: DefaultTheme.SidebarGroup[] = [
   {
     text: 'NestJS',
     items: [

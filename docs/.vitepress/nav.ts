@@ -34,7 +34,7 @@ export const nav: DefaultTheme.Config['nav'] = [
     items: [
       {
         text: 'NestJS',
-        link: `${ROUTES.BACKEND}nest/basic`,
+        link: `${ROUTES.BACKEND_NEST}basic`,
       },
     ],
   },

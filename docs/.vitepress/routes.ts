@@ -14,6 +14,9 @@ export enum ROUTES {
   /** @description 后端 */
   BACKEND = '/backend/',
 
+  /** @description 后端 -- NestJS */
+  BACKEND_NEST = '/backend/nest/',
+
   /** @description Rust */
-  RUST = '/rust/'
+  RUST = '/rust/',
 }
