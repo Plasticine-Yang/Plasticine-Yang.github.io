@@ -277,14 +277,6 @@ type Chainable<T extends Record<string, any> = {}> = {
 
 :::
 
-:::tip 相关题目
-[easy](/type-challenges/easy#) <Badge type="tip" text="easy" />
-
-[medium](/type-challenges/medium#) <Badge type="warning" text="medium" />
-
-[hard](/type-challenges/hard#) <Badge type="danger" text="hard" />
-:::
-
 ## 15 - Last of Array
 
 [练习](https://tsch.js.org/15/play)
