@@ -461,3 +461,89 @@ export class MasterController {
 此外，还会有异步版本的命名，加上 async 后缀，比如 `registerAsync`, `forRootAsync`, `forFeatureAsync`
 
 :::
+
+下面就以实现一个 `DatabaseModule` 为例演示一下如何实现一个 `DynamicModule`
+
+#### 实现 DatabaseModule
+
+根据前面的描述，我们可以很简单地编写一个类，并实现一个静态方法即可
+
+```TypeScript
+import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigService } from './config.service';
+
+@Module({})
+export class DatabaseModule {
+  static forRoot(): DynamicModule {
+    return TypeOrmModule.forRoot({
+      // ...
+    })
+  }
+}
+```
+
+但官方实际上提供了最佳实践，使用 `@nestjs/common` 包中的 `ConfigurableModuleBuilder` 可以很方便的为我们生成 DynamicModule 类，我们只需要去继承生成的类然后就可以放心编写逻辑
+
+`ConfigurableModuleBuilder` 为我们提供的能力：
+
+- 定义 options 的类型
+- 设置使用的方法名，如 `forRoot`, `forFeature` 等
+
+```TypeScript
+import type { DatabaseConfig, EnvironmentVariables } from 'src/types'
+
+import {
+  ConfigurableModuleBuilder,
+  DynamicModule,
+  Module,
+} from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
+
+interface DatabaseModuleOptions {
+  type: 'mysql'
+}
+
+const { ConfigurableModuleClass, OPTIONS_TYPE } =
+  new ConfigurableModuleBuilder<DatabaseModuleOptions>({
+    moduleName: 'Database',
+  })
+    .setClassMethodName('forRoot')
+    .build()
+
+@Module({})
+export class DatabaseModule extends ConfigurableModuleClass {
+  static forRoot(options?: typeof OPTIONS_TYPE): DynamicModule {
+    const type = options?.type ?? 'mysql'
+
+    return TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<EnvironmentVariables>) => {
+        let databaseConfig: DatabaseConfig | undefined
+
+        switch (type) {
+          case 'mysql':
+            databaseConfig = configService.get('mysql', { infer: true })
+            break
+
+          default:
+            throw new Error(
+              `The database type '${type}' has not been supported.`,
+            )
+        }
+
+        if (databaseConfig === undefined) {
+          throw new Error(`Unable to load configuration of database '${type}'.`)
+        }
+
+        return {
+          type,
+          ...databaseConfig,
+          autoLoadEntities: true,
+        }
+      },
+    })
+  }
+}
+```
