@@ -13,6 +13,10 @@ export const nest: DefaultTheme.SidebarGroup[] = [
         text: '拦截器 - 统一响应体',
         link: `${ROUTES.BACKEND_NEST}interceptor`,
       },
+      {
+        text: '装饰器',
+        link: `${ROUTES.BACKEND_NEST}decorator`,
+      },
     ],
   },
 ]
