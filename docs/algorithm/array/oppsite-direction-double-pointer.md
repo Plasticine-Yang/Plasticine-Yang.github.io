@@ -492,3 +492,80 @@ function maxArea(height: number[]): number {
 ---
 
 空间复杂度：`O(1)`
+
+## 42. 接雨水
+
+[题目链接](https://leetcode.cn/problems/trapping-rain-water/)
+
+### 前后缀分解
+
+- 每个柱子中能接雨水的最大高度取决于 `它前面的最高的柱子` 和 `它后面的最高柱子` 中较矮的那个，记为 `containerMaxHeight`
+- 得到 `containerMaxHeight` 后，还要考虑柱子自身的高度，减去自身高度后才是真正的存水量，也就是 `containerMaxHeight - height[i]`
+
+因此关键在于遍历每个柱子的时候能够知道 `它前面的最高的柱子` 和 `它后面的最高柱子`
+
+为此我们需要分别用两个额外的长度为 n 的数组去记录每个柱子的 `前面最高柱子` 和 `后面最高柱子`，分别记为 `前缀和数组` 与 `后缀和数组`
+
+如何生成这两个数组呢？
+
+- 前缀和数组 - 从前往后遍历 `height` 数组，维护一个 `prefixMaxHeight` 变量，记录遍历过程中的柱子最大高度，每次遍历时用 `Math.max(prefixMaxHeight, height[i])` 作为当前柱子的 `前面最高柱子`，同时更新 `prefixMaxHeight`
+
+- 后缀和数组 - 从后往前遍历 `height` 数组，维护一个 `suffixMaxHeight` 变量，记录遍历过程中的柱子最大高度，每次遍历时用 `Math.max(suffixMaxHeight, height[i])` 作为当前柱子的 `后面最高柱子`，同时更新 `suffixMaxHeight`
+
+```TypeScript
+function trap(height: number[]): number {
+  const n = height.length
+
+  // ======= 生成前缀和数组 =======
+  const prefixHeight: number[] = new Array(n).fill(0)
+
+  // 记录前缀和数组遍历过程中的柱子最大高度值
+  let prefixMaxHeight = 0
+
+  for (let i = 0; i < n; i++) {
+    // 计算当前柱子前面的最高柱子 同时 更新 prefixMaxHeight
+    prefixMaxHeight = prefixHeight[i] = Math.max(prefixMaxHeight, height[i])
+  }
+
+  // ======= 生成后缀和数组 =======
+  const suffixHeight: number[] = new Array(n).fill(0)
+
+  // 记录后缀和数组遍历过程中的柱子最大高度值
+  let suffixMaxHeight = 0
+
+  for (let i = n - 1; i >= 0; i--) {
+    // 计算当前柱子后面的最高柱子 同时 更新 suffixMaxHeight
+    suffixMaxHeight = suffixHeight[i] = Math.max(suffixMaxHeight, height[i])
+  }
+
+  // 遍历所有柱子计算总共能接多少雨水
+  let res = 0
+  for (let i = 0; i < n; i++) {
+    // 从前后缀和数组中找出较矮的那个
+    const containerMaxHeight = Math.min(prefixHeight[i], suffixHeight[i])
+
+    // 接水量 - containerMaxHeight - height[i]
+    res += containerMaxHeight - height[i]
+  }
+
+  return res
+}
+```
+
+时间复杂度：`O(n)`
+
+:::details 原因分析
+计算前后缀和数组分别需要遍历 2 次 height 数组，每次遍历花费 `O(1)` 的时间，所以是 `O(2n)`
+
+计算接水量需要遍历 height 数组，每次遍历花费 `O(1)` 的时间，所以是 `O(n)`
+
+因此总的时间复杂度为 `O(2n) + O(n) === O(n)`
+:::
+
+---
+
+空间复杂度：`O(n)`
+
+:::details 原因分析
+用到了 2n 的额外空间的前缀和数组
+:::
