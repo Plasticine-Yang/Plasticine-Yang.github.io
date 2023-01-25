@@ -569,3 +569,68 @@ function trap(height: number[]): number {
 :::details 原因分析
 用到了 2n 的额外空间的前缀和数组
 :::
+
+### 相向双指针
+
+在 [前后缀分解](#前后缀分解) 解法中使用了 `O(n)` 的额外空间，实际上我们还能进一步优化，将其降为 `O(1)`
+
+用左右两个指针相向运动，运动过程中分别记录 `prefixMaxHeight` 和 `suffixMaxHeight`，如下图：
+
+![接雨水相向双指针分析](./images/接雨水相向双指针分析.jpg)
+
+- 站在 `left` 的角度：
+
+此时虽然我还不知道 `(left, right)` 区间内的柱子高度，但是无所谓，因为我已经知道的一个事实是 `prefixMaxHeight < suffixMaxHeight`，那么即便 `(left, right)` 区间内的柱子高度比 `prefixMaxHeight` 或 `suffixMaxHeight` 高或矮都不影响 `left` 柱子的接水量计算
+
+`left` 柱子的接水量在该情况下始终为 `prefixMaxHeight - height[left]`
+
+- 站在 `right` 的角度：
+
+由于 `(left, right)` 这部分未知区间内的柱子高度中有可能存在高度比 `suffixMaxHeight` 高的柱子，如果存在的话那么 `right` 柱子就可以接水，反之则不行，因此不能明确接水量
+
+从这个例子中我们可以总结出一个规律：**`left` 和 `right` 对应的柱子中较矮的那个有资格计算接水量**
+
+因此我们可以写出如下代码：
+
+```TypeScript
+function trap(height: number[]): number {
+  const n = height.length
+
+  // 双指针
+  let left = 0
+  let right = n - 1
+
+  // 记录前后缀最大高度
+  let prefixMaxHeight = 0
+  let suffixMaxHeight = 0
+
+  let res = 0
+  while (left <= right) {
+    // 更新前后缀最大高度
+    prefixMaxHeight = Math.max(height[left], prefixMaxHeight)
+    suffixMaxHeight = Math.max(height[right], suffixMaxHeight)
+
+    // 谁矮谁有资格计算接水量
+    const containerHeight = Math.min(prefixMaxHeight, suffixMaxHeight)
+    if (height[left] < height[right]) {
+      res += containerHeight - height[left]
+      left++
+    } else {
+      res += containerHeight - height[right]
+      right--
+    }
+  }
+
+  return res
+}
+```
+
+时间复杂度：`O(n)`
+
+:::details 原因分析
+两个指针每次移动后的计算时间是 `O(1)`，一共会移动 `n` 次
+:::
+
+---
+
+空间复杂度：`O(1)`
