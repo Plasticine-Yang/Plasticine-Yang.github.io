@@ -450,3 +450,45 @@ function fourSum(nums: number[], target: number): number[][] {
   return nSum(nums, 4, target)
 }
 ```
+
+## 11. 盛最多水的容器
+
+[题目链接](https://leetcode.cn/problems/container-with-most-water/)
+
+1. 左右指针相向移动
+2. 高度较矮的那个作为容器的高度瓶颈，计算容积，更新 res
+3. 高度较矮的那个指针移动，试图寻找瓶颈高度更高的柱子
+
+```TypeScript
+function maxArea(height: number[]): number {
+  const n = height.length
+
+  let left = 0
+  let right = n - 1
+  let res = 0
+
+  while (left < right) {
+    // 选取较矮的柱子作为容器的容纳高度
+    const containerHeight = Math.min(height[left], height[right])
+
+    // 计算容积
+    const area = (right - left) * containerHeight
+
+    res = Math.max(area, res)
+
+    height[left] < height[right] ? left++ : right--
+  }
+
+  return res
+}
+```
+
+时间复杂度：`O(n)`
+
+:::details 原因分析
+指针每移动一次，花费 `O(1)` 的时间进行计算，指针会访问每个柱子，所以一共是 `O(n)`
+:::
+
+---
+
+空间复杂度：`O(1)`
