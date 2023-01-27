@@ -12,7 +12,7 @@ export const nav: DefaultTheme.Config['nav'] = [
 
   {
     text: '前端监控系统',
-    link: `${ROUTES.FE_MONITOR_SYSTEM}basic`,
+    link: `${ROUTES.FE_MONITOR_SYSTEM}system-profile/basic`,
     activeMatch: ROUTES.FE_MONITOR_SYSTEM,
   },
 
