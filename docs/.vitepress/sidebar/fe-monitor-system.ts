@@ -11,7 +11,10 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
     items: [
       {
         text: '系统概况',
-        items: [{ text: '基础知识', link: `${SYSTEM_PROFILE}/basic` }],
+        items: [
+          { text: '基础知识', link: `${SYSTEM_PROFILE}/basic` },
+          { text: '整体架构', link: `${SYSTEM_PROFILE}/architecture-design` },
+        ],
       },
 
       {
@@ -24,7 +27,10 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
 
       {
         text: '服务端建设',
-        items: [{ text: '日志平台', link: `${SERVER}/log-platform` }],
+        items: [
+          { text: '相关技术栈学习', link: `${SERVER}/stack-learning` },
+          { text: '日志平台', link: `${SERVER}/log-platform` },
+        ],
       },
     ],
   },
