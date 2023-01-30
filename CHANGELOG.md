@@ -1,5 +1,17 @@
 # plasticine-yang-github-io
 
+## 0.3.16
+
+### Patch Changes
+
+- feat(algorithm): hard - 42. 接雨水 -- 相向双指针
+- feat(algorithm): hard - 42. 接雨水 -- 前后缀分解
+- feat(algorithm): medium - 11. 盛最多水的容器
+- feat(fe-monitor-system): add stack-learning.md
+- feat(algorithm): medium - 162. 寻找峰值
+- feat(fe-monitor-system): add system-profile - architecture-design.md
+- feat(algorithm): 基本框架 lowerBounce 和 medium - 34. 在排序数组中查找元素的第一个和最后一个位置
+
 ## 0.3.15
 
 ### Patch Changes
