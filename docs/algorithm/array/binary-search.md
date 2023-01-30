@@ -197,3 +197,56 @@ function searchRange(nums: number[], target: number): number[] {
   return [start, end]
 }
 ```
+
+时间复杂度：`O(log n)`
+
+空间复杂度：`O(1)`
+
+## 162. 寻找峰值
+
+[题目链接](https://leetcode.cn/problems/find-peak-element/description/)
+
+这里以开区间的写法为例，首先我们要明确何时让 mid 往右走，何时往左走
+
+不难发现，数组最后一个元素肯定是在峰顶右侧的，因为最后一个元素没有右侧元素，不可能成为峰顶，因此二分初始情况不用将其考虑进来，但是它能够作为之后进行二分的一个重要依据
+
+每次二分时，我们将 mid 元素与其下一个元素 next 进行比较：
+
+- `mid < next` - 峰顶在 mid 的右侧
+- `mid > next` - 峰顶在 mid 左侧
+
+题目说了 `nums[i] !== nums[i+1]`，所以不用考虑相等的情况，直接看图更加直观
+
+![162_寻找峰值](images/162_寻找峰值.png)
+
+```TypeScript
+function findPeakElement(nums: number[]): number {
+  const n = nums.length
+
+  let left = -1
+  let right = n - 1
+
+  while (left + 1 < right) {
+    const mid = Math.floor(left + Math.floor((right - left) / 2))
+
+    if (shouldTurnRight(nums[mid], nums[mid + 1])) {
+      left = mid
+    } else {
+      right = mid
+    }
+  }
+
+  return right
+}
+
+/** @description 跟下一个元素比较，判断峰值在 mid 的哪一侧 */
+function shouldTurnRight(num: number, next: number) {
+  // num > next --> 峰值在 mid 左侧
+  // num <= next --> 峰值在 mid 右侧
+  return num <= next
+}
+```
+
+时间复杂度：`O(log n)`
+
+空间复杂度：`O(1)`
