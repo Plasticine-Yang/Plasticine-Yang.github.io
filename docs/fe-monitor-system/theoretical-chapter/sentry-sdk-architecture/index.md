@@ -30,7 +30,7 @@ Performance 分析完毕后，直接 `Ctrl + F` 搜索 `setupSentry` 函数调�
 :::tip Performance 报告
 如果你懒的话也可以直接用我的这份报告，打开 chrome dev tools，点击 Performance 面板，加载这份 json 文件即可
 
-[Performance 报告下载](files/sentry_init_performance_log.json)
+[Performance 报告下载](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/files/sentry_init_performance_log.json)
 :::
 
 可以看到，首先会先后执行来自 `@sentry/tracing` 包中的 `BrowserTracing` 构造函数，然后再执行 `@sentry/browser` 包中的 init 函数开始初始化流程
