@@ -14,7 +14,7 @@ NestJS 提供的 `ConfigModule` 在 `@nestjs/config` 这个包中，我们先安
 pnpm i @nestjs/config
 ```
 
-使用也很简单，通过调用其静态方法 `forRoot`，以 [dynamic module](./basic.md#dynamic-modules) 的方式注册到 AppModule 中即可
+使用也很简单，通过调用其静态方法 `forRoot`，以 [dynamic module](../basic/#dynamic-modules) 的方式注册到 AppModule 中即可
 
 ```TypeScript
 // app.module.ts

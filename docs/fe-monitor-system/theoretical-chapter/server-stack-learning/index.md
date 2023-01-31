@@ -15,7 +15,7 @@
 
 ## NestJS
 
-关于 NestJS 的部分可以到本网站对应的模块阅读：[NestJS](/backend/nest/basic)
+关于 NestJS 的部分可以到本网站对应的模块阅读：[NestJS](/backend/nest/basic/)
 
 NestJS 是一个非常棒的后端框架，个人想法是比 express, koa 等框架更加规范，通过各种装饰器严格规范 MVC 的流程，而不像 koa 等框架实际上并不存在严格的 MVC 流程，当然，可以自行实现一些结构化代码去将项目变得符合 MVC 开发规范
 

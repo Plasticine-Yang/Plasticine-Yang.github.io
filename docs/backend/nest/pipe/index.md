@@ -303,7 +303,7 @@ export class AppController {
 }
 ```
 
-还可以应用到全局，和 [应用异常过滤器](exception.md#应用异常过滤器) 中的方式是类似的，可以调用 `app.useGlobalPipes()` 方法应用，也可以通过 provider 的方式应用，只是 provide 属性要换成 `@nestjs/core` 中的 `APP_PIPE` 而已
+还可以应用到全局，和 [应用异常过滤器](../exception/#应用异常过滤器) 中的方式是类似的，可以调用 `app.useGlobalPipes()` 方法应用，也可以通过 provider 的方式应用，只是 provide 属性要换成 `@nestjs/core` 中的 `APP_PIPE` 而已
 
 ### 内置的校验管道
 
