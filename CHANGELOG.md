@@ -1,5 +1,14 @@
 # plasticine-yang-github-io
 
+## 0.3.17
+
+### Patch Changes
+
+- refactor: put the pictures of the article in the directory of each article to manage itself
+- feat: support image preview
+- feat(algorithm): medium - 153. 寻找旋转排序数组中的最小值
+- feat(algorithm): medium - 33. 搜索旋转排序数组
+
 ## 0.3.16
 
 ### Patch Changes
