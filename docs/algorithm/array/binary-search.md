@@ -250,3 +250,40 @@ function shouldTurnRight(num: number, next: number) {
 时间复杂度：`O(log n)`
 
 空间复杂度：`O(1)`
+
+## 153. 寻找旋转排序数组中的最小值
+
+[题目链接](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/)
+
+![153_寻找旋转排序数组中的最小值](images/153_寻找旋转排序数组中的最小值.png)
+
+```TypeScript
+/**
+ * @description 二分查找 - 闭区间写法
+ */
+function findMin(nums: number[]): number {
+  const n = nums.length
+  let left = 0
+  let right = n - 2
+
+  while (left <= right) {
+    const mid = Math.floor(left + Math.floor((right - left) / 2))
+
+    if (shouldTurnRight(nums[mid], nums[n - 1])) {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+
+  return nums[left]
+}
+
+function shouldTurnRight(midNum: number, lastNum: number) {
+  return midNum > lastNum
+}
+```
+
+时间复杂度：`O(log n)`
+
+空间复杂度：`O(1)`
