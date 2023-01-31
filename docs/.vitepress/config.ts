@@ -29,6 +29,10 @@ export default defineConfig({
       message: 'Released under the MIT License.',
       copyright: 'Copyright © 2023-present Plasticine-Yang',
     },
+
+    // 文章右侧大纲显示 2 ~ 5 层级
+    outline: [2, 5],
+    outlineTitle: '目录',
   },
   markdown,
 })
