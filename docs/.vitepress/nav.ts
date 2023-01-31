@@ -6,7 +6,7 @@ export const nav: DefaultTheme.Config['nav'] = [
 
   {
     text: 'React 源码学习',
-    link: `${ROUTES.REACT_SOURCE_LEARNING}/plasticine-react/introduction`,
+    link: `${ROUTES.REACT_SOURCE_LEARNING}/plasticine-react/introduction/`,
     activeMatch: ROUTES.REACT_SOURCE_LEARNING,
   },
 
@@ -24,7 +24,7 @@ export const nav: DefaultTheme.Config['nav'] = [
 
   {
     text: '算法',
-    link: `${ROUTES.ALGORITHM}binary-tree/bfs`,
+    link: `${ROUTES.ALGORITHM}binary-tree/bfs/`,
     activeMatch: ROUTES.ALGORITHM,
   },
 
@@ -34,7 +34,7 @@ export const nav: DefaultTheme.Config['nav'] = [
     items: [
       {
         text: 'NestJS',
-        link: `${ROUTES.BACKEND_NEST}basic`,
+        link: `${ROUTES.BACKEND_NEST}basic/`,
       },
     ],
   },
