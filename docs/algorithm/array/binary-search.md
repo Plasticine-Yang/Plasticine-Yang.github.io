@@ -287,3 +287,46 @@ function shouldTurnRight(midNum: number, lastNum: number) {
 时间复杂度：`O(log n)`
 
 空间复杂度：`O(1)`
+
+## 33. 搜索旋转排序数组
+
+[题目链接](https://leetcode.cn/problems/search-in-rotated-sorted-array/)
+
+![33_搜索旋转排序数组](images/33_搜索旋转排序数组.png)
+
+可以自行决定实现 `shouldTurnLeft` 还是 `shouldTurnRight`，这里以 `shouldTurnLeft` 为例
+
+```TypeScript
+/**
+ * @description 二分查找 - 左闭右开区间写法
+ */
+function search(nums: number[], target: number): number {
+  const n = nums.length
+
+  let left = 0
+  let right = n
+
+  while (left < right) {
+    const mid = Math.floor(left + Math.floor((right - left) / 2))
+
+    if (shouldTurnRight(nums[mid], nums[n - 1], target)) {
+      left = mid + 1
+    } else {
+      right = mid
+    }
+  }
+
+  return nums[left] === target ? left : -1
+}
+
+function shouldTurnRight(midNum: number, lastNum: number, target: number) {
+  return (
+    (midNum < lastNum && target <= lastNum && midNum < target) ||
+    (midNum > lastNum && (target <= lastNum || target > midNum))
+  )
+}
+```
+
+时间复杂度：`O(log n)`
+
+空间复杂度：`O(1)`
