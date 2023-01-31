@@ -10,7 +10,7 @@
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
     "preview": "vitepress preview docs",
-    "lint": "eslint src --fix --ext=.ts,.js,.cjs,.mjs --cache --ignore-path=.gitignore",
+    "lint": "eslint docs/.vitepress --fix --ext=.ts,.js,.cjs,.mjs --cache --ignore-path=.gitignore",
     "commit": "cz",
     "changeset": "changeset add",
     "changeset:version": "changeset version",
