@@ -408,10 +408,15 @@ function markFuncStack() {
 从第二张图中的左上方依次到右下方的箭头是整个异常捕获并上报数据的核心流程：
 
 1. 首先通过 `captureException` 捕获异常
+
    1.1. `eventFromException` 为异常生成 Event 对象
+
 2. 在微任务中通过 `_prepareEvent` 预处理生成的 Event 对象
+
 3. Event 对象预处理完毕后调用 `sendEvent` 将数据发送到服务端
+
    3.1. 底层调用了 `_sendEnvelope`，上面也提到了，Sentry 底层发送数据都是以 envelope 作为发送单位
+
    3.2. 由于当前 chrome 环境支持 fetch，因此通过 fetch 将请求发送出去，这是在 `init` 中初始化 transport 对象的时候就决定好的
 
 接下来我们对照着源码探究一下这个流程
