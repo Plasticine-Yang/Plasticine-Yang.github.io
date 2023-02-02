@@ -17,6 +17,17 @@ export const nav: DefaultTheme.Config['nav'] = [
   },
 
   {
+    text: '项目实战',
+    activeMatch: ROUTES.PROJECT_ACTUAL_COMBAT,
+    items: [
+      {
+        text: 'React Admin Dashboard',
+        link: `${ROUTES.REACT_ADMIN_DASHBOARD}introduction/`,
+      },
+    ],
+  },
+
+  {
     text: 'TypeScript 类型挑战',
     link: `${ROUTES.TYPE_CHALLENGES}summary`,
     activeMatch: ROUTES.TYPE_CHALLENGES,
