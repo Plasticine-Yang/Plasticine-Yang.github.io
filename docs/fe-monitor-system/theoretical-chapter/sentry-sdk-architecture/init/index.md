@@ -1,6 +1,6 @@
-# Sentry SDK 架构分析
+# Sentry SDK 初始化流程分析
 
-## 初始化流程分析
+## 环境准备
 
 首先通过 vite 创建一个 `Vanilla JS` 项目用于观察 sentry 的初始化流程，主要是通过 chrome 开发者工具的 `Performance` 分析工具完成
 
@@ -21,7 +21,7 @@ export const setupSentry = () => {
 }
 ```
 
-### 整体函数调用栈
+## 整体函数调用栈
 
 Performance 分析完毕后，直接 `Ctrl + F` 搜索 `setupSentry` 函数调用即可快速定位对应函数调用栈，如下图所示：
 
@@ -30,12 +30,12 @@ Performance 分析完毕后，直接 `Ctrl + F` 搜索 `setupSentry` 函数调�
 :::tip Performance 报告
 你可以下载对应的 Performance 报告加载到你的 chrome dev tools 中对照着查看
 
-[Sentry 初始化流程的 Performance 报告](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/core-process/files/sentry_init_performance_log.json)
+[Sentry 初始化流程的 Performance 报告](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/init/files/sentry_init_performance_log.json)
 :::
 
 可以看到，首先会先后执行来自 `@sentry/tracing` 包中的 `BrowserTracing` 构造函数，然后再执行 `@sentry/browser` 包中的 init 函数开始初始化流程
 
-### init 调用栈
+## init 调用栈
 
 从 `BrowserTracing` 的调用栈中不难发现它用于追踪 `WebVitals`，也就是页面的性能指标，我们主要关注 `init` 调用栈来分析一下初始化流程，其调用栈如下：
 
@@ -45,7 +45,7 @@ Performance 分析完毕后，直接 `Ctrl + F` 搜索 `setupSentry` 函数调�
 
 ---
 
-#### supportsFetch
+### supportsFetch
 
 用于检测当前 Javascript runtime 是否支持 `Fetch API`
 
@@ -76,7 +76,7 @@ export function supportsFetch(): boolean {
 
 ---
 
-#### initAndBind
+### initAndBind
 
 这是来自 `@sentry/core` 的函数，其调用栈如下：
 
@@ -111,7 +111,7 @@ export function initAndBind<F extends Client, O extends ClientOptions>(
 
 ---
 
-##### Scope 是什么？
+#### Scope 是什么？
 
 Sentry 中上报的数据类型有多种，其中一种是 `event`，比如我们业务代码中遇到的 Javascript runtime error，Promise error 等都会被包装成 event 上报到 Sentry 服务端
 
@@ -121,7 +121,7 @@ Sentry 中上报的数据类型有多种，其中一种是 `event`，比如我�
 
 ---
 
-##### Hub 是什么？
+#### Hub 是什么？
 
 Hub 译为 “枢纽”，可见其地位有多么重要，SDK 的核心功能就是数据上报，而 Hub 则是负责调控这一流程的
 
@@ -197,6 +197,8 @@ Sentry.captureMessage('configureScope message')
 
 ---
 
+#### 默认集成的 integrations
+
 现在再回过头看 `initAndBind` 的流程，首先会获取到 hub 实例，然后会创建一个 scope 对象，如果 options 中有传入 `initialScope` 的话则会以它作为初始 scope，否则就只是一个空 scope
 
 然后会创建一个 `BrowserClient` 实例，并将其绑定到 hub 对象上，这样无论在哪里我们都可以通过调用 `Sentry.getCurrent().getClient()` 获取到 SDK 客户端实例
@@ -222,7 +224,7 @@ export const defaultIntegrations = [
 
 接下来我们再去看看 BrowserClient 的实例化流程
 
-### BrowserClient
+## BrowserClient
 
 先来看看 `BrowserClient` 的调用栈
 
@@ -237,11 +239,11 @@ BaseClient 提供的抽象方法有两个：
 
 在捕获到 exception 和 message 时如何生成 event，这个逻辑是取决于具体平台的，目前我们不需要关心这个，因此我们将目光转移到 `BaseClient` 中
 
-### BaseClient
+## BaseClient
 
 ---
 
-#### 构造函数流程
+### 构造函数流程
 
 首先从其构造函数看起
 
@@ -269,7 +271,7 @@ protected constructor(options: O) {
 
 ---
 
-##### DSN 转换成实际上报 url
+#### DSN 转换成实际上报 url
 
 首先会将传入的 dsn 字符串通过 `makeDsn` 生成一个 `DsnComponents` 对象，其 interface 长这样子：
 
@@ -319,7 +321,7 @@ https://o4504406454829056.ingest.sentry.io/api/4504597574123520/envelope/?sentry
 
 ---
 
-##### 生成 Transport 对象
+#### 生成 Transport 对象
 
 这里又涉及到一个新概念了，什么是 Transport 呢？遇到不懂的地方最好的解决办法就是看官方文档，官方文档中对于 Transport 的定义是这样的：
 
@@ -371,223 +373,6 @@ Sentry.init({
 })
 ```
 
-## 触发错误时 Sentry 的运行流程
+至此，初始化流程的分析就结束了，Sentry 的监控功能是通过各种 integrations 实现的，初始化的时候将这些 integrations 都注册进来了，之后等到特定事件发生时触发 integration 中的行为，完成错误监控、行为监控等功能
 
-接下来我们编写一段简单的触发错误的代码，看看 Sentry 对错误的处理流程是怎样的
-
-```TypeScript
-export const setupErrorEmitter = (errorBtnGroup: HTMLDivElement) => {
-  const btnJsError = errorBtnGroup.querySelector<HTMLButtonElement>('#btn-js-error')!
-  btnJsError.addEventListener('click', () => {
-    // 在触发 js error 之前先调用一个具名函数，方便在调用堆栈中搜索定位相关调用栈
-    markFuncStack()
-
-    // @ts-ignore
-    undefinedFn()
-  })
-}
-
-/** @description 具名函数标记函数调用栈 */
-function markFuncStack() {
-  console.log('foo')
-}
-```
-
-然后开启 Performance 工具进行记录，并触发 error，得到的结果如下图所示：
-
-![触发js_error的函数调用堆栈_1](images/触发js_error的函数调用堆栈_1.png)
-
-![触发js_error的函数调用堆栈_2](images/触发js_error的函数调用堆栈_2.png)
-
-:::tip Performance 报告
-你可以下载对应的 Performance 报告加载到你的 chrome dev tools 中对照着查看
-
-[触发 js error 的 Performance 报告](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/core-process/files/sentry_tirgger_js_error_performance_log.json)
-:::
-
-从第二张图中的左上方依次到右下方的箭头是整个异常捕获并上报数据的核心流程：
-
-1. 首先通过 `captureException` 捕获异常
-
-   1.1. `eventFromException` 为异常生成 Event 对象
-
-2. 在微任务中通过 `_prepareEvent` 预处理生成的 Event 对象
-
-3. Event 对象预处理完毕后调用 `sendEvent` 将数据发送到服务端
-
-   3.1. 底层调用了 `_sendEnvelope`，上面也提到了，Sentry 底层发送数据都是以 envelope 作为发送单位
-
-   3.2. 由于当前 chrome 环境支持 fetch，因此通过 fetch 将请求发送出去，这是在 `init` 中初始化 transport 对象的时候就决定好的
-
-接下来我们对照着源码探究一下这个流程
-
-### wrap 源码分析 - 代理函数的运行流程
-
-首先我们从函数调用栈的最开始 - `sentryWrapped` 开始看，在 [sentry-javascript](https://github.com/getsentry/sentry-javascript) 仓库中搜索这个函数，在 `packages/browser/helpers.ts` 中有一个 `wrap` 函数
-
-其作用是将我们的业务函数使用 `try catch` 包裹起来，当业务函数发生异常时，被 catch 捕获到，并创建一个新的 scope 记录当前业务函数被调用时传入的参数有什么，然后再上报到服务端，可以理解为是对业务函数进行了代理
-
-上述的是大概流程，具体流程如下：
-
-```TypeScript
-/**
- * Instruments the given function and sends an event to Sentry every time the
- * function throws an exception.
- *
- * @param fn A function to wrap. It is generally safe to pass an unbound function, because the returned wrapper always
- * has a correct `this` context.
- * @returns The wrapped function.
- * @hidden
- */
-export function wrap(
-  fn: WrappedFunction,
-  options: {
-    mechanism?: Mechanism
-  } = {},
-  before?: WrappedFunction,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
-  // 1. 官方源码中的注释说的很清楚，会为业务函数 fn 包裹，也可以理解为为其进行代理，并且为了避免重复 wrap 代理，会通过
-  // 在原始函数 fn 上添加 non-enumerable 的 `__sentry_wrapped__` 属性指向已代理的函数，对原始函数进行缓存
-  // 并且也会为代理过的函数添加一个 non-enumberable 的 `__sentry_original__` 属性指向原始函数，方便从代理函数中获取到原始函数
-
-  // for future readers what this does is wrap a function and then create
-  // a bi-directional wrapping between them.
-  //
-  // example: wrapped = wrap(original);
-  //  original.__sentry_wrapped__ -> wrapped
-  //  wrapped.__sentry_original__ -> original
-
-  // 2.1. base case 1 - 确保 fn 是函数
-  if (typeof fn !== 'function') {
-    return fn
-  }
-
-  // 2.2. base case 2 - 避免重复 wrap
-  try {
-    // if we're dealing with a function that was previously wrapped, return
-    // the original wrapper.
-    const wrapper = fn.__sentry_wrapped__
-    if (wrapper) {
-      return wrapper
-    }
-
-    // We don't wanna wrap it twice
-    if (getOriginalFunction(fn)) {
-      return fn
-    }
-  } catch (e) {
-    // Just accessing custom props in some Selenium environments
-    // can cause a "Permission denied" exception (see raven-js#495).
-    // Bail on wrapping and return the function as-is (defers to window.onerror).
-    return fn
-  }
-
-  /* eslint-disable prefer-rest-params */
-  // It is important that `sentryWrapped` is not an arrow function to preserve the context of `this`
-  // 3. 为原始函数进行代理
-  const sentryWrapped: WrappedFunction = function (this: unknown): void {
-    const args = Array.prototype.slice.call(arguments)
-
-    try {
-      if (before && typeof before === 'function') {
-        before.apply(this, arguments)
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-      // 3.1. 递归地将参数中的函数也进行代理，确保所有函数的执行都在 sentry 的监控中
-      const wrappedArguments = args.map((arg: any) => wrap(arg, options))
-
-      // Attempt to invoke user-land function
-      // 3.2. 执行被 wrap 的函数，发生异常时会被 catch 捕获并上报数据
-      // NOTE: If you are a Sentry user, and you are seeing this stack frame, it
-      //       means the sentry.javascript SDK caught an error invoking your application code. This
-      //       is expected behavior and NOT indicative of a bug with sentry.javascript.
-      return fn.apply(this, wrappedArguments)
-    } catch (ex) {
-      ignoreNextOnError()
-
-      // 3.3. 创建一个新的 scope，在该 scope 的 event 队列被消费时能够获取到当前函数执行上下文的参数
-      withScope((scope: Scope) => {
-        scope.addEventProcessor((event: SentryEvent) => {
-          if (options.mechanism) {
-            // 给异常 event 添加 type 和 value，这里 type 和 value 都传入 undefined 会为初始化 type 为 'Error'
-            addExceptionTypeValue(event, undefined, undefined)
-
-            // mechanism 是已捕获的异常的元数据，用于记录错误类型、是否处理过等信息
-            addExceptionMechanism(event, options.mechanism)
-          }
-
-          event.extra = {
-            ...event.extra,
-
-            // 记录发生异常时，为原始函数传入的参数有哪些
-            arguments: args,
-          }
-
-          return event
-        })
-
-        // 3.4. 捕获并上报 exception event
-        captureException(ex)
-      })
-
-      throw ex
-    }
-  }
-  /* eslint-enable prefer-rest-params */
-
-  // Accessing some objects may throw
-  // ref: https://github.com/getsentry/sentry-javascript/issues/1168
-  // 4. 由于最终执行的是 sentryWrapped，因此要尽量使其和 fn 保持一致，所以需要将 fn 函数对象上的属性也拷贝到 sentryWrapped 中
-  try {
-    for (const property in fn) {
-      if (Object.prototype.hasOwnProperty.call(fn, property)) {
-        sentryWrapped[property] = fn[property]
-      }
-    }
-  } catch (_oO) {} // eslint-disable-line no-empty
-
-  // Signal that this function has been wrapped/filled already
-  // for both debugging and to prevent it to being wrapped/filled twice
-  // 5. 给 sentryWrapped 标记上 `__sentry_original__` 指向原始 fn
-  markFunctionWrapped(sentryWrapped, fn)
-
-  // 6. 给原始 fn 标记上 `__sentry_wrapped__` 指向 sentryWrapped，起到一个缓存作用，防止重复对原始函数进行代理
-  addNonEnumerableProperty(fn, '__sentry_wrapped__', sentryWrapped)
-
-  // Restore original function name (not all browsers allow that)
-  // 7. 让代理函数尽量和原始 fn 保持一致 - 将原始函数名通过 `Object.defineProperty` 设置到代理函数名上 - 存在兼容性问题
-  try {
-    const descriptor = Object.getOwnPropertyDescriptor(sentryWrapped, 'name') as PropertyDescriptor
-    if (descriptor.configurable) {
-      Object.defineProperty(sentryWrapped, 'name', {
-        get(): string {
-          return fn.name
-        },
-      })
-    }
-    // eslint-disable-next-line no-empty
-  } catch (_oO) {}
-
-  return sentryWrapped
-}
-```
-
-:::tip instrument 作为动词的意思
-
-源码中对 wrap 函数的注释中使用到了 `instrument` 这个单词，其常见的意思是名词，译为乐器、器械，但是在这里显然不是名词
-
-其动词不太常见，这里我到 [merriam webster](https://www.merriam-webster.com/dictionary/instrument) 词典中对 `instrument` 这个单词的动词解释：
-
-> to equip with instruments especially for measuring and recording data
-
-这个翻译很形象的说明了 wrap 函数就是用来对原始函数进行代理的，其会记录原始函数发生异常时的上下文信息到 Scope 中，也就是 `measuring and recording data`
-
-:::
-
-我们现在只是搞懂了 `sentryWrapped` 代理函数内部的运行流程，但是还是不清楚它到底是怎么被调用的，为什么 Demo 中执行的 `markFuncStack` 和 `undefinedFn` 能够被 `sentryWrapped` 代理？因此我们要找到 `wrap` 函数的调用时机
-
-### wrap 函数的调用时机
-
-wip...
+接下来我会以错误监控为目标去分析 Sentry 的流程和源码

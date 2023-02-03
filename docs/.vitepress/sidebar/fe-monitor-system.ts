@@ -22,7 +22,10 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
           { text: '错误监控', link: `${THEORETICAL_CHAPTER}/error-monitor/` },
           {
             text: 'Sentry SDK 架构分析',
-            items: [{ text: '核心流程', link: `${SENTRY_SDK_ARCHITECUTRE}/core-process/` }],
+            items: [
+              { text: '初始化流程', link: `${SENTRY_SDK_ARCHITECUTRE}/init/` },
+              { text: '错误捕获流程', link: `${SENTRY_SDK_ARCHITECUTRE}/error-capture/` },
+            ],
           },
           { text: '服务端相关技术栈学习', link: `${THEORETICAL_CHAPTER}/server-stack-learning/` },
         ],
