@@ -597,6 +597,37 @@ type AppendArgument<Fn, A> = Fn extends (...args: infer Args) => infer R
 
 :::
 
+## 296 - Permutation
+
+[练习](https://tsch.js.org/296/play)
+
+> Implement permutation type that transforms union types into the array that includes permutations of unions.
+
+实现联合类型的全排列，将联合类型转换成所有可能的全排列数组的联合类型。
+
+e.g.
+
+```TypeScript
+type perm = Permutation<'A' | 'B' | 'C'>
+// ['A', 'B', 'C'] | ['A', 'C', 'B'] | ['B', 'A', 'C'] | ['B', 'C', 'A'] | ['C', 'A', 'B'] | ['C', 'B', 'A']
+```
+
+:::details 查看答案
+
+```TypeScript
+// 借助 Acc 遍历联合类型的每一个元素，逐个添加到结果数组中，剩余的元素使用 Exclude 插入即可
+type Permutation<T, Acc = T> =
+  // base case
+  [T] extends [never]
+    ? []
+    : // iterates item of union type `T`
+    Acc extends T
+    ? [Acc, ...Permutation<Exclude<T, Acc>>]
+    : []
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
