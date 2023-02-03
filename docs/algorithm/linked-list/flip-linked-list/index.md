@@ -70,3 +70,67 @@ function reverseBetween(head: ListNode | null, left: number, right: number): Lis
 时间复杂度：`O(n)`
 
 空间复杂度：`O(1)`
+
+## 25. K 个一组翻转链表
+
+[题目链接](https://leetcode.cn/problems/reverse-nodes-in-k-group/)
+
+![25_K个一组翻转链表](images/25_K个一组翻转链表.png)
+
+```TypeScript
+function reverseKGroup(head: ListNode | null, k: number): ListNode | null {
+  // 先求出链表长度
+  const n = calcLinkedListLength(head)
+  let rest = n
+
+  // 创建虚拟头节点
+  const dummy = new ListNode(NaN, head)
+  let pre = dummy
+  let cur = dummy.next
+  let next = null
+  let p0 = dummy
+
+  // 只在剩余节点 >= k 个时才进行翻转
+  while (rest >= k) {
+    // 翻转 k 个节点
+    for (let i = 0; i < k; i++) {
+      next = cur.next
+      cur.next = pre
+      pre = cur
+      cur = next
+    }
+
+    // 保存下一个 p0 - 用于记录翻转下一组 k 个节点的 p0
+    const nextP0 = p0.next
+
+    // 更新 p0 指向关系
+    p0.next.next = cur
+    p0.next = pre
+
+    // 更新 p0
+    p0 = nextP0
+
+    // 更新剩余节点数
+    rest -= k
+  }
+
+  return dummy.next
+}
+
+/** @description 计算链表长度 */
+function calcLinkedListLength(head: ListNode | null) {
+  let length = 0
+  let cur = head
+
+  while (cur !== null) {
+    length++
+    cur = cur.next
+  }
+
+  return length
+}
+```
+
+时间复杂度：`O(n)`
+
+空间复杂度：`O(1)`
