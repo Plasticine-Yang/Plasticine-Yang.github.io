@@ -30,7 +30,7 @@ Performance 分析完毕后，直接 `Ctrl + F` 搜索 `setupSentry` 函数调�
 :::tip Performance 报告
 你可以下载对应的 Performance 报告加载到你的 chrome dev tools 中对照着查看
 
-[Sentry 初始化流程的 Performance 报告](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/files/sentry_init_performance_log.json)
+[Sentry 初始化流程的 Performance 报告](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/core-process/files/sentry_init_performance_log.json)
 :::
 
 可以看到，首先会先后执行来自 `@sentry/tracing` 包中的 `BrowserTracing` 构造函数，然后再执行 `@sentry/browser` 包中的 init 函数开始初始化流程
@@ -402,7 +402,7 @@ function markFuncStack() {
 :::tip Performance 报告
 你可以下载对应的 Performance 报告加载到你的 chrome dev tools 中对照着查看
 
-[触发 js error 的 Performance 报告](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/files/sentry_tirgger_js_error_performance_log.json)
+[触发 js error 的 Performance 报告](https://raw.githubusercontent.com/Plasticine-Yang/Plasticine-Yang.github.io/main/docs/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/core-process/files/sentry_tirgger_js_error_performance_log.json)
 :::
 
 从第二张图中的左上方依次到右下方的箭头是整个异常捕获并上报数据的核心流程：

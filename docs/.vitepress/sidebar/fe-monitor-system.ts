@@ -7,6 +7,9 @@ const THEORETICAL_CHAPTER = `${ROUTES.FE_MONITOR_SYSTEM}theoretical-chapter`
 /** @description 实战篇路由前缀 */
 const CODING_CHAPTER = `${ROUTES.FE_MONITOR_SYSTEM}coding-chapter`
 
+/** @description Sentry SDK 架构分析 */
+const SENTRY_SDK_ARCHITECUTRE = `${THEORETICAL_CHAPTER}/sentry-sdk-architecture`
+
 export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
   {
     text: '前端监控系统',
@@ -17,7 +20,10 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
         items: [
           { text: '基础知识', link: `${THEORETICAL_CHAPTER}/basic/` },
           { text: '错误监控', link: `${THEORETICAL_CHAPTER}/error-monitor/` },
-          { text: 'Sentry SDK 架构分析', link: `${THEORETICAL_CHAPTER}/sentry-sdk-architecture/` },
+          {
+            text: 'Sentry SDK 架构分析',
+            items: [{ text: '核心流程', link: `${SENTRY_SDK_ARCHITECUTRE}/core-process/` }],
+          },
           { text: '服务端相关技术栈学习', link: `${THEORETICAL_CHAPTER}/server-stack-learning/` },
         ],
       },

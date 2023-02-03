@@ -27,17 +27,9 @@ export const nav: DefaultTheme.Config['nav'] = [
     ],
   },
 
-  {
-    text: 'TypeScript 类型挑战',
-    link: `${ROUTES.TYPE_CHALLENGES}summary`,
-    activeMatch: ROUTES.TYPE_CHALLENGES,
-  },
+  { text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary`, activeMatch: ROUTES.TYPE_CHALLENGES },
 
-  {
-    text: '算法',
-    link: `${ROUTES.ALGORITHM}binary-tree/bfs/`,
-    activeMatch: ROUTES.ALGORITHM,
-  },
+  { text: '算法', link: `${ROUTES.ALGORITHM}binary-tree/bfs/`, activeMatch: ROUTES.ALGORITHM },
 
   {
     text: '后端',
@@ -50,9 +42,5 @@ export const nav: DefaultTheme.Config['nav'] = [
     ],
   },
 
-  {
-    text: 'Rust',
-    link: `${ROUTES.RUST}introduction`,
-    activeMatch: ROUTES.RUST,
-  },
+  { text: 'Rust', link: `${ROUTES.RUST}introduction/`, activeMatch: ROUTES.RUST },
 ]
