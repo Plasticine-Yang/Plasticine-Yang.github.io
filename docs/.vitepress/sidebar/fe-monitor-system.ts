@@ -19,12 +19,12 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
         text: '理论篇',
         items: [
           { text: '基础知识', link: `${THEORETICAL_CHAPTER}/basic/` },
-          { text: '错误监控', link: `${THEORETICAL_CHAPTER}/error-monitor/` },
+          { text: '异常监控', link: `${THEORETICAL_CHAPTER}/error-monitor/` },
           {
             text: 'Sentry SDK 架构分析',
             items: [
               { text: '初始化流程', link: `${SENTRY_SDK_ARCHITECUTRE}/init/` },
-              { text: '错误捕获流程', link: `${SENTRY_SDK_ARCHITECUTRE}/error-capture/` },
+              { text: '异常监控流程', link: `${SENTRY_SDK_ARCHITECUTRE}/error-monitor/` },
             ],
           },
           { text: '服务端相关技术栈学习', link: `${THEORETICAL_CHAPTER}/server-stack-learning/` },

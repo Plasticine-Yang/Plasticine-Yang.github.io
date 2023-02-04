@@ -1,4 +1,133 @@
-# 错误监控
+# 异常监控
+
+## 异常监控的本质
+
+异常监控主要针对的是 JavaScript 运行时的异常，浏览器本身就提供了全局捕获异常的方案
+
+```TypeScript
+// 监听 error 事件捕获全局异常 - 不能捕获到 Promise 异常
+window.addEventListenr('error', (err) => {
+  report(normalize(err))
+})
+
+// 监听 unhandledrejection 事件捕获 Promise 异常
+window.addEventListenr('unhandledrejection', (rejection) => {
+  report(normalize(rejection))
+})
+```
+
+- normalize 用于将异常信息进行提取，转成统一的数据格式方便管理
+- report 负责将统一的数据格式上报给服务端
+
+但是仅仅能够捕获异常仅仅是第一步，还需要实现以下功能才能让异常捕获变得有意义：
+
+- 报警系统 - 迅速让开发者感知异常的发生
+- 迅速定位问题根源 - 尽可能多地记录异常发生时的上下文环境
+- 高效处理问题 - 统计异常在用户中的分布情况，优先处理事故率高的问题
+- SourceMap 反解 - 生产环境代码往往和源码无法对应上，通过反解 SourceMap 能够帮助开发者快速定位到出问题的源码所在位置
+- 处理人分配 - 根据 Git 提交记录指定异常处理人
+
+## SourceMap 反解
+
+mozila 提供了一个用于处理 SourceMap 的库 - [source-map](https://www.npmjs.com/package/source-map)
+
+这里我们体验一下 SourceMap，首先使用 vite 创建一个 react 的项目，然后写一个简单的代码让其抛出错误
+
+```tsx
+import './style.css'
+
+const Foo: React.FC = () => {
+  throw new Error('oops...')
+  return (
+    <div className="foo">
+      <div className="box1">box</div>
+      <div className="box2">box</div>
+      <div className="box3">box</div>
+      <div className="box4">box</div>
+      <div className="box5">box</div>
+      <div className="box6">box</div>
+      <div className="box7">box</div>
+      <div className="box8">box</div>
+      <div className="box9">box</div>
+    </div>
+  )
+}
+
+export default Foo
+```
+
+先运行 `pnpm build` 生成产物，然后运行 `pnpm preview` 查看其在浏览器中的报错行列数为 `40:57399`，然后修改 `vite.config.ts`，开启 SourceMap 后再次运行 `pnpm build`
+
+将生成的 SourceMap 文件复制到 demo 项目中，编写如下 demo 代码：
+
+```TypeScript
+import { SourceMapConsumer } from 'source-map'
+
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+const main = async () => {
+  const sourceMap = JSON.parse(readFileSync(resolve(process.cwd(), 'src/index-f143a2fe.js.map')).toString())
+
+  const consumer = await new SourceMapConsumer(sourceMap)
+
+  // 获取编译产物的第 targetLine 行，第 targetColumn 列对应源码的位置
+  const targetLine = 40
+  const targetColumn = 57399
+
+  const sourcePosition = consumer.originalPositionFor({
+    line: targetLine,
+    column: targetColumn,
+  })
+  const { line: sourceLine, column: sourceColumn, source } = sourcePosition
+
+  if (sourceLine !== null && sourceColumn !== null && source !== null) {
+    const displayRange = 10
+
+    // 获取源码中对应行列的内容
+    console.log(
+      `编译产物的第 ${targetLine} 行，第 ${targetColumn} 列对应源码的位置为第 ${sourceLine} 行，第 ${sourceColumn} 列，上下 displayRange 行的代码为：`,
+    )
+    console.log('='.repeat(100))
+
+    const sourceContent = consumer.sourceContentFor(source)
+
+    // 获取源码中上下 displayRange 行的源码内容
+    const formattedSourceContent = sourceContent
+      ?.split('\n')
+      .slice(Math.max(sourceLine - displayRange, 0), sourceLine + displayRange)
+      .join('\n')
+
+    console.log(formattedSourceContent)
+
+    console.log('='.repeat(100))
+  }
+}
+
+main()
+```
+
+最终终端输出的结果如下：
+
+```text
+编译产物的第 40 行，第 57399 列对应源码的位置为第 4 行，第 8 列，上下 displayRange 行的代码为：
+====================================================================================================
+import './style.css'
+
+const Foo: React.FC = () => {
+  throw new Error('oops...')
+  return (
+    <div className="foo">
+      <div className="box1">box</div>
+      <div className="box2">box</div>
+      <div className="box3">box</div>
+      <div className="box4">box</div>
+      <div className="box5">box</div>
+      <div className="box6">box</div>
+      <div className="box7">box</div>
+      <div className="box8">box</div>
+====================================================================================================
+```
 
 ## 可监控的错误类型
 
