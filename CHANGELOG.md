@@ -1,5 +1,21 @@
 # plasticine-yang-github-io
 
+## 0.3.19
+
+### Patch Changes
+
+- refactor(fe-monitor-system): extract sub module - core-process from sentry-sdk-architecture
+- feat(fe-monitor-system): theoretical-chapter > sentry-sdk-source > hub and scope
+- feat(react-admin-dashboard): add skills document
+- fix(index): fix the link of action '开始起飞' error
+- feat(type-challenges): medium - 296 - Permutation
+- feat: set vitepress outline to [2, 5] and set outlineTitle to '目录'
+- feat(fe-monitor-system): add entry to hub and scope source analysis on `theoretical-chapter > init`
+- feat(algorithm): medium - 92. 反转链表 II
+- feat(algorithm): hard - 25. K 个一组翻转链表
+- feat(fe-monitor-system): add the theoretical chapter to the portal of coding chapter
+- feat(fe-monitor-system): coding-chapter > sdk > init
+
 ## 0.3.18
 
 ### Patch Changes
