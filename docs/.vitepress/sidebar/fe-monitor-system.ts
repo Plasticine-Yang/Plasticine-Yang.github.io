@@ -36,8 +36,8 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
           {
             text: 'Sentry SDK 源码分析',
             items: [
-              { text: 'Hub', link: `${THEO_SENTRY_SDK_SOURCE}/hub/` },
               { text: 'Scope', link: `${THEO_SENTRY_SDK_SOURCE}/scope/` },
+              { text: 'Hub', link: `${THEO_SENTRY_SDK_SOURCE}/hub/` },
             ],
           },
           { text: '服务端相关技术栈学习', link: `${THEORETICAL_CHAPTER}/server-stack-learning/` },
