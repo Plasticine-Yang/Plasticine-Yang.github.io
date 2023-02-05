@@ -137,22 +137,6 @@ const Foo: React.FC = () => {
 - Http 请求错误
 - CORS 跨域错误
 
-可以定义一个枚举去记录这些错误类型，可用于统一上报到后端方便其进行分类处理
-
-```ts
-enum ErrorType {
-  JSError = 'js-error',
-  ResourceError = 'resource-error',
-  PromiseError = 'promise-error',
-  HttpError = 'http-error',
-  CORSError = 'cors-error',
-}
-```
-
-## 运行时判断错误类型
-
-TODO
-
 ## 为每个错误生成 uid
 
 为什么要为每个错误生成 `uid` 呢？
@@ -281,7 +265,7 @@ const arr = new Array(-1)
 
 浏览器只允许同域下的脚本捕获具体错误信息，而其他脚本只知道发生了一个错误，但无法获知错误的具体内容（控制台仍然可以看到，JS 脚本无法捕获），由于现在的环境是两个不同源的服务器之间加载 JavaScript 脚本，从而产生了跨域。
 
-### 解决方案：
+解决方案：
 
 1. 服务端响应头中添加 `Access-Control-Allow-Origin` 配置允许跨域的域名
 2. 前端的 `<script src="">` 中加上 `crossorigin` 属性，即 `<script src="" crossorigin>`
