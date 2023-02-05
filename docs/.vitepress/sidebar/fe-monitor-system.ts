@@ -7,8 +7,11 @@ const THEORETICAL_CHAPTER = `${ROUTES.FE_MONITOR_SYSTEM}theoretical-chapter`
 /** @description 实战篇路由前缀 */
 const CODING_CHAPTER = `${ROUTES.FE_MONITOR_SYSTEM}coding-chapter`
 
-/** @description Sentry SDK 架构分析 */
-const SENTRY_SDK_ARCHITECUTRE = `${THEORETICAL_CHAPTER}/sentry-sdk-architecture`
+/** @description 理论篇 - Sentry SDK 架构分析 */
+const THEO_SENTRY_SDK = `${THEORETICAL_CHAPTER}/sentry-sdk-architecture`
+
+/** @description 实战篇 - SDK 实现 */
+const CODING_SDK = `${CODING_CHAPTER}/sdk`
 
 export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
   {
@@ -23,8 +26,8 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
           {
             text: 'Sentry SDK 架构分析',
             items: [
-              { text: '初始化流程', link: `${SENTRY_SDK_ARCHITECUTRE}/init/` },
-              { text: '异常监控流程', link: `${SENTRY_SDK_ARCHITECUTRE}/error-monitor/` },
+              { text: '初始化流程', link: `${THEO_SENTRY_SDK}/init/` },
+              { text: '异常监控流程', link: `${THEO_SENTRY_SDK}/error-monitor/` },
             ],
           },
           { text: '服务端相关技术栈学习', link: `${THEORETICAL_CHAPTER}/server-stack-learning/` },
@@ -35,9 +38,15 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
       {
         text: '实战篇',
         items: [
-          { text: '监控系统整体架构', link: `${CODING_CHAPTER}/system-architecture/` },
-          { text: 'SDK 架构', link: `${CODING_CHAPTER}/sdk-architecture/` },
-          { text: '服务端架构', link: `${CODING_CHAPTER}/server-architecture/` },
+          { text: '介绍', link: `${CODING_CHAPTER}/introduction/` },
+
+          {
+            text: 'SDK 实现',
+            items: [
+              { text: 'SDK 架构', link: `${CODING_SDK}/architecture/` },
+              { text: 'SDK 初始化流程实现', link: `${CODING_SDK}/init/` },
+            ],
+          },
         ],
       },
     ],

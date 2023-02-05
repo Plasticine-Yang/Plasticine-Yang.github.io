@@ -1,6 +1,24 @@
-# 服务端架构
+# 介绍
 
-## 日志平台
+## 前言
+
+实战篇的项目 [plasticine-monitor](https://github.com/Plasticine-Yang/plasticine-monitor.git) 目前已在 github 上开源，欢迎阅读 ~
+
+实战篇会先从 SDK 的实现开始讲起，然后再去实现服务端
+
+SDK 的架构设计主要参考 Sentry，如果对 Sentry 架构不了解的，建议先阅读完对应部分的理论篇文章后再来阅读实战篇文章
+
+## 监控系统整体架构
+
+![前端监控系统整体架构](images/前端监控系统整体架构.png)
+
+## SDK 架构
+
+wip...
+
+## 服务端架构
+
+### 日志平台
 
 日志平台在前端监控系统中的作用是对 SDK 上报的数据以日志文件的方式存放在服务器中，并通过 [ELK 集群](https://www.elastic.co/guide/index.html) 对日志进行处理，再批量入库
 
