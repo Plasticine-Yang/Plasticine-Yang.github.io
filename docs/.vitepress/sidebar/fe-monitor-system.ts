@@ -8,7 +8,10 @@ const THEORETICAL_CHAPTER = `${ROUTES.FE_MONITOR_SYSTEM}theoretical-chapter`
 const CODING_CHAPTER = `${ROUTES.FE_MONITOR_SYSTEM}coding-chapter`
 
 /** @description 理论篇 - Sentry SDK 架构分析 */
-const THEO_SENTRY_SDK = `${THEORETICAL_CHAPTER}/sentry-sdk-architecture`
+const THEO_SENTRY_SDK_ARCHITECTURE = `${THEORETICAL_CHAPTER}/sentry-sdk-architecture`
+
+/** @description 理论篇 - Sentry SDK 源码分析 */
+const THEO_SENTRY_SDK_SOURCE = `${THEORETICAL_CHAPTER}/sentry-sdk-source`
 
 /** @description 实战篇 - SDK 实现 */
 const CODING_SDK = `${CODING_CHAPTER}/sdk`
@@ -26,8 +29,15 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
           {
             text: 'Sentry SDK 架构分析',
             items: [
-              { text: '初始化流程', link: `${THEO_SENTRY_SDK}/init/` },
-              { text: '异常监控流程', link: `${THEO_SENTRY_SDK}/error-monitor/` },
+              { text: '初始化流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/init/` },
+              { text: '异常监控流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/error-monitor/` },
+            ],
+          },
+          {
+            text: 'Sentry SDK 源码分析',
+            items: [
+              { text: 'Hub', link: `${THEO_SENTRY_SDK_SOURCE}/hub/` },
+              { text: 'Scope', link: `${THEO_SENTRY_SDK_SOURCE}/scope/` },
             ],
           },
           { text: '服务端相关技术栈学习', link: `${THEORETICAL_CHAPTER}/server-stack-learning/` },

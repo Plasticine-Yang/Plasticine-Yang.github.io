@@ -123,6 +123,10 @@ Sentry 中上报的数据类型有多种，其中一种是 `event`，比如我�
 
 这意味着在 Scope 中能够对代码运行过程进行追踪，从而可以实现用于追踪用户行为的 [Breadcrumbs](https://docs.sentry.io/platforms/javascript/enriching-events/breadcrumbs/) 以及 [在当前 Scope 中加入自定义上下文](https://docs.sentry.io/platforms/javascript/enriching-events/context/) 的功能
 
+:::tip Scope 源码解析
+关于 Scope 的源码解析可以在 [Sentry SDK 源码分析 - Scope](../../sentry-sdk-source/scope/) 中查看
+:::
+
 ---
 
 #### Hub 是什么？
@@ -166,6 +170,10 @@ Sentry.captureMessage('Hello plasticine!', {
 
 总之，目前只要理解 Hub 作为一个中部枢纽的角色，负责调控 SDK 运行过程中要发送到服务端的数据就行
 
+:::tip Hub 源码解析
+关于 Hub 的源码解析可以在 [Sentry SDK 源码分析 - Hub](../../sentry-sdk-source/hub/) 中查看
+:::
+
 ---
 
 综上所述，Scope 负责记录执行环境的信息，而 Hub 则负责调控整合数据到最终要发送到服务端的数据中，明白这一点就够了
@@ -199,13 +207,13 @@ Sentry.captureMessage('configureScope message')
 
 ![configureScope例子2](images/configureScope例子2.png)
 
----
-
-#### 默认集成的 integrations
-
 现在再回过头看 `initAndBind` 的流程，首先会获取到 hub 实例，然后会创建一个 scope 对象，如果 options 中有传入 `initialScope` 的话则会以它作为初始 scope，否则就只是一个空 scope
 
 然后会创建一个 `BrowserClient` 实例，并将其绑定到 hub 对象上，这样无论在哪里我们都可以通过调用 `Sentry.getCurrent().getClient()` 获取到 SDK 客户端实例
+
+---
+
+### bindClient
 
 在 bindClient 中会调用 `setupIntegrations` 函数去注册所有 integrations，integrations 可以理解为是插件，Sentry 中各种监控功能是通过插件，也就是 integration 的方式集成到 BrowserClient 中的，在没有配置的情况下，默认会启用的 integrations 有以下这些：
 
