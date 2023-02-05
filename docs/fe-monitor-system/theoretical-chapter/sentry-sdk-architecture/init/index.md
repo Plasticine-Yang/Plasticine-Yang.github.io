@@ -1,5 +1,9 @@
 # Sentry SDK 初始化流程分析
 
+:::tip 对应的实战篇传送门
+[传送门](../../../coding-chapter/sdk/init/)
+:::
+
 ## 环境准备
 
 首先通过 vite 创建一个 `Vanilla JS` 项目用于观察 sentry 的初始化流程，主要是通过 chrome 开发者工具的 `Performance` 分析工具完成
@@ -373,6 +377,8 @@ Sentry.init({
 })
 ```
 
-至此，初始化流程的分析就结束了，Sentry 的监控功能是通过各种 integrations 实现的，初始化的时候将这些 integrations 都注册进来了，之后等到特定事件发生时触发 integration 中的行为，完成错误监控、行为监控等功能
+至此，初始化流程的分析就结束了，对实现感兴趣的可以移步到对应的实战篇 - [SDK 初始化流程实现](../../../coding-chapter/sdk/init/)
+
+Sentry 的监控功能是通过各种 integrations 实现的，初始化的时候将这些 integrations 都注册进来了，之后等到特定事件发生时触发 integration 中的行为，完成错误监控、行为监控等功能
 
 接下来我会以错误监控为目标去分析 Sentry 的流程和源码
