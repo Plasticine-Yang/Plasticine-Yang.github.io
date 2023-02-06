@@ -53,8 +53,8 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
           {
             text: 'SDK 实现',
             items: [
-              { text: 'SDK 架构', link: `${CODING_SDK}/architecture/` },
-              { text: 'SDK 初始化流程实现', link: `${CODING_SDK}/init/` },
+              { text: '架构', link: `${CODING_SDK}/architecture/` },
+              { text: '初始化流程', link: `${CODING_SDK}/init/` },
             ],
           },
         ],

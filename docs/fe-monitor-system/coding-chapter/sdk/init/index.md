@@ -1,4 +1,4 @@
-# SDK 初始化流程实现
+# 初始化流程
 
 :::tip 对应的理论篇传送门
 [传送门](../../../theoretical-chapter/sentry-sdk-architecture/init/)
