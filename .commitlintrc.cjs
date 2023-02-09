@@ -7,10 +7,18 @@ module.exports = {
     scopes: [
       'index',
       'templates',
-      'react-source-learning',
-      'fe-monitor-system',
+
+      // react
+      'plasticine-react',
+      'react-technique',
       'react-admin-dashboard',
+
+      'fe-monitor-system',
+
+      // typescript
+      'typescript-basic',
       'type-challenges',
+
       'algorithm',
       'nest',
       'rust',
