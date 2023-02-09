@@ -6,15 +6,14 @@ export const nav: DefaultTheme.Config['nav'] = [
 
   {
     text: 'React 学习',
+    activeMatch: ROUTES.REACT_LEARNING,
     items: [
       {
-        text: '使用技巧',
-        activeMatch: ROUTES.REACT_TECHNIQUE,
-        link: `${ROUTES.REACT_TECHNIQUE}think-about-use-effect/`,
+        text: 'React 使用技巧',
+        link: `${ROUTES.REACT_TECHNIQUE}use-effect/`,
       },
       {
         text: 'plasticine-react',
-        activeMatch: ROUTES.PLASTICINE_REACT,
         link: `${ROUTES.PLASTICINE_REACT}introduction/`,
       },
     ],
@@ -39,10 +38,10 @@ export const nav: DefaultTheme.Config['nav'] = [
 
   {
     text: 'TypeScript',
-    activeMatch: ROUTES.PROJECT_ACTUAL_COMBAT,
+    activeMatch: ROUTES.TYPESCRIPT,
     items: [
-      { text: '基础知识', link: ROUTES.TYPESCRIPT_BASIC, activeMatch: ROUTES.TYPESCRIPT_BASIC },
-      { text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary`, activeMatch: ROUTES.TYPE_CHALLENGES },
+      { text: '基础知识', link: ROUTES.TYPESCRIPT_BASIC },
+      { text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary` },
     ],
   },
 

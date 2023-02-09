@@ -3,7 +3,7 @@ import { DefaultTheme } from 'vitepress'
 
 export const reactTechnique: DefaultTheme.SidebarGroup[] = [
   {
-    text: '使用技巧',
+    text: 'React 使用技巧',
     items: [
       { text: 'useEffect 汇总', link: `${ROUTES.REACT_TECHNIQUE}use-effect/` },
       { text: 'useRef 汇总', link: `${ROUTES.REACT_TECHNIQUE}use-ref/` },

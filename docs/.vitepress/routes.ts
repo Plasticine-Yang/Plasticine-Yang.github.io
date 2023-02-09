@@ -1,4 +1,7 @@
 export enum ROUTES {
+  /** @description React 学习 */
+  REACT_LEARNING = '/react-learning/',
+
   /** @description React 学习 - 使用技巧 */
   REACT_TECHNIQUE = '/react-learning/react-technique/',
 
@@ -13,6 +16,9 @@ export enum ROUTES {
 
   /** @description 项目实战 - React Admin Dashboard */
   REACT_ADMIN_DASHBOARD = '/project-actual-combat/react-admin-dashboard/',
+
+  /** @description TypeScript */
+  TYPESCRIPT = '/typescript/',
 
   /** @description TypeScript - 基础知识 */
   TYPESCRIPT_BASIC = '/typescript/basic/',
