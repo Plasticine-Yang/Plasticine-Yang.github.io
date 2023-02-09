@@ -5,9 +5,19 @@ export const nav: DefaultTheme.Config['nav'] = [
   { text: '首页', link: '/' },
 
   {
-    text: 'React 源码学习',
-    link: `${ROUTES.REACT_SOURCE_LEARNING}/plasticine-react/introduction/`,
-    activeMatch: ROUTES.REACT_SOURCE_LEARNING,
+    text: 'React 学习',
+    items: [
+      {
+        text: '使用技巧',
+        activeMatch: ROUTES.REACT_TECHNIQUE,
+        link: `${ROUTES.REACT_TECHNIQUE}think-about-use-effect/`,
+      },
+      {
+        text: 'plasticine-react',
+        activeMatch: ROUTES.PLASTICINE_REACT,
+        link: `${ROUTES.PLASTICINE_REACT}introduction/`,
+      },
+    ],
   },
 
   {
@@ -27,7 +37,14 @@ export const nav: DefaultTheme.Config['nav'] = [
     ],
   },
 
-  { text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary`, activeMatch: ROUTES.TYPE_CHALLENGES },
+  {
+    text: 'TypeScript',
+    activeMatch: ROUTES.PROJECT_ACTUAL_COMBAT,
+    items: [
+      { text: '基础知识', link: ROUTES.TYPESCRIPT_BASIC, activeMatch: ROUTES.TYPESCRIPT_BASIC },
+      { text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary`, activeMatch: ROUTES.TYPE_CHALLENGES },
+    ],
+  },
 
   { text: '算法', link: `${ROUTES.ALGORITHM}binary-tree/bfs/`, activeMatch: ROUTES.ALGORITHM },
 

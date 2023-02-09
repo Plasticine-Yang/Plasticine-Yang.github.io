@@ -1,6 +1,9 @@
 export enum ROUTES {
-  /** @description React 源码学习 */
-  REACT_SOURCE_LEARNING = '/react-source-learning/',
+  /** @description React 学习 - 使用技巧 */
+  REACT_TECHNIQUE = '/react-learning/react-technique/',
+
+  /** @description React 学习 - plasticine-react */
+  PLASTICINE_REACT = '/react-learning/plasticine-react/',
 
   /** @description 前端监控系统 */
   FE_MONITOR_SYSTEM = '/fe-monitor-system/',
@@ -11,8 +14,11 @@ export enum ROUTES {
   /** @description 项目实战 - React Admin Dashboard */
   REACT_ADMIN_DASHBOARD = '/project-actual-combat/react-admin-dashboard/',
 
-  /** @description TypeScript 类型挑战 */
-  TYPE_CHALLENGES = '/type-challenges/',
+  /** @description TypeScript - 基础知识 */
+  TYPESCRIPT_BASIC = '/typescript/basic/',
+
+  /** @description TypeScript - 类型挑战 */
+  TYPE_CHALLENGES = '/typescript/type-challenges/',
 
   /** @description 算法 */
   ALGORITHM = '/algorithm/',
