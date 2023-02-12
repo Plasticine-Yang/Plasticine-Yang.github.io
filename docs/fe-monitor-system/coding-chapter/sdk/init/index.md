@@ -371,3 +371,111 @@ describe('BaseClient', () => {
 ```
 
 插件机制也正常运作
+
+## BrowserClient
+
+前面的 `BaseClient` 是一个实现了 `Client` 接口的抽象类，之所以设计为抽象类是因为在提供给用户使用的时候我们需要交给具体平台侧去实现平台相关的功能，也就是需要在具体平台环境中实现 BaseClient
+
+以浏览器平台举例，我们就需要实现 `BrowserClient`，其继承自 BaseClient，只是目前我们还没将平台相关的功能完成，所以 BrowserClient 目前仅仅需要继承 BaseClient 并将构造函数改为 `public` 供 SDK 初始化时实例化即可
+
+`packages/browser/src/client.ts`
+
+```TypeScript
+import type { ClientOptions } from '@plasticine-monitor/types'
+
+import { BaseClient } from '@plasticine-monitor/core'
+
+export type BrowserClientOptions = ClientOptions
+
+export class BrowserClient extends BaseClient<BrowserClientOptions> {
+  public constructor(options: BrowserClientOptions) {
+    super(options)
+  }
+}
+```
+
+## Browser SDK init
+
+接下来就需要完成暴露给用户侧使用的 SDK init 函数，由于我们目前实现的是浏览器平台的，所以放在 `browser` 包中实现
+
+`packages/browser/src/sdk.ts`
+
+```TypeScript
+import type { Options } from '@plasticine-monitor/types'
+import type { BrowserClientOptions } from './client'
+
+import { initAndBind } from '@plasticine-monitor/core'
+
+import { BrowserClient } from './client'
+import { defaultPlugins } from './plugins'
+
+type BrowserOptions = Options
+
+export function init(options: BrowserOptions = {}) {
+  const clientOptions: BrowserClientOptions = {
+    plugins: options.plugins ?? defaultPlugins,
+  }
+
+  initAndBind(BrowserClient, clientOptions)
+
+  console.log('SDK 初始化完成')
+}
+```
+
+browser 包从上层使用者的角度来看，不需要关心底层 core 的实现，只需要关注如何实现平台相关的 Client 并解析好实例化所需的 options 即可，底层细节放心交给 core 包实现，因此这里将初始化的逻辑交给 core 包的 `initAndBind` 去完成
+
+## Core SDK initAndBind
+
+那么 core 包中会如何完成初始化的逻辑呢？首先肯定需要创建一个 Hub，因为它是整个 SDK 的中枢，然后再调用传入的具体平台侧的 Client 构造函数创建实例，并将 Client 绑定到 Hub 中，从而能够让 Client 中注册的插件通过 Hub 获取到 Client 实例自身去做定制化功能
+
+`packages/core/src/sdk.ts`
+
+```TypeScript
+import type { Client, ClientConstructor, ClientOptions } from '@plasticine-monitor/types'
+
+import { getCurrentHub } from './hub'
+
+/**
+ * @description 初始化 Hub 和 Client 并将二者关联
+ */
+export function initAndBind<C extends Client, O extends ClientOptions>(
+  clientConstructor: ClientConstructor<C, O>,
+  clientOptions: O,
+): void {
+  const hub = getCurrentHub()
+  const client = new clientConstructor(clientOptions)
+
+  hub.bindClient(client)
+}
+```
+
+## 验证 SDK 初始化效果
+
+这样一来初始化流程就算完成了，接下来我们需要验证一下效果，由于目前我们的 SDK 只支持对插件进行注册，因此我们可以实现一个 `examplePlugin`，只要它能在浏览器中被注册则说明我们的 SDK 初始化流程跑通了
+
+`packages/browser/src/plugins/example-plugin.ts`
+
+```TypeScript
+import type { Plugin } from '@plasticine-monitor/types'
+
+export function examplePlugin(): Plugin {
+  return {
+    name: 'examplePlugin',
+    setupOnce() {
+      console.log('examplePlugin setup:')
+    },
+  }
+}
+```
+
+然后创建一个 `playground` 项目用于验证效果，这里直接使用 vite 创建了一个 Vanilla JS 项目
+
+`packages/playground/src/index.ts`
+
+```TypeScript
+import * as PlasticineMonitor from '@plasticine-monitor/browser'
+
+PlasticineMonitor.init()
+```
+
+![PlasticineMonitor初始化效果](images/PlasticineMonitor初始化效果.png)
