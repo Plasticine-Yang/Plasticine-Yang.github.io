@@ -74,7 +74,7 @@ type MyOmit<T, K> = {
 :::
 
 :::tip 相关题目
-[4 - Pick](/type-challenges/easy#_4-pick) <Badge type="tip" text="easy" />
+[4 - Pick](/typescript/type-challenges/easy#_4-pick) <Badge type="tip" text="easy" />
 :::
 
 ## 8 - Readonly 2
@@ -122,9 +122,9 @@ type MyReadonly2<T, K extends keyof T = keyof T> = {
 :::
 
 :::tip 相关题目
-[7 - Readonly](/type-challenges/easy#_7-readonly) <Badge type="tip" text="easy" />
+[7 - Readonly](/typescript/type-challenges/easy#_7-readonly) <Badge type="tip" text="easy" />
 
-[9 - Deep Readonly](/type-challenges/medium#_9-deep-readonly) <Badge type="warning" text="medium" />
+[9 - Deep Readonly](/typescript/type-challenges/medium#_9-deep-readonly) <Badge type="warning" text="medium" />
 :::
 
 ## 9 - Deep Readonly
@@ -174,9 +174,9 @@ type DeepReadonly<T> = {
 :::
 
 :::tip 相关题目
-[7 - Readonly](/type-challenges/easy#_7-readonly) <Badge type="tip" text="easy" />
+[7 - Readonly](/typescript/type-challenges/easy#_7-readonly) <Badge type="tip" text="easy" />
 
-[8 - Readonly 2](/type-challenges/medium#_8-readonly-2) <Badge type="warning" text="medium" />
+[8 - Readonly 2](/typescript/type-challenges/medium#_8-readonly-2) <Badge type="warning" text="medium" />
 :::
 
 ## 10 - Tuple to Union
@@ -197,7 +197,7 @@ type Test = TupleToUnion<Arr> // expected to be '1' | '2' | '3'
 
 :::details 查看答案
 
-和 [Tuple to Object](/type-challenges/easy#tuple-to-object) 一样。
+和 [Tuple to Object](/typescript/type-challenges/easy#tuple-to-object) 一样。
 
 ```TypeScript
 type TupleToUnion<T extends unknown[]> = T[number]
@@ -206,13 +206,13 @@ type TupleToUnion<T extends unknown[]> = T[number]
 :::
 
 :::tip 相关题目
-[11 - Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
+[11 - Tuple to Object](/typescript/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[472 - Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
+[472 - Tuple to Enum Object](/typescript/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[730 - Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
+[730 - Union to Tuple](/typescript/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 
-[3188 - Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
+[3188 - Tuple to Nested Object](/typescript/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
 ## 12 - Chainable Options
@@ -304,9 +304,9 @@ type Last<T extends any[]> = T extends [...any[], infer Last] ? Last : never
 :::
 
 :::tip 相关题目
-[4 - First of Array](/type-challenges/easy#_4-first-of-array) <Badge type="tip" text="easy" />
+[4 - First of Array](/typescript/type-challenges/easy#_4-first-of-array) <Badge type="tip" text="easy" />
 
-[16 - Pop](/type-challenges/medium#_16-pop) <Badge type="warning" text="medium" />
+[16 - Pop](/typescript/type-challenges/medium#_16-pop) <Badge type="warning" text="medium" />
 :::
 
 ## 16 - Pop
@@ -336,9 +336,9 @@ type Pop<T extends any[]> = T extends [...infer Fronts, any] ? Fronts : []
 :::
 
 :::tip 相关题目
-[14 - First of Array](/type-challenges/easy#_14-first-of-array) <Badge type="tip" text="easy" />
+[14 - First of Array](/typescript/type-challenges/easy#_14-first-of-array) <Badge type="tip" text="easy" />
 
-[15 - Last of Array](/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
+[15 - Last of Array](/typescript/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
 :::
 
 ## 20 - Promise.all
@@ -451,9 +451,9 @@ type TrimLeft<S extends string> = S extends `${Whitespace}${infer Rest}`
 :::
 
 :::tip 相关题目
-[108 - Trim](/type-challenges/medium#_108-trim) <Badge type="tip" text="medium" />
+[108 - Trim](/typescript/type-challenges/medium#_108-trim) <Badge type="tip" text="medium" />
 
-[4803 - Trim Right](/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
+[4803 - Trim Right](/typescript/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
 :::
 
 ## 108 - Trim
@@ -483,9 +483,9 @@ type Trim<S extends string> = S extends `${Whitespace}${infer Rest}` | `${infer 
 :::
 
 :::tip 相关题目
-[106 - Trim Left](/type-challenges/medium#_106-trim-left) <Badge type="tip" text="medium" />
+[106 - Trim Left](/typescript/type-challenges/medium#_106-trim-left) <Badge type="tip" text="medium" />
 
-[4803 - Trim Right](/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
+[4803 - Trim Right](/typescript/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
 :::
 
 ## 110 - Capitalize
@@ -660,13 +660,13 @@ type TupleToNestedObject<T extends readonly string[], U> = T extends [
 :::
 
 :::tip 相关题目
-[10 - Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
+[10 - Tuple to Union](/typescript/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[11 - Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
+[11 - Tuple to Object](/typescript/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[472 - Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
+[472 - Tuple to Enum Object](/typescript/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[730 - Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
+[730 - Union to Tuple](/typescript/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 :::
 
 ## 4803 - Trim Right
@@ -696,7 +696,7 @@ type TrimRight<S extends string> = S extends `${infer Rest}${Whitespace}`
 :::
 
 :::tip 相关题目
-[108 - Trim](/type-challenges/medium#_108-trim) <Badge type="tip" text="medium" />
+[108 - Trim](/typescript/type-challenges/medium#_108-trim) <Badge type="tip" text="medium" />
 
-[4803 - Trim Right](/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
+[4803 - Trim Right](/typescript/type-challenges/medium#_4803-trim-right) <Badge type="tip" text="medium" />
 :::

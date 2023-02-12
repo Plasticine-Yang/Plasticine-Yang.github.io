@@ -104,13 +104,13 @@ type Enum<T extends readonly string[], N extends boolean = false> = {
 :::
 
 :::tip 相关题目
-[10 - Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
+[10 - Tuple to Union](/typescript/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[11 - Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
+[11 - Tuple to Object](/typescript/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[730 - Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
+[730 - Union to Tuple](/typescript/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 
-[3188 - Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
+[3188 - Tuple to Nested Object](/typescript/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
 ## 730 - Union to Tuple <Badge type="danger" text="Unintelligible" />
@@ -118,7 +118,7 @@ type Enum<T extends readonly string[], N extends boolean = false> = {
 [练习](https://tsch.js.org/730/play)
 
 :::tip
-建议先完成 [Union to Intersection](/type-challenges/hard#union-to-intersection)
+建议先完成 [Union to Intersection](/typescript/type-challenges/hard#union-to-intersection)
 :::
 
 > As we know, union is an unordered structure, but tuple is an ordered, which implies that we are not supposed to preassume any order will be preserved between terms of one union, when unions are created or transformed.
@@ -200,13 +200,13 @@ type Prepend<Arr extends unknown[], Item> = [Item, ...Arr]
 :::
 
 :::tip 相关题目
-[10 - Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
+[10 - Tuple to Union](/typescript/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[11 - Tuple to Object](/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
+[11 - Tuple to Object](/typescript/type-challenges/easy#_11-tuple-to-object) <Badge type="tip" text="easy" />
 
-[55 - Union to Intersection](/type-challenges/hard#_55-union-to-intersection) <Badge type="danger" text="hard" />
+[55 - Union to Intersection](/typescript/type-challenges/hard#_55-union-to-intersection) <Badge type="danger" text="hard" />
 
-[472 - Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
+[472 - Tuple to Enum Object](/typescript/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[3188 - Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
+[3188 - Tuple to Nested Object](/typescript/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::

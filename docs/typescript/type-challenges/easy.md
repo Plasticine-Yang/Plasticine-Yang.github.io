@@ -40,7 +40,7 @@ type MyPick<T, K extends keyof T> = {
 :::
 
 :::tip 相关题目
-[3 - Omit](/type-challenges/medium#_3-omit) <Badge type="warning" text="medium" />
+[3 - Omit](/typescript/type-challenges/medium#_3-omit) <Badge type="warning" text="medium" />
 :::
 
 ## 7 - Readonly <Badge type="info" text="built-in" />
@@ -79,9 +79,9 @@ type MyReadonly<T> = {
 :::
 
 :::tip 相关题目
-[8 - Readonly 2](/type-challenges/medium#_8-readonly-2) <Badge type="warning" text="medium" />
+[8 - Readonly 2](/typescript/type-challenges/medium#_8-readonly-2) <Badge type="warning" text="medium" />
 
-[9 - Deep Readonly](/type-challenges/medium#_9-deep-readonly) <Badge type="warning" text="medium" />
+[9 - Deep Readonly](/typescript/type-challenges/medium#_9-deep-readonly) <Badge type="warning" text="medium" />
 :::
 
 ## 11 - Tuple to Object
@@ -120,13 +120,13 @@ type TupleNumber = Tuple[number]
 :::
 
 :::tip 相关题目
-[10 - Tuple to Union](/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
+[10 - Tuple to Union](/typescript/type-challenges/medium#_10-tuple-to-union) <Badge type="warning" text="medium" />
 
-[472 - Tuple to Enum Object](/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
+[472 - Tuple to Enum Object](/typescript/type-challenges/hard#_472-tuple-to-enum-object) <Badge type="danger" text="hard" />
 
-[730 - Union to Tuple](/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
+[730 - Union to Tuple](/typescript/type-challenges/hard#_730-union-to-tuple) <Badge type="danger" text="hard" />
 
-[3188 - Tuple to Nested Object](/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
+[3188 - Tuple to Nested Object](/typescript/type-challenges/medium#_3188-tuple-to-nested-object) <Badge type="warning" text="medium" />
 :::
 
 ## 14 - First of Array
@@ -158,7 +158,7 @@ type First<T extends any[]> = T extends [infer FirstEl, ...any]
 :::
 
 :::tip 相关题目
-[15 - Last of Array](/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
+[15 - Last of Array](/typescript/type-challenges/medium#_15-last-of-array) <Badge type="warning" text="medium" />
 :::
 
 ## 18 - Length of Tuple
@@ -299,9 +299,9 @@ type Concat<T extends any[], U extends any[]> = T extends [...infer FirstArr]
 :::
 
 :::tip 相关题目
-[3057 - Push](/type-challenges/easy#_3057-push) <Badge type="tip" text="easy" />
+[3057 - Push](/typescript/type-challenges/easy#_3057-push) <Badge type="tip" text="easy" />
 
-[3060 - Unshift](/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
+[3060 - Unshift](/typescript/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
 :::
 
 ## 898 - Includes
@@ -366,9 +366,9 @@ type Push<T extends unknown[], U> = [...T, U]
 :::
 
 :::tip 相关题目
-[533 - Concat](/type-challenges/easy#_533-concat) <Badge type="tip" text="easy" />
+[533 - Concat](/typescript/type-challenges/easy#_533-concat) <Badge type="tip" text="easy" />
 
-[3060 - Unshift](/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
+[3060 - Unshift](/typescript/type-challenges/easy#_3060-unshift) <Badge type="tip" text="easy" />
 :::
 
 ## 3060 - Unshift
@@ -394,9 +394,9 @@ type Unshift<T extends unknown[], U> = [U, ...T]
 :::
 
 :::tip 相关题目
-[533 - Concat](/type-challenges/easy#_533-concat) <Badge type="tip" text="easy" />
+[533 - Concat](/typescript/type-challenges/easy#_533-concat) <Badge type="tip" text="easy" />
 
-[3057 - Push](/type-challenges/easy#_3057-push) <Badge type="tip" text="easy" />
+[3057 - Push](/typescript/type-challenges/easy#_3057-push) <Badge type="tip" text="easy" />
 :::
 
 ## 3312 - Parameters <Badge type="info" text="built-in" />
