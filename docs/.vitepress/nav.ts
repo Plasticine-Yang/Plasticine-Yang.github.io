@@ -40,7 +40,7 @@ export const nav: DefaultTheme.Config['nav'] = [
     text: 'TypeScript',
     activeMatch: ROUTES.TYPESCRIPT,
     items: [
-      { text: '基础知识', link: ROUTES.TYPESCRIPT_BASIC },
+      { text: 'TypeScript 使用', link: `${ROUTES.TYPESCRIPT_USAGE}unfamiliar-knowledge` },
       { text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary` },
     ],
   },

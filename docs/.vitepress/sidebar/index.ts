@@ -8,7 +8,7 @@ import { nest } from './nest'
 import { projectActualCombat } from './project-actual-combat'
 import { rust } from './rust'
 
-import { typescriptBasic, typeChallenges } from './typescript'
+import { typescriptUsage, typeChallenges } from './typescript'
 
 import { reactTechnique, plasticineReact } from './react-learning'
 
@@ -21,7 +21,7 @@ export const sidebar: DefaultTheme.Config['sidebar'] = {
   [ROUTES.PROJECT_ACTUAL_COMBAT]: projectActualCombat,
 
   // typescript
-  [ROUTES.TYPESCRIPT_BASIC]: typescriptBasic,
+  [ROUTES.TYPESCRIPT_USAGE]: typescriptUsage,
   [ROUTES.TYPE_CHALLENGES]: typeChallenges,
 
   [ROUTES.ALGORITHM]: algorithm,

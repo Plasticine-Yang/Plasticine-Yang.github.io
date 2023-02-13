@@ -20,8 +20,8 @@ export enum ROUTES {
   /** @description TypeScript */
   TYPESCRIPT = '/typescript/',
 
-  /** @description TypeScript - 基础知识 */
-  TYPESCRIPT_BASIC = '/typescript/basic/',
+  /** @description TypeScript - 使用 */
+  TYPESCRIPT_USAGE = '/typescript/usage/',
 
   /** @description TypeScript - 类型挑战 */
   TYPE_CHALLENGES = '/typescript/type-challenges/',

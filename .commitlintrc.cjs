@@ -16,7 +16,7 @@ module.exports = {
       'fe-monitor-system',
 
       // typescript
-      'typescript-basic',
+      'typescript-usage',
       'type-challenges',
 
       'algorithm',
