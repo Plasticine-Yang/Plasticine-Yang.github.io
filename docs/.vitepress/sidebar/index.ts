@@ -10,12 +10,12 @@ import { rust } from './rust'
 
 import { typescriptUsage, typeChallenges } from './typescript'
 
-import { reactTechnique, plasticineReact } from './react-learning'
+import { reactUsage, plasticineReact } from './react-learning'
 
 export const sidebar: DefaultTheme.Config['sidebar'] = {
   // react-learning
   [ROUTES.PLASTICINE_REACT]: plasticineReact,
-  [ROUTES.REACT_TECHNIQUE]: reactTechnique,
+  [ROUTES.REACT_USAGE]: reactUsage,
 
   [ROUTES.FE_MONITOR_SYSTEM]: feMonitorSystem,
   [ROUTES.PROJECT_ACTUAL_COMBAT]: projectActualCombat,

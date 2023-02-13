@@ -2,8 +2,8 @@ export enum ROUTES {
   /** @description React 学习 */
   REACT_LEARNING = '/react-learning/',
 
-  /** @description React 学习 - 使用技巧 */
-  REACT_TECHNIQUE = '/react-learning/react-technique/',
+  /** @description React 学习 - 使用 */
+  REACT_USAGE = '/react-learning/react-usage/',
 
   /** @description React 学习 - plasticine-react */
   PLASTICINE_REACT = '/react-learning/plasticine-react/',

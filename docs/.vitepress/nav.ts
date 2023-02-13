@@ -9,8 +9,8 @@ export const nav: DefaultTheme.Config['nav'] = [
     activeMatch: ROUTES.REACT_LEARNING,
     items: [
       {
-        text: 'React 使用技巧',
-        link: `${ROUTES.REACT_TECHNIQUE}use-effect/`,
+        text: 'React 使用',
+        link: `${ROUTES.REACT_USAGE}typescript-generic/`,
       },
       {
         text: 'plasticine-react',

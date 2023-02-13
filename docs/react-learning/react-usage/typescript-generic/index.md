@@ -1,6 +1,6 @@
-# useRef 汇总
+# TypeScript 泛型
 
-## TypeScript 类型
+## useRef
 
 ### 传入泛型和 null 后变成 readonly
 

@@ -13,7 +13,7 @@ hero:
   actions:
     - theme: brand
       text: 开始起飞
-      link: /react-source-learning/plasticine-react/introduction/
+      link: react-learning/plasticine-react/introduction/
     - theme: alt
       text: Github
       link: https://github.com/Plasticine-Yang
