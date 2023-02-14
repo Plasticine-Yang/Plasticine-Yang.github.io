@@ -13,6 +13,7 @@ export const reactUsage: DefaultTheme.SidebarGroup[] = [
         text: 'hooks',
         items: [
           { text: 'useState', link: `${HOOKS}/use-state/` },
+          { text: 'useEffect', link: `${HOOKS}/use-effect/` },
           { text: 'useRef', link: `${HOOKS}/use-ref/` },
         ],
       },
