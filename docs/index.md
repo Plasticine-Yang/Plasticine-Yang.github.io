@@ -26,7 +26,7 @@ features:
     details: 自 2022.04 开始接触前端，热爱前端，主要技术栈 React + TypeScript，对 React 源码有深入的理解，未来有学习 Rust 的计划
   - icon: 💻
     title: 目前现状
-    details: 就职于北京字节跳动，飞书前端开发工程师，学习大厂技术、体验团队协作的规范流程、积累工作经验
+    details: 在字节跳动实习，学习大厂技术、体验团队协作的规范流程、积累工作经验
   - icon: 🎯
     title: 短期规划
     details: 阅读《React 设计原理》并实现自己的 Mini React | 完成毕设项目 -- web 前端监控系统的设计与实现
