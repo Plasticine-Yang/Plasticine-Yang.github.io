@@ -1,10 +1,10 @@
-# useState 为什么推荐以函数参数方式 setState
+# useState
 
-## 前言
+## useState 为什么推荐以函数参数方式 setState
 
 在使用 `useState` 时，如果需要依赖 state 的最新值进行更新，通常建议是以函数参数的方式去调用 `setState`，你有思考过为什么以函数参数的方式调用 setState 就能获取到 state 最新值，而以值的方式调用 setState 就获取不到最新值吗？
 
-## setState 需要获取最新值的场景
+### setState 需要获取最新值的场景
 
 先看个例子感受一下什么场景下需要获取 setState 最新值
 
@@ -78,7 +78,7 @@ const Demo: React.FC = () => {
 
 那么为什么以值的方式 setState 就不能获取 state 最新值，而以函数的方式就可以获取 state 最新值呢？这与 Hook 过期闭包问题有关
 
-## Hook 过期闭包问题
+### Hook 过期闭包问题
 
 什么是 Hook 过期闭包问题？看看下面这个例子：
 
@@ -163,7 +163,7 @@ function expiredClosureDemo() {
 }
 ```
 
-## 总结
+### 总结
 
 相信理解了 Hook 过期闭包问题后，就不难理解为什么 setState 需要依赖最新状态值进行更新时要用函数的方式进行更新了
 

@@ -12,7 +12,7 @@ export const reactUsage: DefaultTheme.SidebarGroup[] = [
       {
         text: 'hooks',
         items: [
-          { text: 'useState 为什么推荐以函数参数方式 setState', link: `${HOOKS}/use-state-callback-set-state/` },
+          { text: 'useState', link: `${HOOKS}/use-state/` },
           { text: 'useRef', link: `${HOOKS}/use-ref/` },
         ],
       },
