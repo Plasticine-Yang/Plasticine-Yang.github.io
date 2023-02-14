@@ -8,6 +8,7 @@ export const reactUsage: DefaultTheme.SidebarGroup[] = [
   {
     text: 'React 使用',
     items: [
+      { text: '介绍', link: `${ROUTES.REACT_USAGE}introduction/` },
       { text: '工具', items: [{ text: 'TypeScript 泛型', link: `${TOOLS}/typescript-generic/` }] },
       {
         text: 'hooks',

@@ -10,7 +10,7 @@ export const nav: DefaultTheme.Config['nav'] = [
     items: [
       {
         text: 'React 使用',
-        link: `${ROUTES.REACT_USAGE}tools/typescript-generic/`,
+        link: `${ROUTES.REACT_USAGE}introduction/`,
       },
       {
         text: 'plasticine-react',
