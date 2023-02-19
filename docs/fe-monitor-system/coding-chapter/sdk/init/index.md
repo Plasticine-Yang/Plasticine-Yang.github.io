@@ -479,3 +479,7 @@ PlasticineMonitor.init()
 ```
 
 ![PlasticineMonitor初始化效果](images/PlasticineMonitor初始化效果.png)
+
+## 总结
+
+初始化流程实现后，之后的各种监控能力都通过插件的方式集成进来，如果实现过程中发现有通用的能力的话就可以抽离到 core 中去实现，提高代码复用性
