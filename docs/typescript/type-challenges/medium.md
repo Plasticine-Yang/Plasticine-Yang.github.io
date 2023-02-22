@@ -628,6 +628,24 @@ type Permutation<T, Acc = T> =
 
 :::
 
+## 298 - Length of String
+
+[练习](https://tsch.js.org/298/play)
+
+> Compute the length of a string literal, which behaves like `String#length`.
+
+计算一个字符串字面量的长度，就像 `String#length` 一样。
+
+:::details 查看答案
+
+```TypeScript
+type LengthOfString<S extends string, Counter extends string[] = []> = S extends `${infer First}${infer Rest}`
+  ? LengthOfString<Rest, [First, ...Counter]>
+  : Counter['length']
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
