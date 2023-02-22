@@ -38,6 +38,9 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
             items: [
               { text: 'Scope', link: `${THEO_SENTRY_SDK_SOURCE}/scope/` },
               { text: 'Hub', link: `${THEO_SENTRY_SDK_SOURCE}/hub/` },
+              { text: 'Event', link: `${THEO_SENTRY_SDK_SOURCE}/event/` },
+              { text: 'Breadcrumb', link: `${THEO_SENTRY_SDK_SOURCE}/breadcrumb/` },
+              { text: 'Mechanism', link: `${THEO_SENTRY_SDK_SOURCE}/mechanism/` },
             ],
           },
           { text: '服务端相关技术栈学习', link: `${THEORETICAL_CHAPTER}/server-stack-learning/` },

@@ -495,3 +495,55 @@ function _wrapEventTarget(target: string): void {
 ![Sentry_错误捕获流程](images/Sentry_TryCatch_integraion流程.png)
 
 相信通过这幅图，你能够大致理解 TryCatch 这个 integration 的错误捕获流程了
+
+## HttpContext
+
+该 integration 会注册一个全局的 Sentry 事件处理器，在里面对请求信息进行记录，可以在 Breadcrumb 中看到这些信息
+
+```TypeScript
+/** HttpContext integration collects information about HTTP request headers */
+export class HttpContext implements Integration {
+  /**
+   * @inheritDoc
+   */
+  public static id: string = 'HttpContext'
+
+  /**
+   * @inheritDoc
+   */
+  public name: string = HttpContext.id
+
+  /**
+   * @inheritDoc
+   */
+  public setupOnce(): void {
+    addGlobalEventProcessor((event: Event) => {
+      if (getCurrentHub().getIntegration(HttpContext)) {
+        // if none of the information we want exists, don't bother
+        if (!WINDOW.navigator && !WINDOW.location && !WINDOW.document) {
+          return event
+        }
+
+        // grab as much info as exists and add it to the event
+        const url = (event.request && event.request.url) || (WINDOW.location && WINDOW.location.href)
+        const { referrer } = WINDOW.document || {}
+        const { userAgent } = WINDOW.navigator || {}
+
+        const headers = {
+          ...(event.request && event.request.headers),
+          ...(referrer && { Referer: referrer }),
+          ...(userAgent && { 'User-Agent': userAgent }),
+        }
+        const request = { ...event.request, ...(url && { url }), headers }
+
+        return { ...event, request }
+      }
+      return event
+    })
+  }
+}
+```
+
+:::tip
+关于 Sentry 的 Event 可以到理论篇的源码分析 -- [Event](../../sentry-sdk-source/event/) 章节了解
+:::
