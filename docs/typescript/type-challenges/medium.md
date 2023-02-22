@@ -646,6 +646,34 @@ type LengthOfString<S extends string, Counter extends string[] = []> = S extends
 
 :::
 
+## 459 - Flatten
+
+[练习](https://tsch.js.org/459/play)
+
+> In this challenge, you would need to write a type that takes an array and emitted the flatten array type.
+
+你需要编写一个类型，它接受一个数组类型并返回扁平的数组类型。
+
+e.g.
+
+```TypeScript
+type flatten = Flatten<[1, 2, [3, 4], [[[5]]]]> // [1, 2, 3, 4, 5]
+```
+
+:::details 查看答案
+
+```TypeScript
+type Flatten<Arr extends any[], Res extends any[] = []> = Arr extends [infer First, ...infer Rest]
+  ? First extends any[]
+    ? // First 仍然是数组 -- 展开一层并继续
+      Flatten<[...First, ...Rest], Res>
+    : // First 不是数组 -- 更新结果
+      Flatten<Rest, [...Res, First]>
+  : Res
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
