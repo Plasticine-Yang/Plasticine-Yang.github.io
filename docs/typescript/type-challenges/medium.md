@@ -699,6 +699,31 @@ type AppendToObject<T, U extends PropertyKey, V> = {
 
 :::
 
+## 529 - Absolute
+
+[练习](https://tsch.js.org/529/play)
+
+> Implement the Absolute type. A type that take string, number or bigint. The output should be a positive number string.
+
+接受一个 string, number 或 bigint，输出一个正数字符串。
+
+e.g.
+
+```TypeScript
+type Test = -100;
+type Result = Absolute<Test>; // expected to be "100"
+```
+
+:::details 查看答案
+
+利用字符串模板字面量类型将 number, string 和 bigint 统一转为字符串进行类型约束
+
+```TypeScript
+type Absolute<T extends number | string | bigint> = `${T}` extends `-${infer Value}` ? Value : `${T}`
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
