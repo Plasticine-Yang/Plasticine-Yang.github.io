@@ -1,5 +1,22 @@
 # plasticine-yang-github-io
 
+## 0.3.21
+
+### Patch Changes
+
+- 538ad7c: feat(react-usage): [hooks > use-effect] useEffect 和 useLayoutEffect 的区别
+- 538ad7c: feat(fe-monitor-system): [理论篇 > Sentry SDK 架构分析 > 异常监控流程] HttpContext
+- feat(type-challenges): [summary] 如何对数字类型进行正负比较？
+- 538ad7c: feat(react-usage): introduction
+- 538ad7c: feat(react-usage): useState 为什么推荐以函数参数方式 setState
+- 538ad7c: feat(type-challenges): [medium] 298 - Length of String
+- 538ad7c: feat(type-challenges): [medium] 459 - Flatten
+- 538ad7c: feat(fe-monitor-system): [coding-chapter > sdk > init] 添加总结部分
+- 538ad7c: feat(fe-monitor-system): sentry 异常监控流程分析 -- GlobalHandlers 插件
+- feat(type-challenges): [medium] 527 - Append to object
+- 538ad7c: feat(react-usage): [hooks > useRef] 同步赋值情况下的 ref 更新
+- feat(type-challenges): [medium] 529 - Absolute
+
 ## 0.3.20
 
 ### Patch Changes
