@@ -674,6 +674,31 @@ type Flatten<Arr extends any[], Res extends any[] = []> = Arr extends [infer Fir
 
 :::
 
+## 527 - Append to object
+
+[练习](https://tsch.js.org/527/play)
+
+> Implement a type that adds a new field to the interface. The type takes the three arguments. The output should be an object with the new field.
+
+往 interface 中添加一个新的属性。输出应当是一个带有新属性的 object。
+
+e.g.
+
+```TypeScript
+type Test = { id: '1' }
+type Result = AppendToObject<Test, 'value', 4> // expected to be { id: '1', value: 4 }
+```
+
+:::details 查看答案
+
+```TypeScript
+type AppendToObject<T, U extends PropertyKey, V> = {
+  [P in keyof T | U]: P extends keyof T ? T[P] : V
+}
+```
+
+:::
+
 ## 3188 - Tuple to Nested Object
 
 [练习](https://tsch.js.org/3188/play)
