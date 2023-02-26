@@ -22,6 +22,7 @@ module.exports = {
       'algorithm',
       'nest',
       'rust',
+      'plasticine-islands',
       'commitlint',
     ],
   },
