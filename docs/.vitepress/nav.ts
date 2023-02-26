@@ -9,11 +9,11 @@ export const nav: DefaultTheme.Config['nav'] = [
     activeMatch: ROUTES.REACT_LEARNING,
     items: [
       {
-        text: 'React 使用',
-        link: `${ROUTES.REACT_USAGE}introduction/`,
+        text: 'React 基础',
+        link: `${ROUTES.REACT_BASIC}introduction/`,
       },
       {
-        text: 'plasticine-react',
+        text: 'React 原理与实现',
         link: `${ROUTES.PLASTICINE_REACT}introduction/`,
       },
     ],
@@ -31,7 +31,11 @@ export const nav: DefaultTheme.Config['nav'] = [
     items: [
       {
         text: 'React Admin Dashboard',
-        link: `${ROUTES.REACT_ADMIN_DASHBOARD}introduction/`,
+        link: `${ROUTES.REACT_ADMIN}introduction/`,
+      },
+      {
+        text: '基于 Islands 架构的 SSG 框架',
+        link: `${ROUTES.PLASTICINE_ISLANDS}introduction/`,
       },
     ],
   },

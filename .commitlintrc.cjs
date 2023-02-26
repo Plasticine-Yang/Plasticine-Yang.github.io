@@ -10,7 +10,7 @@ module.exports = {
 
       // react
       'plasticine-react',
-      'react-usage',
+      'react-basic',
       'react-admin-dashboard',
 
       'fe-monitor-system',

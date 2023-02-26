@@ -1,2 +1,2 @@
 export { plasticineReact } from './plasticine-react'
-export { reactUsage } from './react-usage'
+export { reactBasic } from './react-basic'

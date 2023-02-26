@@ -2,8 +2,8 @@ export enum ROUTES {
   /** @description React 学习 */
   REACT_LEARNING = '/react-learning/',
 
-  /** @description React 学习 - 使用 */
-  REACT_USAGE = '/react-learning/react-usage/',
+  /** @description React 学习 - 基础 */
+  REACT_BASIC = '/react-learning/react-basic/',
 
   /** @description React 学习 - plasticine-react */
   PLASTICINE_REACT = '/react-learning/plasticine-react/',
@@ -14,8 +14,11 @@ export enum ROUTES {
   /** @description 项目实战 */
   PROJECT_ACTUAL_COMBAT = '/project-actual-combat/',
 
-  /** @description 项目实战 - React Admin Dashboard */
-  REACT_ADMIN_DASHBOARD = '/project-actual-combat/react-admin-dashboard/',
+  /** @description 项目实战 - React Admin */
+  REACT_ADMIN = '/project-actual-combat/react-admin/',
+
+  /** @description 项目实战 - 基于 Islands 架构的 SSG 框架*/
+  PLASTICINE_ISLANDS = '/project-actual-combat/plasticine-islands/',
 
   /** @description TypeScript */
   TYPESCRIPT = '/typescript/',
