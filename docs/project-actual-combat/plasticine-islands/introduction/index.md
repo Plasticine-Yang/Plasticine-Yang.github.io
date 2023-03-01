@@ -53,3 +53,9 @@ islands 架构支持在 SSR 场景下进行局部 [hydration](/react-learning/re
 5. 主题 UI 的开发：基于 React 完成页面 UI 的开发
 6. 实现 islands 架构：本项目的重点和亮点
 7. 持续集成和部署：集成 CI/CD 能力，并发布 npm package
+
+## 仓库管理方式
+
+由于项目涉及到 CLI、主题包、Core、vite 插件、babel 插件等多个模块，因此会采用 monorepo 的方式进行管理
+
+采用的 monorepo 方案为 [pnpm workspace](https://pnpm.io/workspaces)
