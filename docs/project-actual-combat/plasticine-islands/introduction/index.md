@@ -29,6 +29,15 @@ islands 架构支持在 SSR 场景下进行局部 [hydration](/react-learning/re
 
 1. 在服务端需要支持零 JavaScript 完成页面的静态渲染
 2. 支持在静态内容通过 `placeholders` 嵌入独立的动态组件，每个动态组件都包含用于 hydrate 它自己的运行时代码，这些运行时代码最好是能够在 `requestIdleCallback` 这样的空闲时执行
+
+   就像这样：
+
+   ```tsx
+   <Foo __island />
+   ```
+
+   通过类似的方式将组件标记为动态组件，为它添加自己的 hydrate 运行时代码
+
 3. 支持同构渲染
 
 其实和 SSR 的能力很像，主要区别点就在于能够将应用按照组件划分为静态部分和支持自行 hydration 的部分
