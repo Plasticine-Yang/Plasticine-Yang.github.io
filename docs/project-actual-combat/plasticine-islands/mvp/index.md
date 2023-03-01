@@ -211,3 +211,5 @@ pnpm i @plasticine-islands/cli -w
 ```
 
 ![命令模式运行](images/命令模式运行.png)
+
+至此我们的 mvp 版本中的 cli 应用就算实现完毕啦，可以到 [feat/mvp-cli](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp-cli) 分支查看代码
