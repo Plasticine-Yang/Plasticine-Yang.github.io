@@ -31,6 +31,7 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
             items: [
               { text: '初始化流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/init/` },
               { text: '异常监控流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/error-monitor/` },
+              { text: '数据上报流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/data-report/` },
             ],
           },
           {
@@ -38,7 +39,6 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
             items: [
               { text: 'Scope', link: `${THEO_SENTRY_SDK_SOURCE}/scope/` },
               { text: 'Hub', link: `${THEO_SENTRY_SDK_SOURCE}/hub/` },
-              { text: 'Event', link: `${THEO_SENTRY_SDK_SOURCE}/event/` },
               { text: 'Breadcrumb', link: `${THEO_SENTRY_SDK_SOURCE}/breadcrumb/` },
               { text: 'Mechanism', link: `${THEO_SENTRY_SDK_SOURCE}/mechanism/` },
             ],
@@ -58,6 +58,7 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
             items: [
               { text: '架构', link: `${CODING_SDK}/architecture/` },
               { text: '初始化流程', link: `${CODING_SDK}/init/` },
+              { text: '数据上报流程', link: `${CODING_SDK}/data-report/` },
             ],
           },
         ],

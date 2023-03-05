@@ -1,8 +1,8 @@
-# Event
+# 数据上报流程
 
 ## 前言
 
-发往 Sentry 的数据都是先处理成 `Event`，然后再被处理成 `envelope` 发送出去
+在 Sentry 中，数据传输的单位都是 Envelope，每个 Envelope 中都有 Event 作为载体被发往服务端
 
 因此可以思考一下，`core` 包中的 client，作为底层应当提供以下几种能力：
 
@@ -16,6 +16,8 @@
 - 捕获 message -- 将 message 转换成 event 并发送出去，可以复用 `eventFromMessage`
 
 底层提供了这些能力后，browser 端的 client 就可以通过插件的方式去利用 event 集成额外信息，比如需要记录用户行为时，就可以将行为记录在 event 中，并通过 `breadcrumb` 插件来消费 event 生成用户行为信息进行记录
+
+更进一步，因为我们有 Hub 能够在任意地方获取到 client 实例，因此可以再封装一个单独的 `captureException`, `captureMessage` 这样的函数，其内部会以 `getCurrentHub().client.captureException` 的方式实现，从而让我们可以在任意地方对异常进行捕获上报
 
 目前先明白底层提供的 event 相关的能力有哪些即可，接下来会逐个对照源码去分析
 
@@ -197,7 +199,45 @@ export function eventFromMessage(
 
 ## 发送 Event
 
-发送 Event 之前会创建一个 Envelope 对象，并且最终会执行 `_sendEnvelope` 将其发送出去
+调用 `sendEvent` 发送 Event 之前会创建一个 Envelope 对象，并且最终会执行 `_sendEnvelope` 将其发送出去
+
+### Envelope
+
+Envelope 的类型如下：
+
+```ts
+export type Envelope = EventEnvelope | SessionEnvelope | ClientReportEnvelope | ReplayEnvelope
+```
+
+是一个联合类型，以 EventEnvelope 为例看看它长啥样：
+
+```ts
+export type EventEnvelope = BaseEnvelope<EventEnvelopeHeaders, EventItem | AttachmentItem | UserFeedbackItem>
+
+type BaseEnvelopeItem<ItemHeader, P> = [ItemHeader & BaseEnvelopeItemHeaders, P] // P is for payload
+
+type BaseEnvelope<EnvelopeHeader, Item> = [
+  EnvelopeHeader & BaseEnvelopeHeaders,
+  Array<Item & BaseEnvelopeItem<BaseEnvelopeItemHeaders, unknown>>,
+]
+```
+
+举个例子能更直观理解这个类型
+
+```ts
+declare
+eventEnvelope: EventEnvelope = [
+  // envelope 的 header
+  { dsn: 'xxx' },
+  // envelope items -- 格式为 [headers, payload]
+  [
+    [{ type: 'error' }, { foo: 'foo' }],
+    [{ type: 'info', { bar: 'bar' }}]
+  ]
+]
+```
+
+### sendEvent
 
 ```ts
 public sendEvent(event: Event, hint: EventHint = {}): void {
