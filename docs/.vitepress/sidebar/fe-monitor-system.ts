@@ -30,8 +30,8 @@ export const feMonitorSystem: DefaultTheme.SidebarGroup[] = [
             text: 'Sentry SDK 架构分析',
             items: [
               { text: '初始化流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/init/` },
-              { text: '异常监控流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/error-monitor/` },
               { text: '数据上报流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/data-report/` },
+              { text: '异常监控流程', link: `${THEO_SENTRY_SDK_ARCHITECTURE}/error-monitor/` },
             ],
           },
           {

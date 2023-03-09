@@ -1,5 +1,9 @@
 # 数据上报流程
 
+:::tip 对应的实战篇传送门
+[传送门](/fe-monitor-system/coding-chapter/sdk/data-report/)
+:::
+
 ## 前言
 
 在 Sentry 中，数据传输的单位都是 Envelope，每个 Envelope 中都有 Event 作为载体被发往服务端
