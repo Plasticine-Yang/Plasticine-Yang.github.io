@@ -7,7 +7,7 @@
 - JavaScript 代码运行错误
 - 资源加载错误
 
-对于如何捕获这两种异常，在 [异常捕获原理](../../error-monitor/) 中已经提到过，就不再赘述了
+对于如何捕获这两种异常，在 [异常捕获原理](/fe-monitor-system/theoretical-chapter/sentry-sdk-architecture/error-monitor/) 中已经提到过，就不再赘述了
 
 这里主要是解释下 Sentry 中对 JS 异常的捕获思路，一般我们捕获异常是通过添加全局的 `error` 和 `unhandledrejection`，而在 Sentry 中，为了更精确地捕获到用户行为，还会为 `setInterval`, `setTimeout`, `requestAnimationFrame` 中的回调以及事件处理函数的事件对象进行监听，使得 `Breadcrumb` 能够更加精确地记录用户行为
 
@@ -66,7 +66,7 @@ addInstrumentationHandler 中的 instrumentation 是什么意思呢？常规意�
 
 :::
 
-通过 `addInstrumentationHandler` 去添加一个异常监听器函数，至于最后的 `addMechanismAndCapture`，其涉及到 `mechanism` 这个概念，可以到理论篇的源码分析 -- [Mechanism](../../sentry-sdk-source/mechanism/) 中了解
+通过 `addInstrumentationHandler` 去添加一个异常监听器函数，至于最后的 `addMechanismAndCapture`，其涉及到 `mechanism` 这个概念，可以到理论篇的源码分析 -- [Mechanism](/fe-monitor-system/theoretical-chapter/sentry-sdk-source/mechanism/) 中了解
 
 ### addInstrumentationHandler
 
@@ -543,7 +543,3 @@ export class HttpContext implements Integration {
   }
 }
 ```
-
-:::tip
-关于 Sentry 的 Event 可以到理论篇的源码分析 -- [Event](../../sentry-sdk-source/event/) 章节了解
-:::
