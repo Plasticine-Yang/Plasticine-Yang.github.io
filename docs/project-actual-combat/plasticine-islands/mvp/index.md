@@ -6,8 +6,8 @@
 
 - 基本 CLI 命令：包括 dev 和 build
 - 搭建 vite 开发环境服务器
+- 支持 React 组件的渲染
 - 实现传统 SSR 渲染流程
-- 主题包的 Layout Demo 实现，完整实现会在后续文章中讲解
 
 ## 项目创建
 
@@ -80,7 +80,7 @@ npx degit Plasticine-Yang/templates/node-monorepo plasticine-islands
 pnpm 的 `-C` 参数是让命令执行时的工作目录指向 `-C` 参数的目录，这样就能很方便地执行各个子包的命令，不需要手动切换到具体目录再执行命令
 
 :::tip
-也可以使用 `pnpm --filter @plsaticine-islands/cli build` 的方式实现同等效果，但是这种方式需要输入完整的包名
+也可以使用 `pnpm --filter @plasticine-islands/cli build` 的方式实现同等效果，但是这种方式需要输入完整的包名
 
 个人更倾向于使用 `-C` 参数，可以避免输入完整包名的心智负担，因为有时候可能想不起来包名是啥，然后就得看看自己目前写的项目是啥，知道包名后再拼接上子包名才行
 
@@ -478,3 +478,142 @@ packages:
 ![playground_dev浏览器运行效果](images/playground_dev浏览器运行效果.png)
 
 可以看到，成功啦！
+
+## 支持 React 组件的渲染
+
+要支持 React 组件的渲染，首先我们得提供一个带有容器节点的入口 html，将 React 组件渲染到容器节点中
+
+入口 html 内容如下：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plasticine-islands</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+首先遇到的问题就是，如何让 vite 的开发环境服务器支持渲染这个 html 呢？
+
+### Vite 插件 - Dev Server 加载 html
+
+答案是自行实现一个插件，插件的功能是给开发环境服务器注册一个中间件，在这个中间件中读取模板 html 的文件内容，并作为结果返回出去即可
+
+如何实现这样一个插件呢？通过查阅 [Vite 官方文档](https://vitejs.dev/guide/api-plugin.html#configureserver) 可以发现其提供了 `configureServer` hook，允许我们在这里面获取服务器实例并注册自定义的中间件
+
+因此可以写一个简单的 plugin 完成我们的需求，首先创建一个新的包 -- `vite-plugin-dev-server-html`
+
+并在 types 包中定义一下该插件的参数类型：
+
+```ts
+// packages/types/src/vite-plugin-dev-server-html/index.ts
+/** @description vite-plugin-dev-server-html-options 插件参数 */
+export interface VitePluginDevServerHtmlOptions {
+  /** @description 要加载的 html 文件路径 */
+  htmlPath: string
+
+  /**
+   * @description 是否需要在插件运行过程中出错时加载默认的 html
+   * @default true
+   */
+  loadDefaultHtmlOnError?: boolean
+}
+```
+
+然后就可以 `packages/vite-plugin-dev-server-html/src/index.ts` 中实现该插件了
+
+```ts
+import { type Plugin } from 'vite'
+
+import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+import { readFile } from 'fs/promises'
+
+import type { VitePluginDevServerHtmlOptions } from '@plasticine-islands/types'
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
+const DEFAULT_HTML_PATH = resolve(__dirname, 'default.html')
+
+const DEFAULT_OPTIONS: VitePluginDevServerHtmlOptions = {
+  htmlPath: DEFAULT_HTML_PATH,
+  loadDefaultHtmlOnError: true,
+}
+
+/**
+ * @description 为 vite 开发环境服务器加载 html 作为入口
+ */
+export default function vitePluginDevServerHtml(options: VitePluginDevServerHtmlOptions = DEFAULT_OPTIONS): Plugin {
+  const { htmlPath, loadDefaultHtmlOnError } = options
+
+  return {
+    name: 'vite-plugin-dev-server-html',
+    apply: 'serve',
+    configureServer(server) {
+      // 需要在 vite 内置的 middleware 运行完后再运行该 middleware
+      return () => {
+        server.middlewares.use(async (_, res, next) => {
+          let html: string
+
+          try {
+            html = await readFile(htmlPath, 'utf-8')
+          } catch (error) {
+            if (loadDefaultHtmlOnError) {
+              html = await readFile(DEFAULT_HTML_PATH, 'utf-8')
+            } else {
+              return next(error)
+            }
+          }
+
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'text/html')
+          res.end(html)
+        })
+      }
+    },
+  }
+}
+
+export type { VitePluginDevServerHtmlOptions }
+```
+
+最后再在 core 包中安装该插件，并进行使用即可
+
+```shell
+pnpm -C packages/core i "@plasticine-islands/vite-plugin-dev-server-html@*"
+```
+
+```ts
+// packages/core/src/dev-server/index.ts
+import { createServer as createViteServer } from 'vite'
+
+import type { CreateDevServerOptions } from '@plasticine-islands/types'
+import vitePluginDevServerHtml from '@plasticine-islands/vite-plugin-dev-server-html'
+
+import { DEV_SERVER_HTML_PATH } from '../constants'
+
+const defaultCreateDevServerOptions: CreateDevServerOptions = {
+  root: process.cwd(),
+}
+
+export function createDevServer(options: CreateDevServerOptions = defaultCreateDevServerOptions) {
+  const { root } = options
+
+  return createViteServer({
+    root,
+    plugins: [
+      vitePluginDevServerHtml({
+        htmlPath: DEV_SERVER_HTML_PATH,
+      }),
+    ],
+  })
+}
+```
+
+和之前的步骤类似，在项目根目录的 `package.json` 中添加插件相应的 `build` 和 `stub` 脚本，并以 stub 模式构建插件后即可运行 `pnpm play:dev` 查看效果，如果能在浏览器中看到成功渲染了指定的 html 则说明成功啦~
