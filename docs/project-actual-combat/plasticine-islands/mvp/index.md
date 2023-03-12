@@ -1,5 +1,9 @@
 # MVP 版本开发
 
+:::tip
+本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp)
+:::
+
 ## 前言
 
 在 MVP 版本中，我们需要完成以下几件事：
@@ -7,7 +11,7 @@
 - 基本 CLI 命令：包括 dev 和 build
 - 搭建 vite 开发环境服务器
 - 支持 React 组件的渲染
-- 实现传统 SSR 渲染流程
+- 搭建 SSG 核心流程
 
 ## 项目创建
 
@@ -538,7 +542,6 @@ import { readFile } from 'fs/promises'
 
 import type { VitePluginDevServerHtmlOptions } from '@plasticine-islands/types'
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_HTML_PATH = resolve(__dirname, 'default.html')
 
 const DEFAULT_OPTIONS: VitePluginDevServerHtmlOptions = {
@@ -583,14 +586,101 @@ export default function vitePluginDevServerHtml(options: VitePluginDevServerHtml
 export type { VitePluginDevServerHtmlOptions }
 ```
 
-最后再在 core 包中安装该插件，并进行使用即可
+有两点需要注意：
+
+1. `default.html` 不会被 unbuild 打包进去，需要手动配置为 bundless 模式打包到产物中
+2. 需要配置 esm 下的 `__dirname` shims
+
+---
+
+#### default.html bundless
+
+由于入口 index.ts 及其依赖都没有引用到 `default.html`，所以其不会被 unbuild 打包到产物中，要想将其打包进去，需要我们手动配置一下 unbuild
+
+首先将 `default.html` 移动到 `src/bundless` 目录中，因为 unbuild 只支持将目录进行 bundless，不支持具体文件
+
+然后在包目录下编写 `build.config.ts`，写入如下内容：
+
+```ts
+import { defineBuildConfig } from 'unbuild'
+
+export default defineBuildConfig({
+  entries: [
+    'src/index',
+    {
+      input: 'src/bundless',
+      outDir: 'dist',
+      builder: 'mkdist',
+    },
+  ],
+  rollup: {
+    emitCJS: true,
+  },
+  declaration: true,
+})
+```
+
+`builder` 配置为 `mkdist` 即可使用 bundless 模式进行打包，这样一来打包的产物中结构如下：
+
+```text
+dist
+├── default.html
+├── index.cjs
+├── index.d.ts
+└── index.mjs
+```
+
+---
+
+#### `__dirname` shims
+
+创建包的时候在 `package.json` 中声明了 `"type": "module"`，因此是不能用 `__dirname` 的，但是这里我们依然直接使用了，为什么呢？因为 unbuild 其实可以帮我们完成这个 shims，`build.config.ts` 中写入如下配置：
+
+```ts{14}
+import { defineBuildConfig } from 'unbuild'
+
+export default defineBuildConfig({
+  entries: [
+    'src/index',
+    {
+      input: 'src/bundless',
+      outDir: 'dist',
+      builder: 'mkdist',
+    },
+  ],
+  rollup: {
+    emitCJS: true,
+    cjsBridge: true,
+  },
+  declaration: true,
+})
+```
+
+打包后的产物中 unbuild 会插入如下代码：
+
+```js
+// -- Unbuild CommonJS Shims --
+import __cjs_url__ from 'url'
+import __cjs_path__ from 'path'
+import __cjs_mod__ from 'module'
+const __filename = __cjs_url__.fileURLToPath(import.meta.url)
+const __dirname = __cjs_path__.dirname(__filename)
+const require = __cjs_mod__.createRequire(import.meta.url)
+```
+
+因此我们能直接毫无顾忌地在 esm 规范下使用 `__dirname`，不需要手动编写 shims 代码了
+
+---
+
+有了插件之后，最后再在 core 包中安装该插件，并进行使用即可
 
 ```shell
 pnpm -C packages/core i "@plasticine-islands/vite-plugin-dev-server-html@*"
 ```
 
-```ts
-// packages/core/src/dev-server/index.ts
+::: code-group
+
+```ts [packages/core/src/dev-server/index.ts]
 import { createServer as createViteServer } from 'vite'
 
 import type { CreateDevServerOptions } from '@plasticine-islands/types'
@@ -616,4 +706,618 @@ export function createDevServer(options: CreateDevServerOptions = defaultCreateD
 }
 ```
 
+```ts [packages/core/src/constants/dev-server.ts]
+import { resolve } from 'path'
+
+import { DIST_PATH } from './common'
+
+/** @description 开发环境服务器的 html 入口路径 */
+export const DEV_SERVER_HTML_PATH = resolve(DIST_PATH, 'template/index.html')
+```
+
+```ts [packages/core/src/constants/common.ts]
+import { resolve } from 'path'
+
+export const PACKAGE_ROOT = resolve(__dirname, '..')
+export const DIST_PATH = resolve(PACKAGE_ROOT, 'dist')
+```
+
+:::
+
+:::tip
+常量中对于 `PACKAGE_ROOT` 的路径应当是已 dist 产物的目录结构为准，因为最终运行的是 dist 中的文件而不是 src 中的文件
+:::
+
 和之前的步骤类似，在项目根目录的 `package.json` 中添加插件相应的 `build` 和 `stub` 脚本，并以 stub 模式构建插件后即可运行 `pnpm play:dev` 查看效果，如果能在浏览器中看到成功渲染了指定的 html 则说明成功啦~
+
+### 客户端渲染
+
+有了挂载 React 组件的容器节点后，接下来我们就要完成客户端渲染的部分了，将 React 组件渲染到容器节点中
+
+由于我们的框架是用于给用户建设文档站点的，所以应当有一个开箱即用的使用体验，因此我们需要提供一些默认的主题组件，比如整体页面布局、顶部 header、首页 hero 页等，首先以实现一个简单的 Layout 组件为例
+
+:::tip
+对于 React 组件等代码，会交给 vite 去处理，因此不需要 unbuild 进行打包，所以适合放到 `src/bundless` 目录下
+
+类似地，入口 html 文件也是不需要 unbuild 打包的，因此也适合放到 `src/bundless` 目录下，unbuild 的配置原理和前面的类似，不会再赘述
+:::
+
+首先需要给 core 安装 react 依赖
+
+```shell
+pnpm -C packages/core i react react-dom
+pnpm -C packages/core i @types/react @types/react-dom -D
+```
+
+并在包目录下新建 `tsconfig.json`，写入如下内容：
+
+```json
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "moduleResolution": "node"
+  },
+  "include": ["src"]
+}
+```
+
+新建 `packages/core/src/bundless/theme-default/Layout/index.tsx`，编写如下内容：
+
+```tsx
+const Layout: React.FC = () => {
+  return <div>Layout</div>
+}
+
+export default Layout
+```
+
+再编写一个客户端渲染的入口，直接交给 vite 加载，所以也适合作为 bundless 文件，新建 `packages/core/src/bundless/runtime/client-entry.tsx`
+
+::: code-group
+
+```tsx [runtime/client-entry.tsx]
+import { createRoot } from 'react-dom/client'
+
+import App from './app'
+
+function renderInBrowser() {
+  const $root = document.querySelector<HTMLDivElement>('#root')
+
+  if ($root === null) {
+    throw new Error('容器节点 `#root` 不存在，客户端渲染无法进行')
+  }
+
+  createRoot($root).render(<App />)
+}
+
+renderInBrowser()
+```
+
+```tsx [runtime/app.tsx]
+import Layout from '../theme-default'
+
+const App: React.FC = () => {
+  return <Layout />
+}
+
+export default App
+```
+
+:::
+
+由于需要在 vite 中渲染 React 组件，因此我们还要给开发环境服务器在注册一个 `@vitejs/plugin-react` 插件
+
+::: code-group
+
+```shell [安装依赖]
+pnpm -C packages/core i @vitejs/plugin-react
+```
+
+```ts{3,20} [packages/core/src/dev-server/index.ts]
+import { createServer as createViteServer } from 'vite'
+
+import vitePluginReact from '@vitejs/plugin-react'
+
+import type { CreateDevServerOptions } from '@plasticine-islands/types'
+import vitePluginDevServerHtml from '@plasticine-islands/vite-plugin-dev-server-html'
+
+import { DEV_SERVER_HTML_PATH } from '../constants'
+
+const defaultCreateDevServerOptions: CreateDevServerOptions = {
+  root: process.cwd(),
+}
+
+export function createDevServer(options: CreateDevServerOptions = defaultCreateDevServerOptions) {
+  const { root } = options
+
+  return createViteServer({
+    root,
+    plugins: [
+      vitePluginReact(),
+
+      vitePluginDevServerHtml({
+        htmlPath: DEV_SERVER_HTML_PATH,
+      }),
+    ],
+  })
+}
+```
+
+:::
+
+最后修改一下 `packages/core/src/bundless/template/index.html`，加载客户端运行时代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plasticine-islands</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script
+      type="module"
+      src="/Users/plasticine/code/projects/plasticine-islands/packages/core/dist/runtime/client-entry.tsx"
+    ></script>
+  </body>
+</html>
+```
+
+---
+
+#### 修改插件 - 注入热更新相关代码
+
+此时出现了如下错误：
+
+![由html中缺失vite热更新相关运行时代码导致的报错](images/由html中缺失vite热更新相关运行时代码导致的报错.png)
+
+这是由于 `@vitejs/plugin-react` 中有热更新相关的能力，其依赖于 vite 注入的热更新相关运行时代码，而我们的插件返回的 html 中并没有生成这部分代码，导致 `@vitejs/plugin-react` 无法正常工作，因此需要修改一下原来的插件实现，注入热更新相关代码
+
+如何注入呢？可以调用 server 实例上的 `transformIndexHtml` 方法即可调用 vite 内置的 html transform 为 html 注入热更新相关代码
+
+::: code-group
+
+```ts{33,34} [packages/vite-plugin-dev-server-html/src/index.ts]
+import { type Plugin } from 'vite'
+
+import { resolve } from 'path'
+import { readFile } from 'fs/promises'
+
+import type { VitePluginDevServerHtmlOptions } from '@plasticine-islands/types'
+
+const DEFAULT_HTML_PATH = resolve(__dirname, 'default.html')
+
+const DEFAULT_OPTIONS: VitePluginDevServerHtmlOptions = {
+  htmlPath: DEFAULT_HTML_PATH,
+  loadDefaultHtmlOnError: true,
+}
+
+/**
+ * @description 为 vite 开发环境服务器加载 html 作为入口
+ */
+export default function vitePluginDevServerHtml(options: VitePluginDevServerHtmlOptions = DEFAULT_OPTIONS): Plugin {
+  const { htmlPath, loadDefaultHtmlOnError } = options
+
+  return {
+    name: 'vite-plugin-dev-server-html',
+    apply: 'serve',
+    configureServer(server) {
+      // 需要在 vite 内置的 middleware 运行完后再运行该 middleware
+      return () => {
+        server.middlewares.use(async (req, res, next) => {
+          let html: string
+
+          try {
+            html = await readFile(htmlPath, 'utf-8')
+
+            // 使用 vite 内置的 transform 处理 html，为其注入热更新相关代码
+            req.url && (html = await server.transformIndexHtml(req.url, html, req.originalUrl))
+          } catch (error) {
+            if (loadDefaultHtmlOnError) {
+              html = await readFile(DEFAULT_HTML_PATH, 'utf-8')
+            } else {
+              return next(error)
+            }
+          }
+
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'text/html')
+          res.end(html)
+        })
+      }
+    },
+  }
+}
+
+export type { VitePluginDevServerHtmlOptions }
+```
+
+:::
+
+修改后的效果如下：
+
+![手动注入客户端运行时的运行效果](images/手动注入客户端运行时的运行效果.png)
+
+可以看到成功跑起来了！
+
+### 插件自动注入加载客户端运行时代码的 `script` 标签到 html 中
+
+目前我们是手动在 html 中添加 `script` 标签去加载客户端运行时的代码，不是很优雅，涉及到 html 的功能都应该交给插件自动完成才对，否则就失去了这个插件存在的意义
+
+那么接下来我们就需要给插件添加新功能了，给它添加新的配置项，允许我们指定客户端运行时代码的路径，然后由插件往 html 中插入 `script` 标签，并且 src 只想我们传入的路径
+
+首先添加新的配置项：
+
+::: code-group
+
+```ts [packages/types/src/vite-plugin-dev-server-html/index.ts]
+/** @description vite-plugin-dev-server-html-options 插件参数 */
+export interface VitePluginDevServerHtmlOptions {
+  /** @description 要加载的 html 文件路径 */
+  htmlPath: string
+
+  /**
+   * @description 是否需要在插件运行过程中出错时加载默认的 html
+   * @default true
+   */
+  loadDefaultHtmlOnError?: boolean
+
+  /** @description 客户端运行时代码的入口，传入该配置项后会在生成的 html 中注入 script 标签加载客户端运行时代码 */
+  clintEntryPath?: string
+}
+```
+
+:::
+
+配置是有了，但是要怎么实现这个特性呢？
+
+可以通过 vite plugin 提供的 `transformIndexHtml` hook 去实现，代码如下：
+
+::: code-group
+
+```ts{49-69} [packages/vite-plugin-dev-server-html/src/index.ts]
+import { HtmlTagDescriptor, type Plugin } from 'vite'
+
+import { resolve } from 'path'
+import { readFile } from 'fs/promises'
+
+import type { VitePluginDevServerHtmlOptions } from '@plasticine-islands/types'
+
+const DEFAULT_HTML_PATH = resolve(__dirname, 'default.html')
+
+const DEFAULT_OPTIONS: VitePluginDevServerHtmlOptions = {
+  htmlPath: DEFAULT_HTML_PATH,
+  loadDefaultHtmlOnError: true,
+}
+
+/**
+ * @description 为 vite 开发环境服务器加载 html 作为入口
+ */
+export default function vitePluginDevServerHtml(options: VitePluginDevServerHtmlOptions = DEFAULT_OPTIONS): Plugin {
+  const { htmlPath, loadDefaultHtmlOnError, clintEntryPath } = options
+
+  return {
+    name: 'vite-plugin-dev-server-html',
+    apply: 'serve',
+    configureServer(server) {
+      // 需要在 vite 内置的 middleware 运行完后再运行该 middleware
+      return () => {
+        server.middlewares.use(async (req, res, next) => {
+          let html: string
+
+          try {
+            html = await readFile(htmlPath, 'utf-8')
+
+            // 使用 vite 内置的 transform 处理 html，为其注入热更新相关代码
+            req.url && (html = await server.transformIndexHtml(req.url, html, req.originalUrl))
+          } catch (error) {
+            if (loadDefaultHtmlOnError) {
+              html = await readFile(DEFAULT_HTML_PATH, 'utf-8')
+            } else {
+              return next(error)
+            }
+          }
+
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'text/html')
+          res.end(html)
+        })
+      }
+    },
+    // 为 html 注入加载客户端运行时代码的 script 标签
+    transformIndexHtml(html) {
+      const tags: HtmlTagDescriptor[] = []
+
+      if (clintEntryPath !== undefined) {
+        const scriptTag: HtmlTagDescriptor = {
+          tag: 'script',
+          attrs: {
+            type: 'module',
+            src: `/@fs/${clintEntryPath}`,
+          },
+          injectTo: 'body',
+        }
+
+        tags.push(scriptTag)
+      }
+
+      return {
+        html,
+        tags,
+      }
+    },
+  }
+}
+
+export type { VitePluginDevServerHtmlOptions }
+```
+
+```html [packages/core/src/bundless/template/index.html]
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plasticine-islands</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script // [!code --]
+      type="module" // [!code --]
+      src="/Users/plasticine/code/projects/plasticine-islands/packages/core/dist/runtime/client-entry.tsx" // [!code --]
+    ></script> // [!code --]
+  </body>
+</html>
+```
+
+:::
+
+再次运行之后，可以看到自动注入了 script 标签：
+
+![自动注入加载客户端运行时代码的script标签](images/自动注入加载客户端运行时代码的script标签.png)
+
+## 搭建 SSG 核心流程
+
+SSG 相比传统的 SSR 有什么不同呢？
+
+SSR 是需要一台 NodeJS 服务器支撑，页面中会有一些动态的内容，比如请求接口获取数据然后组装成 html 后由服务端直接返回 html 文档，并注入一些和交互相关的 js 运行时代码，用于在客户端接收到 html 后运行，去激活 html 中交互相关的部分，比如绑定事件监听器
+
+也就是说 SSR 适用于实时性比较高的场景，每次访问页面都要获取到最新的数据信息
+
+而 SSG 呢？它本质上是构建阶段的 SSR，仍然以上面的例子来说，页面中同样有请求接口获取数据然后组装 html 的流程，但是这套流程只在构建阶段发生，走完一次之后客户端每次访问的结果都是构建阶段时就确定好的结果，并不能获取到最新的内容，因此 SSG 往往更适合对页面数据的实时性要求不高的场景
+
+接下来我们就要搭建一套 SSG 的核心流程，其实本质上就是搭建 SSR 的流程，因此会涉及到同构渲染的流程
+
+总结下来其实就三步：
+
+1. 分别打包客户端和服务端代码 -- 得到客户端打包产物的路径 [1]
+2. 引入服务端入口的打包产物代码 -- 获取其 render 函数
+3. 服务端渲染产出 html 文档
+
+   2. 用 `2` 的 render 函数生成 html 字符串
+   1. 用 `1` 的客户端产物路径作为注入到 html 文档的 script 标签 src，用于 hydration
+
+这样一来就能够完成同构渲染了，同一份 React 组件，在服务端渲染一次，生成 html 字符串，在客户端访问时又渲染一次，但不是用于生成 DOM 元素，而是为 DOM 进行 hydration，使其具有交互性
+
+搞明白这个过程后就可以开始写代码啦~
+
+### 打包 client 和 server 产物
+
+首先在 core 包中实现，使用 vite 对客户端和服务端代码分别打包，由于二者没有关联，因此可以使用 `Promise.all` 并发执行
+
+::: code-group
+
+```ts [packages/core/src/build/bundle.ts]
+import { build as viteBuild, type InlineConfig } from 'vite'
+
+import ora from 'ora'
+
+import type { RollupOutput } from 'rollup'
+
+import {
+  CLIENT_BUNDLE_PATH,
+  CLIENT_ENTRY_PATH,
+  SERVER_BUNDLE_NAME,
+  SERVER_BUNDLE_PATH,
+  SERVER_ENTRY_PATH,
+} from '../constants'
+
+/**
+ * @description 构建客户端和服务端产物
+ * @param root 命令执行的目标路径
+ * @returns [clientBundle, serverBundle]
+ */
+export async function bundle(root: string) {
+  const spinner = ora('building client + server bundles...\n').start()
+
+  try {
+    const clientViteConfig = resolveViteConfig(root, 'client')
+    const serverViteConfig = resolveViteConfig(root, 'server')
+
+    const [clientBundle, serverBundle] = await Promise.all([viteBuild(clientViteConfig), viteBuild(serverViteConfig)])
+    spinner.succeed()
+
+    return [clientBundle, serverBundle] as [RollupOutput, RollupOutput]
+  } catch (error) {
+    spinner.fail(error)
+  }
+}
+
+function resolveViteConfig(root: string, target: 'client' | 'server'): InlineConfig {
+  const isServer = target === 'server'
+
+  return {
+    mode: 'production',
+    root,
+    build: {
+      ssr: isServer ? true : false,
+      outDir: isServer ? SERVER_BUNDLE_PATH : CLIENT_BUNDLE_PATH,
+      rollupOptions: {
+        input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
+        output: {
+          format: 'esm',
+          file: isServer ? SERVER_BUNDLE_NAME : undefined,
+        },
+      },
+    },
+  }
+}
+```
+
+```ts [packages/core/src/build/index.ts]
+import { bundle } from './bundle'
+import { renderPage } from './render-page'
+
+export async function build(root: string) {
+  const [clientBundle, serverBundle] = await bundle(root)
+}
+```
+
+:::
+
+:::tip 服务端的产物为什么保存到 `.temp` 中？
+服务端的产物之所以保存到 `.temp` 目录是因为其只会在构建时执行一次，构建结束后没有保存的必要了，会被删除，因此适合放到 `.temp` 中，表明它只是一个中间产物
+
+这也正是 SSG 和 SSR 的最明显区别所在，如果是 SSR 的话，服务端的构建产物应当保留，并且部署时启动一个 node 服务器，对每个到来的请求，在相应的路由处理器中调用服务端打包产物的 render 函数生成 html 字符串返回，SSG 则不需要
+:::
+
+接下来在 cli 包中调用 `build` 函数看看效果
+
+::: code-group
+
+```ts [packages/cli/src/actions/build.ts]
+import { resolve } from 'path'
+
+import { build } from '@plasticine-islands/core'
+import type { ActionBuildFunc } from '@plasticine-islands/types'
+
+export const actionBuild: ActionBuildFunc = (root) => {
+  /** @description 需要将相对路径 root 解析成绝对路径，默认使用命令执行时的路径作为 root */
+  const parsedRoot = root !== undefined ? resolve(root) : process.cwd()
+
+  build(parsedRoot)
+}
+```
+
+:::
+
+![构建客户端和服务端产物](images/构建客户端和服务端产物.gif)
+
+### 产出 html 以及与 hydration 相关的 js
+
+最终打包的产物应当包括调用服务端打包产物的 render 函数生成的 html 以及负责 hydration 的客户端代码，并且 html 中需要有一个 script 标签去加载这些 hydration js 代码
+
+这个行为看上去就像渲染一个页面一样，因此我们需要再实现一个 `renderPage` 函数，其接受服务端产物的 render 函数以及客户端产物的入口地址
+
+最终会将这些组合起来并往文件系统中写入一个 html 文件，这样就完成整个打包流程了
+
+::: code-group
+
+```ts [packages/core/src/build/render-page.ts]
+import { ensureDir, readFile, remove, writeFile } from 'fs-extra'
+
+import type { OutputChunk } from 'rollup'
+
+import ejs from 'ejs'
+import ora from 'ora'
+
+import type { BuildCommandOptions, BuildHtmlEjsData, ServerRenderFunc } from '@plasticine-islands/types'
+
+import { resolve } from 'path'
+import { BUILD_HTML_PATH, DEFAULT_BUILD_HTML_TITLE, SERVER_BUNDLE_PATH } from '../constants'
+
+export async function renderPage(
+  root: string,
+  serverRender: ServerRenderFunc,
+  clientEntryChunk: OutputChunk,
+  options: BuildCommandOptions,
+) {
+  const { outdir } = options
+  const spinner = ora('rendering page...\n').start()
+
+  try {
+    // 读取模板并注入数据
+    const template = await readFile(BUILD_HTML_PATH, 'utf-8')
+    const html = ejs.render(template, {
+      title: DEFAULT_BUILD_HTML_TITLE,
+      serverRenderedString: serverRender(),
+      clientEntryChunkPath: clientEntryChunk.fileName,
+    } as BuildHtmlEjsData)
+
+    // 将结果写入构建目录中
+    await ensureDir(resolve(root, outdir))
+    await writeFile(resolve(root, outdir, 'index.html'), html)
+
+    // 移除服务端构建产物
+    await remove(resolve(root, SERVER_BUNDLE_PATH))
+
+    spinner.succeed('render page successfully!')
+  } catch (error) {
+    spinner.fail('渲染页面过程出错\n')
+    console.error(error)
+  }
+}
+```
+
+```ts [packages/core/src/build/index.ts]
+import { resolve } from 'path'
+
+import type { OutputChunk } from 'rollup'
+
+import type { BuildCommandOptions, ServerBundleModule } from '@plasticine-islands/types'
+
+import { CLIENT_BUNDLE_PATH, SERVER_BUNDLE_NAME, SERVER_BUNDLE_PATH } from '../constants'
+import { bundle } from './bundle'
+import { renderPage } from './render-page'
+
+const defaultBuildCommandOptions: BuildCommandOptions = {
+  outdir: CLIENT_BUNDLE_PATH,
+}
+
+export async function build(root: string, options: BuildCommandOptions = defaultBuildCommandOptions) {
+  const [clientBundle] = await bundle(root, options)
+
+  // 加载服务端构建产物中的 render 函数
+  const serverBundleModulePath = resolve(root, SERVER_BUNDLE_PATH, SERVER_BUNDLE_NAME)
+  const { render }: ServerBundleModule = await import(serverBundleModulePath)
+
+  // 获取客户端产物的入口地址
+  const clientEntryChunk = clientBundle.output.find((item) => item.type === 'chunk' && item.isEntry) as OutputChunk
+
+  renderPage(root, render, clientEntryChunk, options)
+}
+```
+
+```ts [packages/core/bundless/templates/build.html]
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+  </head>
+  <body>
+    <div id="root"><%- serverRenderedString %></div>
+    <script type="module" src="/<%= clientEntryChunkPath %>"></script>
+  </body>
+</html>
+
+```
+
+:::
+
+这里使用了 ejs 完成对产物的 html 的处理，主要负责完成一些数据的注入，现在再运行 `pnpm play:build`，效果如下
+
+![build命令运行效果](images/build命令运行效果.png)
+
+至此，我们的 MVP 版本就开发完啦~
+
+:::tip
+本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp)
+:::
