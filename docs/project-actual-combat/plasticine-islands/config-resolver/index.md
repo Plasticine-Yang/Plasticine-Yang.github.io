@@ -1,5 +1,9 @@
 # 实现配置文件解析功能
 
+:::tip
+本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
+:::
+
 ## 前言
 
 在使用很多库的时候，大家应该都注意到它们都支持以配置文件的方式进行自定义配置，比如 vite 支持 `vite.config.ts`，`vite.config.js` 等文件进行配置
@@ -289,3 +293,7 @@ export default defineConfig({
 ![build命令效果图](images/build命令效果图.png)
 
 至此，配置文件解析的功能就实现啦，之后会随着项目开发继续添加额外的配置项，只需要先修改 `PlasticineIslandsConfig` 类型即可，然后在用到相应配置的地方解构出对应配置项，并且要记得赋默认值即可
+
+:::tip
+本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
+:::
