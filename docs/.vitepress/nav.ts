@@ -13,6 +13,10 @@ export const nav: DefaultTheme.Config['nav'] = [
         link: `${ROUTES.REACT_BASIC}introduction/`,
       },
       {
+        text: 'Next.js',
+        link: `${ROUTES.NEXT}quick-learn/`,
+      },
+      {
         text: 'React 原理与实现',
         link: `${ROUTES.PLASTICINE_REACT}introduction/`,
       },

@@ -11,11 +11,12 @@ import { typeChallenges, typescriptUsage } from './typescript'
 
 import { plasticineIslands } from './plasticine-islands'
 import { reactAdmin } from './react-admin'
-import { plasticineReact, reactBasic } from './react-learning'
+import { next, plasticineReact, reactBasic } from './react-learning'
 
 export const sidebar: DefaultTheme.Config['sidebar'] = {
   // React 学习
   [ROUTES.PLASTICINE_REACT]: plasticineReact,
+  [ROUTES.NEXT]: next,
   [ROUTES.REACT_BASIC]: reactBasic,
 
   // 前端监控系统

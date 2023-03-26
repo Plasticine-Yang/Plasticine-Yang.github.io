@@ -8,6 +8,9 @@ export enum ROUTES {
   /** @description React 学习 - plasticine-react */
   PLASTICINE_REACT = '/react-learning/plasticine-react/',
 
+  /** @description React 学习 - Next.js */
+  NEXT = '/react-learning/next/',
+
   /** @description 前端监控系统 */
   FE_MONITOR_SYSTEM = '/fe-monitor-system/',
 
