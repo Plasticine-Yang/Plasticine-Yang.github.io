@@ -50,15 +50,16 @@ unconfig 提供了一个 `loadConfig` 函数，我们只需要告诉它希望解
 ::: code-group
 
 ```ts [packages/cli/src/config-resolver.ts]
-import { loadConfig as unconfigLoadConfig } from 'unconfig'
+import { loadConfig } from 'unconfig'
 
 import { BASE_DIRECTORY } from '@plasticine-islands/shared'
-import type { PlasticineIslandsConfig } from '@plasticine-islands/types'
+import type { BuildConfig, PlasticineIslandsConfig, ResolvedConfig } from '@plasticine-islands/types'
 
 import { resolve } from 'path'
+import { DEFAULT_OUT_DIRECTORY_NAME } from './constants'
 
-export async function loadConfig(root: string) {
-  const res = await unconfigLoadConfig<PlasticineIslandsConfig>({
+export async function resolveConfig(root: string): Promise<ResolvedConfig> {
+  const loadedConfig = await loadConfig<PlasticineIslandsConfig | undefined>({
     sources: [
       {
         files: 'plasticine-islands.config',
@@ -69,9 +70,21 @@ export async function loadConfig(root: string) {
     cwd: resolve(root, BASE_DIRECTORY),
   })
 
-  res.config = res.config ?? {}
+  const { config = {}, sources } = loadedConfig
 
-  return res
+  return {
+    root,
+    configPath: sources.at(0) ?? '',
+    buildConfig: resolveBuildConfig(config),
+  }
+}
+
+function resolveBuildConfig(config: PlasticineIslandsConfig): BuildConfig {
+  const { outDirectoryName } = config.build ?? {}
+
+  return {
+    outDirectoryName: outDirectoryName ?? DEFAULT_OUT_DIRECTORY_NAME,
+  }
 }
 
 export function defineConfig(config: PlasticineIslandsConfig) {
@@ -80,25 +93,51 @@ export function defineConfig(config: PlasticineIslandsConfig) {
 ```
 
 ```ts [packages/types/src/config.ts]
+import { DeepPartial, DeepRequired } from './utils'
+
 export interface BuildConfig {
   /**
    * @description 产物的目录名
    * @default dist
    */
-  outDirectoryName?: string
+  outDirectoryName: string
 }
 
 export interface PlasticineIslandsConfig {
-  build?: BuildConfig
+  build?: DeepPartial<BuildConfig>
 }
 
-export interface LoadedConfig {
-  config: PlasticineIslandsConfig
-  sources: string[]
+export interface ResolvedConfig {
+  /** @description 执行 cli 命令时指定的 root 目录 */
+  root: string
+
+  /** @description 配置文件的路径 */
+  configPath: string
+
+  /** @description build 命令相关配置 */
+  buildConfig: DeepRequired<BuildConfig>
 }
 ```
 
+```ts [packages/types/src/utils.ts]
+export type DeepPartial<T> = T extends Record<PropertyKey, any>
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>
+    }
+  : T
+
+export type DeepRequired<T> = T extends Record<PropertyKey, any>
+  ? {
+      [P in keyof T]-?: DeepRequired<T[P]>
+    }
+  : T
+```
+
 :::
+
+解释一下这里为什么要用 DeepPartial 和 DeepRequired，因为我希望实现的效果是用户即便不编写配置文件，也能够正常使用我们的框架，因此提供给用户定义的配置，也就是 `PlasticineIslandsConfig`，它应当是全部属性都为可选的对象
+
+但是在传递给 core 包使用的时候，需要保证每个配置项都有值，因此还需要有一个全部属性都不是可选的配置对象，也就是 `ResolvedConfig`，因而有了使用 DeepPartial 和 DeepRequired 的需求
 
 这里我们还导出了一个 `defineConfig` 函数，它啥也没做，仅仅是提供一个类型提示
 
@@ -106,43 +145,43 @@ export interface LoadedConfig {
 
 有了配置文件的话，我们就不用之前的 cli option 了，不然还得考虑两者的优先级问题，比较复杂
 
-在 build action 中移除 options 参数，并调用上面实现的 `loadConfig` 函数获取解析出来的配置，并把原先依赖 options 的 core 包中的函数修改一下
+在 build action 中移除 options 参数，并调用上面实现的 `resolveConfig` 函数获取解析出来的配置，并把原先依赖 options 的 core 包中的函数修改一下
 
 还需要将 `BASE_DIRECTORY` 的改动也加上
 
 ::: code-group
 
-```ts{6,12,14} [packages/cli/src/actions/build.ts]
+```ts [packages/cli/src/actions/build.ts]
 import { resolve } from 'path'
 
 import { build } from '@plasticine-islands/core'
 import type { ActionBuildFunc } from '@plasticine-islands/types'
 
-import { loadConfig } from '../config-resolver'
+import { resolveConfig } from '../config-resolver'
 
 export const actionBuild: ActionBuildFunc = async (root) => {
   /** @description 需要将相对路径 root 解析成绝对路径，默认使用命令执行时的路径作为 root */
   const parsedRoot = root !== undefined ? resolve(root) : process.cwd()
 
-  const loadConfigResult = await loadConfig(parsedRoot)
+  const resolvedConfig = await resolveConfig(parsedRoot)
 
-  build(parsedRoot, loadConfigResult)
+  build(resolvedConfig)
 }
 ```
 
-```ts{4,11-12,17,23} [packages/core/src/build/index.ts]
+```ts [packages/core/src/build/index.ts]
 import { resolve } from 'path'
 import type { OutputChunk } from 'rollup'
 
 import { BASE_DIRECTORY } from '@plasticine-islands/shared'
-import type { LoadedConfig, ServerBundleModule } from '@plasticine-islands/types'
+import type { ResolvedConfig, ServerBundleModule } from '@plasticine-islands/types'
 
 import { SERVER_BUNDLE_DIRECTORY_NAME, SERVER_BUNDLE_NAME } from '../constants'
 import { bundle } from './bundle'
 import { renderPage } from './render-page'
 
-export async function build(root: string, loadedConfig: LoadedConfig) {
-  const { build: buildConfig = {} } = loadedConfig.config
+export async function build(resolvedConfig: ResolvedConfig) {
+  const { root, buildConfig } = resolvedConfig
 
   const [clientBundle] = await bundle(root, buildConfig)
 
@@ -157,28 +196,23 @@ export async function build(root: string, loadedConfig: LoadedConfig) {
 }
 ```
 
-```ts{6,38-39,46} [packages/core/src/build/bundle.ts]
+```ts [packages/core/src/build/bundle.ts]
 import ora from 'ora'
 import { join } from 'path'
 import type { RollupOutput } from 'rollup'
 import { build as viteBuild, type InlineConfig } from 'vite'
 
 import { BASE_DIRECTORY } from '@plasticine-islands/shared'
-import type { BuildConfig } from '@plasticine-islands/types'
+import type { BuildConfig, ResolvedConfig } from '@plasticine-islands/types'
 
-import {
-  CLIENT_BUNDLE_DIRECTORY_NAME,
-  CLIENT_ENTRY_PATH,
-  SERVER_BUNDLE_DIRECTORY_NAME,
-  SERVER_ENTRY_PATH,
-} from '../constants'
+import { CLIENT_ENTRY_PATH, SERVER_BUNDLE_DIRECTORY_NAME, SERVER_ENTRY_PATH } from '../constants'
 
 /**
  * @description 构建客户端和服务端产物
  * @param root 命令执行的目标路径
  * @returns [clientBundle, serverBundle]
  */
-export async function bundle(root: string, buildConfig: BuildConfig) {
+export async function bundle(root: string, buildConfig: ResolvedConfig['buildConfig']) {
   const spinner = ora('building client + server bundles...\n').start()
 
   try {
@@ -196,7 +230,7 @@ export async function bundle(root: string, buildConfig: BuildConfig) {
 }
 
 function resolveViteConfig(root: string, target: 'client' | 'server', buildConfig: BuildConfig): InlineConfig {
-  const { outDirectoryName = CLIENT_BUNDLE_DIRECTORY_NAME } = buildConfig
+  const { outDirectoryName } = buildConfig
   const isServer = target === 'server'
 
   return {
@@ -216,7 +250,7 @@ function resolveViteConfig(root: string, target: 'client' | 'server', buildConfi
 }
 ```
 
-```ts{7,25,38-39,42} [packages/core/src/build/render-page.ts]
+```ts [packages/core/src/build/render-page.ts]
 import ejs from 'ejs'
 import fsExtra from 'fs-extra'
 import ora from 'ora'
@@ -224,14 +258,9 @@ import { resolve } from 'path'
 import type { OutputChunk } from 'rollup'
 
 import { BASE_DIRECTORY } from '@plasticine-islands/shared'
-import type { BuildConfig, BuildHtmlEjsData, ServerRenderFunc } from '@plasticine-islands/types'
+import type { BuildHtmlEjsData, ResolvedConfig, ServerRenderFunc } from '@plasticine-islands/types'
 
-import {
-  BUILD_HTML_PATH,
-  CLIENT_BUNDLE_DIRECTORY_NAME,
-  DEFAULT_BUILD_HTML_TITLE,
-  SERVER_BUNDLE_DIRECTORY_NAME,
-} from '../constants'
+import { BUILD_HTML_PATH, DEFAULT_BUILD_HTML_TITLE, SERVER_BUNDLE_DIRECTORY_NAME } from '../constants'
 
 const { ensureDir, readFile, remove, writeFile } = fsExtra
 
@@ -239,9 +268,9 @@ export async function renderPage(
   root: string,
   serverRender: ServerRenderFunc,
   clientEntryChunk: OutputChunk,
-  buildConfig: BuildConfig,
+  buildConfig: ResolvedConfig['buildConfig'],
 ) {
-  const { outDirectoryName = CLIENT_BUNDLE_DIRECTORY_NAME } = buildConfig
+  const { outDirectoryName } = buildConfig
   const spinner = ora('rendering page...\n').start()
 
   try {
@@ -292,7 +321,31 @@ export default defineConfig({
 
 ![build命令效果图](images/build命令效果图.png)
 
+可以多尝试几种情况：
+
+- 不编写 `plasticine-islands.config.ts` 文件
+- 编写了配置文件，但导出了一个空对象
+- 导出了带有 `build` 配置的对象，但该对象是一个空对象
+
+以上情况均能让框架的 build 命令正常运行
+
 至此，配置文件解析的功能就实现啦，之后会随着项目开发继续添加额外的配置项，只需要先修改 `PlasticineIslandsConfig` 类型即可，然后在用到相应配置的地方解构出对应配置项，并且要记得赋默认值即可
+
+## 让前端应用能获取到加载的配置
+
+由于之后配置文件中会配置许多和文档站点相关的信息，比如站点标题，logo，navbar，sidebar，markdown 相关配置等，这些都需要能够在前端应用中获取到才行
+
+但是目前我们的框架尚不具备这个能力，所以接下来思考下如何实现
+
+由于我们的 dev 和 build 命令底层都是基于 vite 实现的，而 vite 的插件机制中有和 rollup 兼容的虚拟模块机制，通过虚拟模块可以允许我们往前端应用中注入解析的配置
+
+### Vite 插件 - 将加载的配置作为虚拟模块
+
+我们需要实现一个 Vite 插件，在插件中提供虚拟模块，并在虚拟模块中将加载的配置导出出去，从而能够让前端应用通过 import 模块的方式获取到用户定义的配置信息
+
+但是提供给前端应用的应当只有页面开发需要的配置，至于 root，configPath，build 这些都不应暴露给前端应用，因为其根本就用不上这些配置
+
+为此我们先扩展一下 `PlasticineIslandsConfig` 的类型
 
 :::tip
 本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
