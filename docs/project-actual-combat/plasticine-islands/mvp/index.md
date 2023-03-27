@@ -1,7 +1,7 @@
 # MVP 版本开发
 
-:::tip
-本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp)
+:::tip 本节代码分支地址
+[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp)
 :::
 
 ## 前言
@@ -1318,6 +1318,6 @@ export async function build(root: string, options: BuildCommandOptions = default
 
 至此，我们的 MVP 版本就开发完啦~
 
-:::tip
-本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp)
+:::tip 本节代码分支地址
+[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mvp)
 :::
