@@ -1,14 +1,20 @@
 # 实现配置文件解析功能
 
-:::tip
-本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
+:::tip 本节代码分支地址
+[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
 :::
 
 ## 前言
 
 在使用很多库的时候，大家应该都注意到它们都支持以配置文件的方式进行自定义配置，比如 vite 支持 `vite.config.ts`，`vite.config.js` 等文件进行配置
 
-那么你是否好奇如何实现一个配置文件解析功能呢？可以了解一下 [unconfig](https://github.com/antfu/unconfig)，它提供了通用的配置文件解析功能，能够解析常见的配置文件格式，比如 `.json`，`.js`，`.ts`，`.xxxrc`等
+那么你是否好奇如何实现一个配置文件解析功能呢？可以了解一下 [unconfig](https://github.com/antfu/unconfig)，它提供了通用的配置文件解析功能，能够解析常见的配置文件格式，比如 `.json`，`.js`，`.ts` 以及 `.rc` (如 `.eslintrc`) 等
+
+:::tip
+.rc 后缀是一种 Unix 系统中常用的配置文件命名约定，表示 "run commands"，也就是运行命令时所需要的配置文件。
+
+在 Unix 系统中，许多命令都有自己的配置文件，例如 .bashrc、.vimrc、.gitconfig 等等。这些配置文件通常都遵循相同的命名约定，即使用点号开头，后面跟着命令的名称和 .rc 后缀。
+:::
 
 本篇文章我们就会用它来为项目添加配置文件解析能力
 
@@ -43,13 +49,56 @@ export const BASE_DIRECTORY = '.plasticine-islands'
 
 然后 core 包和 cli 包都需要安装 shared 包，装好之后就可以集成 unconfig 解析配置文件了
 
-## cli 包集成 unconfig 解析配置文件
+## cli-service 包集成 unconfig 解析配置文件
+
+### 为什么不放在 cli 包中
+
+配置文件解析这一能力没有放到 cli 包中，而是放到了单独的一个 `cli-service` 包中，这是为什么呢？
+
+来回看一下目前我们的 cli 包的入口 `index.ts`
+
+```ts
+import cac from 'cac'
+
+import pkg from '../package.json'
+import { actionBuild, actionDev } from './actions'
+
+const cli = cac('plasticine-islands')
+
+// build 命令
+cli.command('build [root]', '构建产物').action(actionBuild)
+
+// dev 命令
+cli.command('dev [root]', '启动开发环境服务器').action(actionDev)
+
+// 支持 `--help` 和 `-h` 显示帮助信息
+cli.help()
+
+// 支持 `--version` 和 `-v` 显示版本信息
+cli.version(pkg.version)
+
+cli.parse()
+```
+
+拥有配置文件解析能力后，我们会导出一个 `defineConfig` 函数出去，如果配置文件解析能力放到 cli 包实现的话，那么 defineConfig 也就需要在 cli 包中导出，但是每次 import cli 包的时候，都会执行 cli 的运行流程
+
+这就意味着，如果用户使用了 defineConfig，并且运行 `plasticine-islands build` 命令
+
+那么上面这些运行时代码会在命令运行时执行，而当 build action 中去加载用户的配置文件时，由于其使用了 defineConfig，并且是从 cli 包中导入的，在导入时 cli 入口的运行时代码又会执行一次，而执行到 `cli.parse` 的时候，会再次触发 build action
+
+也就是说整个 build 命令会无限死循环地执行下去，显然是不合理的，事实上，cli 包本身就不应该负责导出 defineConfig 或其他模块，它的职责就单纯是一个命令行应用，那么 defineConfig 这样的 API 应该放在哪里导出呢？
+
+由于它是 cli 包需要用到的一个功能，可以理解成是一种服务，因此我们可以新建一个 `cli-service` 包去负责导出 API，用户使用时也是从这个包中导入
+
+下面就直接开始实现，创建 `cli-service` 包的过程就不赘述了
+
+### 实现
 
 unconfig 提供了一个 `loadConfig` 函数，我们只需要告诉它希望解析什么名字的文件，并提供一个工作目录即可，代码如下
 
 ::: code-group
 
-```ts [packages/cli/src/config-resolver.ts]
+```ts [packages/cli-service/src/config-resolver.ts]
 import { loadConfig } from 'unconfig'
 
 import { BASE_DIRECTORY } from '@plasticine-islands/shared'
@@ -139,7 +188,7 @@ export type DeepRequired<T> = T extends Record<PropertyKey, any>
 
 但是在传递给 core 包使用的时候，需要保证每个配置项都有值，因此还需要有一个全部属性都不是可选的配置对象，也就是 `ResolvedConfig`，因而有了使用 DeepPartial 和 DeepRequired 的需求
 
-这里我们还导出了一个 `defineConfig` 函数，它啥也没做，仅仅是提供一个类型提示
+导出的 `defineConfig` 函数啥也没做，仅仅是提供一个类型提示
 
 ### 修改 build action 的实现
 
@@ -156,8 +205,7 @@ import { resolve } from 'path'
 
 import { build } from '@plasticine-islands/core'
 import type { ActionBuildFunc } from '@plasticine-islands/types'
-
-import { resolveConfig } from '../config-resolver'
+import { resolveConfig } from '@plasticine-islands/cli-service'
 
 export const actionBuild: ActionBuildFunc = async (root) => {
   /** @description 需要将相对路径 root 解析成绝对路径，默认使用命令执行时的路径作为 root */
@@ -347,6 +395,283 @@ export default defineConfig({
 
 为此我们先扩展一下 `PlasticineIslandsConfig` 的类型
 
+:::code-group
+
+```ts{1-7,11,24-25} [packages/types/src/config.ts]
+export interface SiteConfig {
+  /**
+   * @description 网站标题
+   * @default plasticine-islands
+   */
+  title?: string
+}
+
+export interface PlasticineIslandsConfig {
+  build?: DeepPartial<BuildConfig>
+  siteConfig?: DeepPartial<SiteConfig>
+}
+
+export interface ResolvedConfig {
+  /** @description 执行 cli 命令时指定的 root 目录 */
+  root: string
+
+  /** @description 配置文件的路径 */
+  configPath: string
+
+  /** @description build 命令相关配置 */
+  buildConfig: DeepRequired<BuildConfig>
+
+  /** @description 站点配置 - 会暴露给前端应用 */
+  siteConfig: DeepRequired<SiteConfig>
+}
+```
+
+:::
+
+由于我们目前的重点不在实现站点样式上，因此不会把 SiteConfig 的类型定义得很详细，只定义一个 title 测试即可，重点在于让前端应用通过导入虚拟模块获取配置文件中的 SiteConfig 配置
+
+然后新建一个 `vite-plugin-plasticine-islands-site-config`，并写入如下代码：
+
+:::code-group
+
+```ts [packages/vite-plugin-plasticine-islands-site-config/src/index.ts]
+import type { Plugin } from 'vite'
+
+import type { SiteConfig } from '@plasticine-islands/types'
+
+const virtualModuleId = 'virtual:plasticine-islands-site-config'
+const resolvedVirtualModuleId = '\0' + virtualModuleId
+
+export default function vitePluginSiteConfig(siteConfig: SiteConfig): Plugin {
+  return {
+    name: 'plasticine-islands-site-config',
+    resolveId(id) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId
+      }
+    },
+    load(id) {
+      if (id === resolvedVirtualModuleId) {
+        return `export default ${JSON.stringify(siteConfig)}`
+      }
+    },
+  }
+}
+```
+
+:::
+
+接下来需要将这个插件集成到 core 包中，分别应用到 dev 和 build 命令的 vite 运行时当中
+
+### 集成到 dev 和 build 中
+
+dev 命令启动的 Vite Dev Server 可以配置该插件
+
+build 命令中 resolveViteConfig 的时候可以配置该插件
+
+:::code-group
+
+```ts [packages/core/src/dev-server/index.ts]
+import vitePluginReact from '@vitejs/plugin-react'
+import { createServer as createViteServer } from 'vite'
+
+import { ResolvedConfig } from '@plasticine-islands/types'
+import vitePluginDevServerHtml from '@plasticine-islands/vite-plugin-dev-server-html'
+import vitePluginPlasticineIslandsSiteConfig from '@plasticine-islands/vite-plugin-plasticine-islands-site-config'
+
+import { CLIENT_ENTRY_PATH, DEV_SERVER_HTML_PATH } from '../constants'
+
+export function createDevServer(resolvedConfig: ResolvedConfig) {
+  const { root, siteConfig } = resolvedConfig
+
+  return createViteServer({
+    root,
+    plugins: [
+      vitePluginReact(),
+
+      vitePluginDevServerHtml({
+        htmlPath: DEV_SERVER_HTML_PATH,
+        clintEntryPath: CLIENT_ENTRY_PATH,
+      }),
+
+      vitePluginPlasticineIslandsSiteConfig(siteConfig),
+    ],
+  })
+}
+```
+
+```ts [packages/core/src/build/bundle.ts]
+function resolveViteConfig(target: 'client' | 'server', resolvedConfig: ResolvedConfig): InlineConfig {
+  const { root, buildConfig, siteConfig } = resolvedConfig
+  const { outDirectoryName } = buildConfig
+  const isServer = target === 'server'
+
+  return {
+    mode: 'production',
+    root,
+    build: {
+      outDir: isServer ? join(BASE_DIRECTORY, SERVER_BUNDLE_DIRECTORY_NAME) : join(BASE_DIRECTORY, outDirectoryName),
+      ssr: isServer ? true : false,
+      rollupOptions: {
+        input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
+        output: {
+          format: 'esm',
+        },
+      },
+    },
+    plugins: [vitePluginPlasticineIslandsSiteConfig(siteConfig)],
+  }
+}
+```
+
+:::
+
 :::tip
-本节代码分支地址：[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
+这里对 createDevServer 和 resolveViteConfig 的参数进行了修改，具体可到本节对应的代码分支中查看
+:::
+
+这里不难发现，dev 和 build 中都有共同的 vite plugins，因此可以考虑将其抽离成一个 `resolveVitePlugins` 函数
+
+:::code-group
+
+```ts [packages/core/src/helpers/resolve-vite-plugins.ts]
+import vitePluginReact from '@vitejs/plugin-react'
+import type { PluginOption } from 'vite'
+
+import type { ResolvedConfig } from '@plasticine-islands/types'
+import vitePluginDevServerHtml from '@plasticine-islands/vite-plugin-dev-server-html'
+import vitePluginPlasticineIslandsSiteConfig from '@plasticine-islands/vite-plugin-plasticine-islands-site-config'
+
+import { CLIENT_ENTRY_PATH, DEV_SERVER_HTML_PATH } from '../constants'
+
+export function resolveVitePlugins(resolvedConfig: ResolvedConfig): PluginOption[] {
+  const { siteConfig } = resolvedConfig
+
+  return [
+    vitePluginReact(),
+
+    vitePluginDevServerHtml({
+      htmlPath: DEV_SERVER_HTML_PATH,
+      clintEntryPath: CLIENT_ENTRY_PATH,
+    }),
+
+    vitePluginPlasticineIslandsSiteConfig(siteConfig),
+  ]
+}
+```
+
+```ts [packages/core/src/dev-server/index.ts]
+import { createServer as createViteServer } from 'vite'
+
+import { ResolvedConfig } from '@plasticine-islands/types'
+
+import { resolveVitePlugins } from '../helpers'
+
+export function createDevServer(resolvedConfig: ResolvedConfig) {
+  const { root } = resolvedConfig
+
+  return createViteServer({
+    root,
+    plugins: resolveVitePlugins(resolvedConfig),
+  })
+}
+```
+
+```ts [packages/core/src/build/bundle.ts]
+function resolveViteConfig(target: 'client' | 'server', resolvedConfig: ResolvedConfig): InlineConfig {
+  const { root, buildConfig } = resolvedConfig
+  const { outDirectoryName } = buildConfig
+  const isServer = target === 'server'
+
+  return {
+    mode: 'production',
+    root,
+    build: {
+      outDir: isServer ? join(BASE_DIRECTORY, SERVER_BUNDLE_DIRECTORY_NAME) : join(BASE_DIRECTORY, outDirectoryName),
+      ssr: isServer ? true : false,
+      rollupOptions: {
+        input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
+        output: {
+          format: 'esm',
+        },
+      },
+    },
+    plugins: resolveVitePlugins(resolvedConfig),
+  }
+}
+```
+
+:::
+
+### 验证效果 - 在 runtime 的 App 组件中导入虚拟模块
+
+:::code-group
+
+```ts [packages/core/bundless/runtime/app.tsx]
+import siteConfig from 'virtual:plasticine-islands-site-config'
+
+import Layout from '../theme-default'
+
+const App: React.FC = () => {
+  console.log(siteConfig)
+  return <Layout />
+}
+
+export default App
+```
+
+```ts [packages/core/src/plasticine-islands-env.d.ts]
+declare module 'virtual:plasticine-islands-site-config' {
+  import { SiteConfig } from '@plasticine-islands/types'
+
+  const siteConfig: SiteConfig
+
+  export default siteConfig
+}
+```
+
+:::
+
+这里通过新增一个 `plasticine-islands-env.d.ts` 文件让 TypeScript 正确识别出虚拟模块的类型
+
+### 验证效果 - 在 playground 中验证
+
+运行 `pnpm play:dev`，效果如下：
+
+![dev命令加载配置文件的SiteConfig效果](images/dev命令加载配置文件的SiteConfig效果.png)
+
+运行 `pnpm play:build`，并给 playground 包安装一个 `serve` 依赖，并在 `package.json` 中添加如下脚本：
+
+:::code-group
+
+```json [playground/package.json]
+{
+  "scripts": {
+    "preview": "serve docs/.plasticine-islands/dist"
+  }
+}
+```
+
+```json [package.json]
+{
+  "scripts": {
+    "play:preview": "pnpm -C playground preview"
+  }
+}
+```
+
+:::
+
+运行 `pnpm:preview`，效果如下：
+
+![运行preview命令的终端效果图](images/运行preview命令的终端效果图.png)
+
+![运行preview命令的浏览器效果图](images/运行preview命令的浏览器效果图.png)
+
+至此，我们就能够在前端应用中访问到用户在配置文件中定义的 SiteConfig 啦，之后在实现网站样式时就以 SiteConfig 为桥梁进行定制
+
+## 配置文件热更新
+
+:::tip 本节代码分支地址
+[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
 :::
