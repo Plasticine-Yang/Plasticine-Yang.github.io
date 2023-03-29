@@ -672,6 +672,252 @@ declare module 'virtual:plasticine-islands-site-config' {
 
 ## 配置文件热更新
 
+Vite 插件提供了 `handleHotUpdate` 这个钩子来让我们在文件发生变化时进行一些操作
+
+我们只需要比对一下变化的文件是否是配置文件，是的话重启 Dev Server，加载新的配置文件内容即可
+
+### 有问题的实现
+
+:::code-group
+
+```ts [packages/vite-plugin-plasticine-islands-site-config/src/index.ts]
+export default function vitePluginPlasticineIslandsSiteConfig(
+  root: string,
+  siteConfig: SiteConfig,
+  configFilePath: string,
+): Plugin {
+  return {
+    name: 'plasticine-islands-site-config',
+    resolveId(id) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId
+      }
+    },
+    load(id) {
+      if (id === resolvedVirtualModuleId) {
+        return `export default ${JSON.stringify(siteConfig)}`
+      }
+    },
+
+    // 配置文件更新时重启 Dev Server
+    handleHotUpdate(ctx) {
+      const filesToWatch = [configFilePath]
+      const include = (filePath: string) => filesToWatch.some((file) => file.includes(filePath))
+
+      if (include(ctx.file)) {
+        console.log(chalk.cyan(`\n配置文件 ${relative(root, configFilePath)} 改动，重启开发服务器...\n`))
+        ctx.server.restart()
+      }
+    },
+  }
+}
+```
+
+:::
+
+这样是不是就能实现配置文件热更新了呢？先思考一下我们热更新的目的是什么？是不是希望开发服务器重新执行 resolveConfig 去读取最新的配置文件内容？
+
+那么我们可以在 resolveConfig 被调用的时候打印一下，再改动一下配置文件看看重启 Dev Server 后是否有重新调用 resolveConfig
+
+:::code-group
+
+```ts{2} [packages/cli-service/src/config-resolver.ts]
+export async function resolveConfig(root: string): Promise<ResolvedConfig> {
+  console.log('执行 resolveConfig')
+  const loadedConfig = await loadConfig<PlasticineIslandsConfig | undefined>({
+    sources: [
+      {
+        files: 'plasticine-islands.config',
+        extensions: ['ts', 'js'],
+      },
+    ],
+    merge: false,
+    cwd: resolve(root, BASE_DIRECTORY),
+  })
+
+  const { config = {}, sources } = loadedConfig
+
+  return {
+    root,
+    configFilePath: sources.at(0) ?? '',
+    buildConfig: resolveBuildConfig(config),
+    siteConfig: resolveSiteConfig(config),
+  }
+}
+```
+
+:::
+
+![配置文件热更新没有重新调用resolveConfig](images/配置文件热更新没有重新调用resolveConfig.gif)
+
+可以看到，并没有打印出「执行 resolveConfig」，说明配置文件并没有重新加载
+
+### 改进
+
+再看看我们是怎么重启 Dev Server 的？
+
+```ts
+ctx.server.restart()
+```
+
+这是直接调用 Vite Dev Server 实例的 restart 方法去重启 Dev Server 的，而我们的加载配置文件启动 Dev Server 是执行 dev 命令对应的 action 才有的
+
+也就是说，我们应当在配置文件变化时重新执行 dev action 的逻辑
+
+```ts
+export const actionDev: ActionDevFunc = async (root) => {
+  /** @description 需要将相对路径 root 解析成绝对路径，默认使用命令执行时的路径作为 root */
+  const parsedRoot = root !== undefined ? resolve(root) : process.cwd()
+
+  const resolvedConfig = await resolveConfig(parsedRoot)
+
+  const server = await createDevServer(resolvedConfig)
+  await server.listen()
+
+  server.printUrls()
+}
+```
+
+所以将这部分代码抽出来，它会在 actionDev 和插件中都被调用
+
+:::code-group
+
+```ts{18-21} [packages/cli/src/actions/dev.ts]
+import { resolve } from 'path'
+
+import { resolveConfig } from '@plasticine-islands/cli-service'
+import { createDevServer } from '@plasticine-islands/core'
+import type { ActionDevFunc } from '@plasticine-islands/types'
+
+/** @inheritdoc */
+export const actionDev: ActionDevFunc = async (root) => {
+  await startDevServer(root)
+}
+
+async function startDevServer(root?: string) {
+  /** @description 需要将相对路径 root 解析成绝对路径，默认使用命令执行时的路径作为 root */
+  const parsedRoot = root !== undefined ? resolve(root) : process.cwd()
+
+  const resolvedConfig = await resolveConfig(parsedRoot)
+
+  const server = await createDevServer(resolvedConfig, async () => {
+    await server.close()
+    startDevServer(root)
+  })
+  await server.listen()
+
+  server.printUrls()
+}
+```
+
+```ts [packages/core/src/dev-server/index.ts]
+import { createServer as createViteServer } from 'vite'
+
+import { ResolvedConfig } from '@plasticine-islands/types'
+
+import { resolveVitePlugins } from '../helpers'
+
+export function createDevServer(resolvedConfig: ResolvedConfig, onDevServerRestart: () => Promise<void>) {
+  const { root } = resolvedConfig
+
+  return createViteServer({
+    root,
+    plugins: resolveVitePlugins({ resolvedConfig, onDevServerRestart }),
+  })
+}
+```
+
+```ts{10-13,15-16,26} [packages/core/src/helpers/resolve-vite-plugins.ts]
+import vitePluginReact from '@vitejs/plugin-react'
+import type { PluginOption } from 'vite'
+
+import type { ResolvedConfig, VitePluginPlasticineIslandsSiteConfigOptions } from '@plasticine-islands/types'
+import vitePluginDevServerHtml from '@plasticine-islands/vite-plugin-dev-server-html'
+import vitePluginPlasticineIslandsSiteConfig from '@plasticine-islands/vite-plugin-plasticine-islands-site-config'
+
+import { CLIENT_ENTRY_PATH, DEV_SERVER_HTML_PATH } from '../constants'
+
+interface ResolveVitePluginsOptions {
+  resolvedConfig: ResolvedConfig
+  onDevServerRestart: VitePluginPlasticineIslandsSiteConfigOptions['onDevServerRestart']
+}
+
+export function resolveVitePlugins(options: ResolveVitePluginsOptions): PluginOption[] {
+  const { resolvedConfig, onDevServerRestart } = options
+
+  return [
+    vitePluginReact(),
+
+    vitePluginDevServerHtml({
+      htmlPath: DEV_SERVER_HTML_PATH,
+      clintEntryPath: CLIENT_ENTRY_PATH,
+    }),
+
+    vitePluginPlasticineIslandsSiteConfig({ resolvedConfig, onDevServerRestart }),
+  ]
+}
+```
+
+```ts{4,11,36} [packages/vite-plugin-plasticine-islands-site-config/src/index.ts]
+import chalk from 'chalk'
+import type { Plugin } from 'vite'
+
+import type { VitePluginPlasticineIslandsSiteConfigOptions } from '@plasticine-islands/types'
+import { relative } from 'path'
+
+const virtualModuleId = 'virtual:plasticine-islands-site-config'
+const resolvedVirtualModuleId = '\0' + virtualModuleId
+
+export default function vitePluginPlasticineIslandsSiteConfig(
+  options: VitePluginPlasticineIslandsSiteConfigOptions,
+): Plugin {
+  const { resolvedConfig, onDevServerRestart } = options
+  const { root, siteConfig, configFilePath } = resolvedConfig
+
+  return {
+    name: 'plasticine-islands-site-config',
+    resolveId(id) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId
+      }
+    },
+    load(id) {
+      if (id === resolvedVirtualModuleId) {
+        return `export default ${JSON.stringify(siteConfig)}`
+      }
+    },
+
+    // 配置文件更新时重启 Dev Server
+    async handleHotUpdate(ctx) {
+      const filesToWatch = [configFilePath]
+      const include = (filePath: string) => filesToWatch.some((file) => file.includes(filePath))
+
+      if (include(ctx.file)) {
+        console.log(chalk.cyan(`\n配置文件 ${relative(root, configFilePath)} 改动，重启开发服务器...\n`))
+        await onDevServerRestart()
+      }
+    },
+  }
+}
+```
+
+```ts [packages/types/src/vite-plugin-plasticine-islands-site-config/index.ts]
+import type { ResolvedConfig } from '../config'
+
+export interface VitePluginPlasticineIslandsSiteConfigOptions {
+  resolvedConfig: ResolvedConfig
+  onDevServerRestart: () => Promise<void>
+}
+```
+
+:::
+
+现在再来验证一下效果
+
+![配置文件热更新效果](images/配置文件热更新效果.gif)
+
+可以发现成功了！至此配置文件解析能力就实现完啦
+
 :::tip 本节代码分支地址
 [https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
 :::
