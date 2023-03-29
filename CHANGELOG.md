@@ -1,5 +1,18 @@
 # plasticine-yang-github-io
 
+## 0.3.22
+
+### Patch Changes
+
+- cf81a28: feat(plasticine-islands): 实现配置文件解析功能
+- 234603e: feat(plasticine-islands): 介绍
+- 234603e: feat(react-basic): 如何理解 SSR 中的 hydrate?
+- 15928cb: feat(react-basic): [useMemo] - 到底啥时候需要用 useMemo?
+- 1bdca9a: feat(fe-monitor-system): [Sentry 架构分析] 数据上报流程
+- d7ca22f: feat(fe-monitor-system): [实战篇] 数据上报流程实现
+- 30eaca1: feat(next): 快速了解 Next.js
+- fd19c84: feat(plasticine-islands): mvp 版本开发
+
 ## 0.3.21
 
 ### Patch Changes
