@@ -1,4 +1,4 @@
-# 实现配置文件解析功能
+# 配置文件解析功能
 
 :::tip 本节代码分支地址
 [https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/config-resolver)
