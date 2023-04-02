@@ -9,6 +9,7 @@ export const plasticineIslands: DefaultTheme.SidebarGroup[] = [
       { text: 'MVP 版本开发', link: `${ROUTES.PLASTICINE_ISLANDS}mvp/` },
       { text: '配置文件解析功能', link: `${ROUTES.PLASTICINE_ISLANDS}config-resolver/` },
       { text: '约定式路由', link: `${ROUTES.PLASTICINE_ISLANDS}conventional-based-routing/` },
+      { text: '集成 MDX 解析能力', link: `${ROUTES.PLASTICINE_ISLANDS}mdx/` },
     ],
   },
 ]
