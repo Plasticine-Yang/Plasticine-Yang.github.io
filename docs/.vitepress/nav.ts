@@ -34,7 +34,7 @@ export const nav: DefaultTheme.Config['nav'] = [
     activeMatch: ROUTES.PROJECT_ACTUAL_COMBAT,
     items: [
       {
-        text: 'React Admin Dashboard',
+        text: 'React Admin',
         link: `${ROUTES.REACT_ADMIN}introduction/`,
       },
       {

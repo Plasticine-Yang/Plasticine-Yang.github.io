@@ -11,7 +11,7 @@ module.exports = {
       // react
       'plasticine-react',
       'react-basic',
-      'react-admin-dashboard',
+      'react-admin',
       'next',
 
       'fe-monitor-system',

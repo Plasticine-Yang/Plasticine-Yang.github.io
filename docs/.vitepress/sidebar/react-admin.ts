@@ -7,6 +7,7 @@ export const reactAdmin: DefaultTheme.SidebarGroup[] = [
     items: [
       { text: '介绍', link: `${ROUTES.REACT_ADMIN}introduction/` },
       { text: '技巧', link: `${ROUTES.REACT_ADMIN}skills/` },
+      { text: '主题系统', link: `${ROUTES.REACT_ADMIN}theme-system/` },
     ],
   },
 ]
