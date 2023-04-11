@@ -628,6 +628,82 @@ export default Baz
 
 要解决这个问题很简单，只需要将 root 改为非用户真实执行命令时的 root 即可，也就是不以 `playground/docs` 为 root，可以任意取一个虚假目录作为 root，从而避开 vite dev server 的静态资源返回
 
+但是 build 的时候还是需要获取到真实的 root 的，因此不能修改 build 时的 root，也就是说要能够在插件中感知到当前运行的是什么命令，因此需要先修改一下 `ResolvedConfig`
+
+:::code-group
+
+```ts{2} [packages/types/src/config.ts]
+export interface ResolvedConfig {
+  command: CliCommand
+
+  /** @description 执行 cli 命令时指定的 root 目录 */
+  root: string
+
+  /** @description 配置文件的路径 */
+  configFilePath: string
+
+  /** @description build 命令相关配置 */
+  buildConfig: DeepRequired<BuildConfig>
+
+  /** @description 站点配置 - 会暴露给前端应用 */
+  siteConfig: DeepRequired<SiteConfig>
+}
+```
+
+```ts [packages/types/src/cli/enums.ts]
+export enum CliCommand {
+  Dev = 'dev',
+  Build = 'build',
+}
+```
+
+```ts{5,11} [packages/cli/src/actions/build.ts]
+import { resolve } from 'path'
+
+import { resolveConfig } from '@plasticine-islands/cli-service'
+import { build } from '@plasticine-islands/core'
+import { CliCommand, type ActionBuildFunc } from '@plasticine-islands/types'
+
+export const actionBuild: ActionBuildFunc = async (root) => {
+  /** @description 需要将相对路径 root 解析成绝对路径，默认使用命令执行时的路径作为 root */
+  const parsedRoot = root !== undefined ? resolve(root) : process.cwd()
+
+  const resolvedConfig = await resolveConfig(parsedRoot, CliCommand.Build)
+
+  build(resolvedConfig)
+}
+```
+
+```ts{5,16} [packages/cli/src/actions/dev.ts]
+import { resolve } from 'path'
+
+import { resolveConfig } from '@plasticine-islands/cli-service'
+import { createDevServer } from '@plasticine-islands/core'
+import { CliCommand, type ActionDevFunc } from '@plasticine-islands/types'
+
+/** @inheritdoc */
+export const actionDev: ActionDevFunc = async (root) => {
+  await startDevServer(root)
+}
+
+async function startDevServer(root?: string) {
+  /** @description 需要将相对路径 root 解析成绝对路径，默认使用命令执行时的路径作为 root */
+  const parsedRoot = root !== undefined ? resolve(root) : process.cwd()
+
+  const resolvedConfig = await resolveConfig(parsedRoot, CliCommand.Dev)
+
+  const server = await createDevServer(resolvedConfig, async () => {
+    await server.close()
+    startDevServer(root)
+  })
+  await server.listen()
+
+  server.printUrls()
+}
+```
+
+:::
+
 如何修改 root 呢？这个可以放到和配置文件处理相关的插件，即前面实现的配置文件解析对应的插件中实现
 
 Vite 的 config 钩子允许我们修改解析的 vite 配置，在这里面修改 root 即可
@@ -646,7 +722,7 @@ export default function vitePluginPlasticineIslandsSiteConfig(
 
     config() {
       return {
-        root: 'fake-root',
+        root: command === CliCommand.Dev ? '__PLASTICINE_DEV_SERVER_ROOT__' : root,
       }
     },
   }
