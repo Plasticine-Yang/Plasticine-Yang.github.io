@@ -1,5 +1,9 @@
 # 开发阶段 MDX 模块热更新
 
+:::tip 本节代码分支地址
+[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mdx-hmr](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mdx-hmr)
+:::
+
 ## 目前存在的问题
 
 现在在 playground 中添加一个 mdx 文件，并在其中导入一个简单的 Counter 组件
@@ -139,3 +143,7 @@ export default function vitePluginMdxHMR(): Plugin {
 ![热更新后组件状态保留](images/热更新后组件状态保留.gif)
 
 可以看到，最开始遇到的两个问题都解决了！
+
+:::tip 本节代码分支地址
+[https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mdx-hmr](https://github.com/Plasticine-Yang/plasticine-islands/tree/feat/mdx-hmr)
+:::
