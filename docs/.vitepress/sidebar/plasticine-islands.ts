@@ -10,6 +10,7 @@ export const plasticineIslands: DefaultTheme.SidebarGroup[] = [
       { text: '配置文件解析功能', link: `${ROUTES.PLASTICINE_ISLANDS}config-resolver/` },
       { text: '约定式路由', link: `${ROUTES.PLASTICINE_ISLANDS}conventional-based-routing/` },
       { text: '集成 MDX 解析能力', link: `${ROUTES.PLASTICINE_ISLANDS}mdx/` },
+      { text: '开发阶段 MDX 模块热更新', link: `${ROUTES.PLASTICINE_ISLANDS}mdx-hmr/` },
     ],
   },
 ]
