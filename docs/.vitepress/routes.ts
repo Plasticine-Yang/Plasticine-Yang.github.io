@@ -23,6 +23,9 @@ export enum ROUTES {
   /** @description 项目实战 - 基于 Islands 架构的 SSG 框架*/
   PLASTICINE_ISLANDS = '/project-actual-combat/plasticine-islands/',
 
+  /** @description 项目实战 - 基于 WebRTC 进行数据共享*/
+  PROJECT_ACTUAL_COMBAT_PLASTICINE_DROP = '/project-actual-combat/plasticine-drop/',
+
   /** @description TypeScript */
   TYPESCRIPT = '/typescript/',
 

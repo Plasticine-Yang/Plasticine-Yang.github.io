@@ -15,6 +15,7 @@ module.exports = {
       'next',
 
       'fe-monitor-system',
+      'plasticine-drop',
 
       // typescript
       'typescript-usage',
