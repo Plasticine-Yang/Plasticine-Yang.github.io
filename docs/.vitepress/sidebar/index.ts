@@ -9,12 +9,16 @@ import { rust } from './rust'
 
 import { typeChallenges, typescriptUsage } from './typescript'
 
+import { frameworkSourceLearningReact } from './framework-source-learning'
 import { plasticineIslands } from './plasticine-islands'
 import { plasticineDrop } from './project-actual-combat'
 import { reactAdmin } from './react-admin'
 import { next, plasticineReact, reactBasic } from './react-learning'
 
 export const sidebar: DefaultTheme.Config['sidebar'] = {
+  // 框架源码学习
+  [ROUTES.FRAMEWORK_SOURCE_LEARNING_REACT]: frameworkSourceLearningReact,
+
   // React 学习
   [ROUTES.PLASTICINE_REACT]: plasticineReact,
   [ROUTES.NEXT]: next,
