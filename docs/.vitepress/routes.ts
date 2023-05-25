@@ -1,4 +1,10 @@
 export enum ROUTES {
+  /** @description 框架源码学习 */
+  FRAMEWORK_SOURCE_LEARNING = '/framework-source-learning',
+
+  /** @description 框架源码学习 - React */
+  FRAMEWORK_SOURCE_LEARNING_REACT = '/framework-source-learning/react',
+
   /** @description React 学习 */
   REACT_LEARNING = '/react-learning/',
 

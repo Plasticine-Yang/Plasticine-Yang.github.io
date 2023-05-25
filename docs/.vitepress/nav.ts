@@ -5,6 +5,17 @@ export const nav: DefaultTheme.Config['nav'] = [
   { text: '首页', link: '/' },
 
   {
+    text: '框架源码学习',
+    activeMatch: ROUTES.FRAMEWORK_SOURCE_LEARNING,
+    items: [
+      {
+        text: 'React',
+        link: `${ROUTES.FRAMEWORK_SOURCE_LEARNING_REACT}/01-jsx/`,
+      },
+    ],
+  },
+
+  {
     text: 'React 学习',
     activeMatch: ROUTES.REACT_LEARNING,
     items: [
