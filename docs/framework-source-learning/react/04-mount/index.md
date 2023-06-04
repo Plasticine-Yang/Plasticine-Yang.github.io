@@ -111,7 +111,7 @@ ReactNode 的类型定义如下：
 ```ts
 export type ReactTextNode = string | number
 
-export type ReactNode = ReactElement | ReactElement[] | ReactTextNode
+export type ReactNode = ReactElement | ReactTextNode
 ```
 
 :::
@@ -225,3 +225,484 @@ const reconcileChildFibers = createChildReconciler(true)
 
 export { mountChildFibers, reconcileChildFibers }
 ```
+
+### reconcileSingleElement
+
+对于一个 ReactElement，在进行 diff 之前，我们需要先为其创建一个 FiberNode 才方便与老的 FiberNode 进行比较，因此先实现一个 `createFiberNodeFromElement` 函数
+
+```ts
+/** 为 ReactElement 创建 FiberNode */
+function createFiberNodeFromElement(element: ReactElement): FiberNode | null {
+  const { key, props, type } = element
+
+  let fiberTag: FiberTagEnum | null = null
+
+  if (typeof type === 'string') {
+    fiberTag = FiberTagEnum.HostComponent
+  } else {
+    if (__DEV__) {
+      console.warn(`尚未支持转换 ${type} 类型的 ReactElement 为 FiberNode`, element)
+    }
+  }
+
+  if (fiberTag !== null) {
+    return new FiberNode(fiberTag, props, key)
+  }
+
+  return null
+}
+
+function createFiberNodeFromTextNode(textNode: ReactTextNode) {
+  return new FiberNode(FiberTagEnum.HostText, { textNodeContent: textNode }, null)
+}
+```
+
+除了要为 ReactElement 创建 FiberNode 之外，还要考虑为文本节点 ReactTextNode 创建 FiberNode
+
+然后就可以去实现 reconcileSingleElement 了，目前的实现比较简单，只考虑创建 FiberNode 并维护简单的指向关系即可，不进行复杂的 diff，因为本章我们的目的只是 mount
+
+```ts
+/** 调和 ReactElement */
+function reconcileSingleElement(wipFiberNode: FiberNode, currentFiberNode: FiberNode | null, element: ReactElement) {
+  const fiberNodeForElement = createFiberNodeFromElement(element)
+
+  if (fiberNodeForElement) {
+    fiberNodeForElement.return = wipFiberNode
+    return fiberNodeForElement
+  }
+
+  return null
+}
+```
+
+### reconcileSingleTextNode
+
+和 reconcileSingleElement 类似，只是改成了为 ReactTextNode 创建 FiberNode 而已
+
+```ts
+/** 调和 ReactTextNode */
+function reconcileSingleTextNode(wipFiberNode: FiberNode, currentFiberNode: FiberNode | null, textNode: ReactTextNode) {
+  const fiberNodeForTextNode = createFiberNodeFromTextNode(textNode)
+
+  fiberNodeForTextNode.return = wipFiberNode
+
+  return fiberNodeForTextNode
+}
+```
+
+### 为创建的 FiberNode 标记 Placement flag
+
+现在有了对应的 FiberNode 之后就可以开始为其标记副作用 flags 了，由于我们现在只关心 mount，所以只用简单地对 FiberNode 标记 Placement flag 即可
+
+```ts
+/** 插入一个 FiberNode - 为其标记 Placement flag */
+function placeSingleChild(fiberNode: FiberNode) {
+  // fiberNode 对应的 current FiberNode 为 null 说明是 mount，需要标记 Placement
+  const shouldTagPlacement = fiberNode.alternate === null
+
+  if (shouldTrackSideEffects && shouldTagPlacement) {
+    fiberNode.flags |= FiberFlagEnum.Placement
+  }
+
+  return fiberNode
+}
+```
+
+最后再将其整合到 reconcileChildFibers 函数中即可
+
+```ts {12,23-24,37-40}
+return function reconcileChildFibers(
+  wipFiberNode: FiberNode,
+  currentFiberNode: FiberNode | null,
+  nextChildren?: ReactElementChildren,
+): FiberNode | null {
+  // 单节点 - ReactElement
+  if (isObject(nextChildren)) {
+    let fiberNodeForElement: FiberNode | null = null
+
+    switch ((nextChildren as ReactElement).$$typeof) {
+      case REACT_ELEMENT_TYPE:
+        fiberNodeForElement = reconcileSingleElement(wipFiberNode, currentFiberNode, nextChildren as ReactElement)
+        break
+
+      default:
+        if (__DEV__) {
+          console.warn('未实现的 reconcile 场景 - ReactElement#$$typeof', nextChildren)
+        }
+        break
+    }
+
+    if (fiberNodeForElement !== null) {
+      const placedFiberNode = placeSingleChild(fiberNodeForElement)
+      return placedFiberNode
+    }
+
+    return null
+  }
+
+  // 多节点 - ReactElement[]
+  if (isArray(nextChildren)) {
+    // TODO
+  }
+
+  // 文本节点 - ReactTextNode
+  if (isReactTextNode(nextChildren)) {
+    const fiberNodeForTextNode = reconcileSingleTextNode(wipFiberNode, currentFiberNode, nextChildren)
+    const placedFiberNode = placeSingleChild(fiberNodeForTextNode)
+
+    return placedFiberNode
+  }
+
+  if (__DEV__) {
+    console.warn('未实现的 reconcile 场景', nextChildren)
+  }
+
+  return null
+}
+```
+
+## completeWork
+
+completeWork 中主要做两件事：
+
+- 创建或标记元素更新
+
+  元素更新不是本篇文章的重点，放到之后将更新流程时再讲解
+
+- mount 时离屏构建宿主环境 UI，比如 DOM 树
+
+  以浏览器环境为例，离屏构建 DOM 树的意思就是进行一些 `document.createElement()` 这样的调用创建真实 DOM 节点，并在 completeWork 不断往上归的过程中将 DOM 加入到父 FiberNode 对应的 DOM 节点中，这样一来当回到 RootFiberNode 的时候就能够得到一颗完整的、尚未实际插入到真实 DOM 中的离屏 DOM 树了
+
+  然后再在后续 commit 阶段中消费 hostRootFiber 的 Placement flags 时将这个离屏 DOM 树渲染出来，这个之后会看到
+
+- flags 冒泡
+
+  flags 冒泡的意思是通过 FiberNode 的 subtreeFlags 属性能够快速知道以某个 FiberNode 为根节点的子树中包含哪些副作用 flags，以免重复进行遍历操作
+
+### 离屏构建宿主环境 UI
+
+首先搭一个大致的结构：
+
+```ts
+export function completeWork(fiberNode: FiberNode): void {
+  const newProps = fiberNode.pendingProps
+  const currentFiberNode = fiberNode.alternate
+
+  switch (fiberNode.tag) {
+    case FiberTagEnum.HostComponent:
+      if (currentFiberNode !== null && fiberNode.stateNode) {
+        // update
+      } else {
+        // mount
+        // 1. 离屏构建宿主环境 UI 节点
+        // 2. 将构建的节点插入到宿主环境 UI 树中
+        // 3. 关联 FiberNode 与宿主环境 UI 的节点
+      }
+
+      break
+
+    case FiberTagEnum.HostText:
+      break
+
+    default:
+      if (__DEV__) {
+        console.warn('[completeWork] 未实现的 FiberNode#tag 情况', fiberNode)
+      }
+
+      break
+  }
+}
+```
+
+这里涉及到具体宿主环境相关的操作了，不适合在 reconciler 中直接调用具体宿主环境的 API，毕竟也不知道会在哪个宿主环境中使用，为此需要抽象出宿主环境对应的操作
+
+然后在实现具体宿主环境的包时再实现这些抽象 API
+
+#### HostConfig - 抽象宿主环境 API
+
+```ts
+export interface HostConfig<HostComponent = any, HostText = any> {
+  /** 创建宿主环境的组件 - 比如 DOM 中的 `<div>`, `<h1>` 等 */
+  createHostComponent: (type: string, props: any) => HostComponent
+
+  /** 创建宿主环境的文本节点 */
+  createHostText: (text?: string | number) => HostText
+
+  /** 插入元素 */
+  appendInitialChild: (parent: HostComponent, child: HostComponent | HostText) => void
+}
+```
+
+目前我们要用到的宿主环境的能力就是创建一个宿主环境的组件和文本，以及插入一个子元素到父元素中，所以 HostConfig 接口暂时就这两个方法，之后有需要再来调整和扩展即可
+
+接下来在 completeWork 中接入：
+
+```ts
+export function completeWork(fiberNode: FiberNode, hostConfig: HostConfig): void {
+  const { createHostComponent } = hostConfig
+
+  const pendingProps = fiberNode.pendingProps
+  const currentFiberNode = fiberNode.alternate
+
+  switch (fiberNode.tag) {
+    case FiberTagEnum.HostComponent:
+      if (currentFiberNode !== null && fiberNode.stateNode) {
+        // update
+      } else {
+        // mount
+        // 1. 离屏构建宿主环境 UI 节点
+        const hostComponent = createHostComponent(fiberNode.type, pendingProps)
+
+        // 2. 将构建的节点插入到宿主环境 UI 树中
+
+        // 3. 关联 FiberNode 与宿主环境 UI 的节点
+        fiberNode.stateNode = hostComponent
+      }
+
+      break
+
+    case FiberTagEnum.HostText:
+      if (currentFiberNode !== null && fiberNode.stateNode) {
+        // update
+      } else {
+        // mount - 文本节点没有子节点，因此无需调用 appendAllChildren
+        const hostText = createHostText(pendingProps.textNodeContent)
+        fiberNode.stateNode = hostText
+      }
+
+      break
+
+    default:
+      if (__DEV__) {
+        console.warn('[completeWork] 未实现的 FiberNode#tag 情况', fiberNode)
+      }
+
+      break
+  }
+}
+```
+
+#### appendAllChildren
+
+接下来就是将 fiberNode 的子节点对应的宿主环境 UI 节点插入到创建好的 hostComponent 中，这个插入并不是简单的将子 FiberNode 的 stateNode 插入即可，而是要找到与宿主环境对应的 stateNode 再插入
+
+举个例子：
+
+```tsx
+const Foo = () => <h1></h1>
+const Bar = () => <h2></h2>
+
+<Foo>
+ <Bar />
+ <h3>hello</h3>
+</Foo>
+
+// 实际应处理成：
+
+<h1>
+  <h2></h2>
+  <h3>hello</h3>
+</h1>
+```
+
+这里涉及到两个点：
+
+- 需要将所有的子节点都插入
+- 不能直接将 Bar 这样的节点插入，因为宿主环境中并不能渲染这样的节点，比如在浏览器中不能直接渲染 `<Bar />` 这样的东西，因此需要递归地找到 Bar 节点子树中对应宿主环境 UI 的节点再取其 stateNode 进行插入
+
+为此，我们需要将这段逻辑封装到一个函数中实现，其名为 `appendAllChildren`
+
+```ts
+/**
+ * 将 FiberNode 的所有子节点对应的宿主环境节点插入到 hostComponent 中
+ *
+ * @param hostComponent 宿主环境的组件节点
+ * @param fiberNode wip FiberNode
+ */
+function appendAllChildren(hostComponent: HostComponent, fiberNode: FiberNode, hostConfig: HostConfig) {
+  const { appendInitialChild } = hostConfig
+
+  let node = fiberNode.child
+
+  while (node !== null) {
+    // 回到最初的 FiberNode 时停止
+    if (node === fiberNode) {
+      return
+    }
+
+    if (node.tag === FiberTagEnum.HostComponent || node.tag === FiberTagEnum.HostText) {
+      // 找到 HostComponent 或 HostText - 插入到宿主环境 UI 中
+      appendInitialChild(hostComponent, node.stateNode)
+    } else if (node.child !== null) {
+      // 否则有子节点就沿着子节点去继续寻找
+
+      // 寻找的过程中同时关联父子 FiberNode 的关系
+      node.child.return = node
+
+      // 沿着子节点寻找
+      node = node.child
+
+      continue
+    }
+
+    // 往兄弟节点找
+    if (node.sibling !== null) {
+      // 关联兄弟节点和父节点的关系
+      node.sibling.return = node.return
+
+      // 没有子节点就沿着兄弟节点去寻找
+      node = node.sibling
+
+      continue
+    }
+
+    // 没有兄弟节点就回到父节点
+    while (node !== null && node.sibling === null) {
+      // 再往上会回到最初进来时的 FiberNode
+      if (node.return === null || node.return === fiberNode) {
+        return
+      }
+
+      node = node.return
+    }
+  }
+}
+```
+
+有了 appendAllChildren 后就可以处理 HostComponent 的情况了
+
+```ts {17}
+export function completeWork(fiberNode: FiberNode, hostConfig: HostConfig): void {
+  const { createHostComponent, createHostText } = hostConfig
+
+  const pendingProps = fiberNode.pendingProps
+  const currentFiberNode = fiberNode.alternate
+
+  switch (fiberNode.tag) {
+    case FiberTagEnum.HostComponent:
+      if (currentFiberNode !== null && fiberNode.stateNode) {
+        // update
+      } else {
+        // mount
+        // 1. 离屏构建宿主环境 UI 节点
+        const hostComponent = createHostComponent(fiberNode.type, pendingProps)
+
+        // 2. 将构建的节点插入到宿主环境 UI 树中
+        appendAllChildren(hostComponent, fiberNode, hostConfig)
+
+        // 3. 关联 FiberNode 与宿主环境 UI 的节点
+        fiberNode.stateNode = hostComponent
+      }
+
+      break
+
+    case FiberTagEnum.HostText:
+      if (currentFiberNode !== null && fiberNode.stateNode) {
+        // update
+      } else {
+        // mount - 文本节点没有子节点，因此无需调用 appendAllChildren
+        const hostText = createHostText(pendingProps.textNodeContent)
+        fiberNode.stateNode = hostText
+      }
+
+      break
+
+    default:
+      if (__DEV__) {
+        console.warn('[completeWork] 未实现的 FiberNode#tag 情况', fiberNode)
+      }
+
+      break
+  }
+}
+```
+
+### flags 冒泡
+
+在 completeWork 中，其处理节点的顺序是先子后父的，因此可以将每个子节点的 flags 通过按位或的方式保存在当前节点的 subtreeFlags 中进行记录，这样最终回到 RootFiberNode 时就可以知道整个 Fiber 树中是否有副作用 flags 要处理
+
+```ts
+/**
+ * 冒泡 fiberNode 的所有子节点的属性
+ *
+ * 比如 subtreeFlags
+ */
+function bubbleProperties(fiberNode: FiberNode) {
+  let subtreeFlags: FiberFlagEnum = FiberFlagEnum.NoFlags
+  let child = fiberNode.child
+
+  while (child !== null) {
+    subtreeFlags |= child.subtreeFlags
+    subtreeFlags |= child.flags
+
+    // 关联父子节点
+    child.return = fiberNode
+
+    // 继续遍历下一个兄弟节点
+    child = child.sibling
+  }
+
+  fiberNode.subtreeFlags |= subtreeFlags
+}
+```
+
+这里函数的命名叫 `bubbleProperties` 而不是 `bubbleSubtreeFlags` 的原因是之后还会有类似的冒泡场景，比如优先级 Lane，它们都是 FiberNode 的属性
+
+接下来在 completeWork 中调用一下该函数
+
+```ts {23,36,40-43}
+export function completeWork(fiberNode: FiberNode, hostConfig: HostConfig): void {
+  const { createHostComponent, createHostText } = hostConfig
+
+  const pendingProps = fiberNode.pendingProps
+  const currentFiberNode = fiberNode.alternate
+
+  switch (fiberNode.tag) {
+    case FiberTagEnum.HostComponent:
+      if (currentFiberNode !== null && fiberNode.stateNode) {
+        // update
+      } else {
+        // mount
+        // 1. 离屏构建宿主环境 UI 节点
+        const hostComponent = createHostComponent(fiberNode.type, pendingProps)
+
+        // 2. 将构建的节点插入到宿主环境 UI 树中
+        appendAllChildren(hostComponent, fiberNode, hostConfig)
+
+        // 3. 关联 FiberNode 与宿主环境 UI 的节点
+        fiberNode.stateNode = hostComponent
+      }
+
+      bubbleProperties(fiberNode)
+
+      break
+
+    case FiberTagEnum.HostText:
+      if (currentFiberNode !== null && fiberNode.stateNode) {
+        // update
+      } else {
+        // mount - 文本节点没有子节点，因此无需调用 appendAllChildren
+        const hostText = createHostText(pendingProps.textNodeContent)
+        fiberNode.stateNode = hostText
+      }
+
+      bubbleProperties(fiberNode)
+
+      break
+
+    case FiberTagEnum.HostRoot:
+      bubbleProperties(fiberNode)
+
+      break
+
+    default:
+      if (__DEV__) {
+        console.warn('[completeWork] 未实现的 FiberNode#tag 情况', fiberNode)
+      }
+
+      break
+  }
+}
+```
+
+至此，render 阶段的 mount 流程就告一段落了，下一篇会进入 commit 阶段
