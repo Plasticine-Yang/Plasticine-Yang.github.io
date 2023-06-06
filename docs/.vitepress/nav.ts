@@ -82,4 +82,6 @@ export const nav: DefaultTheme.Config['nav'] = [
   },
 
   { text: 'Rust', link: `${ROUTES.RUST}introduction/`, activeMatch: ROUTES.RUST },
+
+  { text: 'Linux 小技巧', link: ROUTES.LINUX, activeMatch: ROUTES.LINUX },
 ]

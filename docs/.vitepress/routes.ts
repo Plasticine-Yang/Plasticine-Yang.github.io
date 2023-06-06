@@ -52,4 +52,7 @@ export enum ROUTES {
 
   /** @description Rust */
   RUST = '/rust/',
+
+  /** @description Linux */
+  LINUX = '/linux/',
 }
