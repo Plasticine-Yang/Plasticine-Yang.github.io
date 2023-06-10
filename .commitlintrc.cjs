@@ -15,7 +15,6 @@ module.exports = {
       'next',
 
       'fe-monitor-system',
-      'plasticine-drop',
 
       // typescript
       'typescript-usage',
@@ -26,7 +25,7 @@ module.exports = {
       'rust',
       'plasticine-islands',
       'commitlint',
-      'linux'
+      'linux',
     ],
   },
   rules: {

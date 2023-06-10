@@ -11,7 +11,6 @@ import { typeChallenges, typescriptUsage } from './typescript'
 
 import { frameworkSourceLearningReact } from './framework-source-learning'
 import { plasticineIslands } from './plasticine-islands'
-import { plasticineDrop } from './project-actual-combat'
 import { reactAdmin } from './react-admin'
 import { next, plasticineReact, reactBasic } from './react-learning'
 
@@ -30,7 +29,6 @@ export const sidebar: DefaultTheme.Config['sidebar'] = {
   // 项目实战
   [ROUTES.REACT_ADMIN]: reactAdmin,
   [ROUTES.PLASTICINE_ISLANDS]: plasticineIslands,
-  [ROUTES.PROJECT_ACTUAL_COMBAT_PLASTICINE_DROP]: plasticineDrop,
 
   // Typescript
   [ROUTES.TYPESCRIPT_USAGE]: typescriptUsage,

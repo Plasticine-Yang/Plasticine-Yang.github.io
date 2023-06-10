@@ -52,10 +52,6 @@ export const nav: DefaultTheme.Config['nav'] = [
         text: '基于 Islands 架构的 SSG 框架',
         link: `${ROUTES.PLASTICINE_ISLANDS}introduction/`,
       },
-      {
-        text: '基于 WebRTC 进行数据共享',
-        link: `${ROUTES.PROJECT_ACTUAL_COMBAT_PLASTICINE_DROP}introduction/`,
-      },
     ],
   },
 
