@@ -26,6 +26,7 @@ module.exports = {
       'rust',
       'plasticine-islands',
       'commitlint',
+      'linux'
     ],
   },
   rules: {
