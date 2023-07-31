@@ -8,7 +8,7 @@
 
 ## islands 架构是什么？
 
-islands 架构支持在 SSR 场景下进行局部 [hydration](/react-learning/react-basic/rendering/understanding-hydration/)
+islands 架构支持在 SSR 场景下进行局部 hydration
 
 传统的 SSR 渲染一个应用时，会进行全量渲染，也就是 **生成整个页面的 html 字符串 + 整个页面的 hydration**
 
