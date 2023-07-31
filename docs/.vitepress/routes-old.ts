@@ -1,9 +1,9 @@
-export enum ROUTES {
+export enum Routes {
   /** @description 框架源码学习 */
-  FRAMEWORK_SOURCE_LEARNING = '/framework-source-learning',
+  FrameworkSourceLearning = '/framework-source-learning',
 
   /** @description 框架源码学习 - React */
-  FRAMEWORK_SOURCE_LEARNING_REACT = '/framework-source-learning/react',
+  FrameworkSourceLearningReact = '/framework-source-learning/react',
 
   /** @description 项目实战 */
   PROJECT_ACTUAL_COMBAT = '/project-actual-combat/',

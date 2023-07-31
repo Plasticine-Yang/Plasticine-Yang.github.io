@@ -1,14 +1,17 @@
-import { ROUTES } from '../../routes'
 import { DefaultTheme } from 'vitepress'
 
-export const typeChallenges: DefaultTheme.SidebarGroup[] = [
+import { routes } from '../../routes'
+
+const PREFIX = routes.typescript.typeChallenges
+
+export const typeChallengesSidebarGroup: DefaultTheme.SidebarGroup[] = [
   {
     text: 'TypeScript 类型挑战',
     items: [
-      { text: '技巧总结', link: `${ROUTES.TYPE_CHALLENGES}summary` },
-      { text: 'Easy', link: `${ROUTES.TYPE_CHALLENGES}easy` },
-      { text: 'Medium', link: `${ROUTES.TYPE_CHALLENGES}medium` },
-      { text: 'Hard', link: `${ROUTES.TYPE_CHALLENGES}hard` },
+      { text: '技巧总结', link: `${PREFIX}/summary` },
+      { text: 'Easy', link: `${PREFIX}/easy` },
+      { text: 'Medium', link: `${PREFIX}/medium` },
+      { text: 'Hard', link: `${PREFIX}/hard` },
     ],
   },
 ]

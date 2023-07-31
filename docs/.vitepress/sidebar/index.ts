@@ -1,28 +1,24 @@
 import { DefaultTheme } from 'vitepress'
 
-import { ROUTES } from '../routes'
-
-import { algorithm } from './algorithm'
-import { nest } from './nest'
-
-import { typeChallenges } from './typescript'
-
-import { frameworkSourceLearningReact } from './framework-source-learning'
-import { plasticineIslands } from './plasticine-islands'
+import { algorithmSidebar } from './algorithm'
+import { backendSidebar } from './backend'
+import { frameworkSourceLearningSidebar } from './framework-source-learning'
+import { projectsSidebar } from './projects'
+import { typescriptSidebar } from './typescript'
 
 export const sidebar: DefaultTheme.Config['sidebar'] = {
-  // 框架源码学习
-  [ROUTES.FRAMEWORK_SOURCE_LEARNING_REACT]: frameworkSourceLearningReact,
+  /** 框架源码学习 */
+  ...frameworkSourceLearningSidebar,
 
-  // 项目实战
-  [ROUTES.PLASTICINE_ISLANDS]: plasticineIslands,
+  /** 项目 */
+  ...projectsSidebar,
 
-  // Typescript
-  [ROUTES.TYPE_CHALLENGES]: typeChallenges,
+  /** TypeScript */
+  ...typescriptSidebar,
 
-  // 算法
-  [ROUTES.ALGORITHM]: algorithm,
+  /** 后端 */
+  ...backendSidebar,
 
-  // NestJS
-  [ROUTES.BACKEND_NEST]: nest,
+  /** 算法 */
+  ...algorithmSidebar,
 }
