@@ -16,38 +16,9 @@ export const nav: DefaultTheme.Config['nav'] = [
   },
 
   {
-    text: 'React 学习',
-    activeMatch: ROUTES.REACT_LEARNING,
-    items: [
-      {
-        text: 'React 基础',
-        link: `${ROUTES.REACT_BASIC}introduction/`,
-      },
-      {
-        text: 'Next.js',
-        link: `${ROUTES.NEXT}quick-learn/`,
-      },
-      {
-        text: 'React 原理与实现',
-        link: `${ROUTES.PLASTICINE_REACT}introduction/`,
-      },
-    ],
-  },
-
-  {
-    text: '前端监控系统',
-    link: `${ROUTES.FE_MONITOR_SYSTEM}theoretical-chapter/basic/`,
-    activeMatch: ROUTES.FE_MONITOR_SYSTEM,
-  },
-
-  {
     text: '项目实战',
     activeMatch: ROUTES.PROJECT_ACTUAL_COMBAT,
     items: [
-      {
-        text: 'React Admin',
-        link: `${ROUTES.REACT_ADMIN}introduction/`,
-      },
       {
         text: '基于 Islands 架构的 SSG 框架',
         link: `${ROUTES.PLASTICINE_ISLANDS}introduction/`,
@@ -58,10 +29,7 @@ export const nav: DefaultTheme.Config['nav'] = [
   {
     text: 'TypeScript',
     activeMatch: ROUTES.TYPESCRIPT,
-    items: [
-      { text: 'TypeScript 使用', link: `${ROUTES.TYPESCRIPT_USAGE}unfamiliar-knowledge` },
-      { text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary` },
-    ],
+    items: [{ text: 'TypeScript 类型挑战', link: `${ROUTES.TYPE_CHALLENGES}summary` }],
   },
 
   { text: '算法', link: `${ROUTES.ALGORITHM}binary-tree/bfs/`, activeMatch: ROUTES.ALGORITHM },
@@ -77,7 +45,5 @@ export const nav: DefaultTheme.Config['nav'] = [
     ],
   },
 
-  { text: 'Rust', link: `${ROUTES.RUST}introduction/`, activeMatch: ROUTES.RUST },
-
-  { text: 'Linux 小技巧', link: ROUTES.LINUX, activeMatch: ROUTES.LINUX },
+  { text: 'Linux', link: ROUTES.LINUX, activeMatch: ROUTES.LINUX },
 ]
