@@ -7,25 +7,14 @@ module.exports = {
     scopes: [
       'index',
       'templates',
-
-      // react
       'plasticine-react',
-      'react-basic',
-      'react-admin',
-      'next',
-
-      'fe-monitor-system',
-
-      // typescript
-      'typescript-usage',
       'type-challenges',
-
       'algorithm',
       'nest',
-      'rust',
       'plasticine-islands',
       'commitlint',
       'linux',
+      'git',
     ],
   },
   rules: {

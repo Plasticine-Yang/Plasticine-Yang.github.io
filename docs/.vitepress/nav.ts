@@ -64,4 +64,6 @@ export const nav: DefaultTheme.Config['nav'] = [
   },
 
   { text: 'Linux', link: `${routes.linux.root}/` },
+
+  { text: 'Git', link: `${routes.git.root}/` },
 ]

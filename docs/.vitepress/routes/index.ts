@@ -1,6 +1,7 @@
 import { algorithm } from './algorithm'
 import { backend } from './backend'
 import { frameworkSourceLearning } from './framework-source-learning'
+import { git } from './git'
 import { linux } from './linux'
 import { projects } from './projects'
 import { typescript } from './typescript'
@@ -23,4 +24,7 @@ export const routes = {
 
   /** Linux */
   linux,
+
+  /** Git */
+  git,
 }
