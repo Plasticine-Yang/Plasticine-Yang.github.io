@@ -17,6 +17,11 @@ export const nav: DefaultTheme.Config['nav'] = [
   },
 
   {
+    text: '微前端',
+    link: `${routes.microFrontend.whatProblemSolve}/`,
+  },
+
+  {
     text: '项目',
     activeMatch: routes.projects.root,
     items: [
