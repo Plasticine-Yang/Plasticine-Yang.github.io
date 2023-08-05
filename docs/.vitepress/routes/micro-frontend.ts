@@ -6,4 +6,7 @@ export const microFrontend = {
 
   /** 微前端解决了什么问题 */
   whatProblemSolve: '/micro-frontend/what-problem-solve',
+
+  /** 实现微前端的方案 */
+  solutions: '/micro-frontend/solutions',
 } satisfies Route
