@@ -9,4 +9,7 @@ export const microFrontend = {
 
   /** 实现微前端的方案 */
   solutions: '/micro-frontend/solutions',
+
+  /** 基于 iframe 的微前端 */
+  iframe: '/micro-frontend/iframe',
 } satisfies Route
