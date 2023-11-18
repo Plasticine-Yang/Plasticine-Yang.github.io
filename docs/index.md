@@ -6,7 +6,7 @@ hero:
   actions:
     - theme: brand
       text: Quick Start
-      link: /linux/ssh
+      link: /notes/
     - theme: alt
       text: Github
       link: https://github.com/Plasticine-Yang/Plasticine-Yang.github.io
