@@ -2,9 +2,7 @@
 pageType: home
 
 hero:
-  name: Plasticine-Yang\'s blogs
-  text: Plasticien-Yang\'s blogs
-  tagline: Plasticine-Yang\'s blogs tagline
+  name: Plasticine-Yang's blogs
   actions:
     - theme: brand
       text: Quick Start
@@ -14,7 +12,7 @@ hero:
       link: https://github.com/web-infra-dev/rspress
   image:
     src: /rspress-icon.png
-    alt: Plasticine-Yang\'s blogs Logo
+    alt: Plasticine-Yang's blogs Logo
 features:
   - title: Blazing fast build speed
     details: The core compilation module is based on the Rust front-end toolchain, providing a more ultimate development experience.

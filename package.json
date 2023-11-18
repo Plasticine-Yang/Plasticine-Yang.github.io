@@ -8,9 +8,11 @@
     "preview": "rspress preview"
   },
   "dependencies": {
+    "react": "^18.2.0",
     "rspress": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^16"
+    "@types/node": "^16",
+    "@types/react": "^18.2.37"
   }
 }
