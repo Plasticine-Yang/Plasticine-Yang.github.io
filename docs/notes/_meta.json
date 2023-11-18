@@ -1,0 +1,13 @@
+[
+  "index",
+  {
+    "type": "custom-link",
+    "link": "/linux/ssh",
+    "label": "Linux 使用技巧"
+  },
+  {
+    "type": "custom-link",
+    "link": "/vite/",
+    "label": "Vite"
+  }
+]
