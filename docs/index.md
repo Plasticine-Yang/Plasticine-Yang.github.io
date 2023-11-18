@@ -6,10 +6,10 @@ hero:
   actions:
     - theme: brand
       text: Quick Start
-      link: /guide/
+      link: /linux/ssh
     - theme: alt
       text: Github
-      link: https://github.com/web-infra-dev/rspress
+      link: https://github.com/Plasticine-Yang/Plasticine-Yang.github.io
   image:
     src: /rspress-icon.png
     alt: Plasticine-Yang's blogs Logo
