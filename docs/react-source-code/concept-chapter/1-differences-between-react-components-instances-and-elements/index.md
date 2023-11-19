@@ -1,10 +1,17 @@
 # Differences between react components, instances and elements
 
+:::tip
+本篇文章来源于 [Dan Abramov](https://twitter.com/dan_abramov) 的 [React Components, Elements, and Instances](https://legacy.reactjs.org/blog/2015/12/18/react-components-elements-and-instances.html)
+:::
+
 ## 提出问题，带着问题阅读
 
-1. 为什么对于渲染在屏幕上的视图需要用三个概念去描述？
+1. ReactElement 的意义是什么？
+2. ReactComponent 的意义是什么？
+3. 为什么对于渲染在屏幕上的视图需要用三个概念去描述？
+4. 为什么 React 倾向于 immutable？
 
-## 理解为什么要引入 ReactElement
+## ReactElement 的意义是什么？
 
 首先来看一个简单的案例场景：
 
@@ -355,6 +362,199 @@ const DeleteAccount = () => ({
 
 而 ReactElement 仅仅描述它们的层级结构，并不保留任何相关 DOM 或组件实例的引用，可以有效做到解耦。
 
+### 小结
+
+到这里就可以理解为什么 React 要引入 ReactElement 了，因为它能够解决上面提到的传统面向对象的 UI 编程的痛点：
+
+1. 不需要保存对相关 DOM 和组件实例的引用。
+2. 用于在 React 自动管理组件的创建、更新和销毁的过程中提供 UI 描述信息。
+3. 父子组件内部之间无关联，可以轻松实现解耦。
+
+## ReactComponent 的意义是什么？
+
+一个最重要和最直观的意义在于，ReactComponent 可以封装 ReactElement 树。
+
+比如类组件的 render 方法返回一段 jsx 以及函数组件返回一段 jsx，它们都做到了对 ReactElement 树的封装。
+
+举个例子，当 React 识别到下面这个 ReactElement：
+
+```ts
+{
+  type: Button,
+  props: {
+    color: 'blue',
+    children: 'OK!'
+  }
+}
+```
+
+由于 type 不是 string，那么它就是一个类组件的构造函数或者函数组件的函数，于是 React 会尝试传入 props 创建类组件实例或传入 props 给函数组件的函数，然后就得到下面这个返回的 ReactElement：
+
+```ts
+{
+  type: 'button',
+  props: {
+    className: 'button button-blue',
+    children: {
+      type: 'b',
+      props: {
+        children: 'OK!'
+      }
+    }
+  }
+}
+```
+
+现在得到的 ReactElement 的 type 是 string，也就是来到了 DOM tag element 了，那么就可以停止上面这个过程，将其渲染到页面中。
+
+React 会从根组件出发，不断重复上面这个过程，直到将所有的 ReactComponent 都解析成 DOM tag element。
+
+原文中对这一过程的一个形象描述：
+
+> React is like a child asking “what is Y” for every “X is Y” you explain to them until they figure out every little thing in the world.
+
+### 在 ReactComponent 的视角重新实现前面的案例
+
+还记得前面用面向对象的 UI 编程实现的一个案例吗？这里对其简化以下，将案例中的 isSubmitted 状态提升到组件 props 传入，使用 React 函数组件实现的效果就是下面这样：
+
+```jsx
+const Form = ({ isSubmitted, buttonText }) => {
+  if (isSubmitted) {
+    // Form submitted! Return a message element.
+    return {
+      type: Message,
+      props: {
+        text: 'Success!',
+      },
+    }
+  }
+
+  // Form is still visible! Return a button element.
+  return {
+    type: Button,
+    props: {
+      children: buttonText,
+      color: 'blue',
+    },
+  }
+}
+```
+
+直接根据传入的 props 判断返回的 ReactElement 即可，从而解决了面向对象的那种需要在组件内部维护对其他组件实例的引用以及生命周期的问题。
+
+我们只需要描述一个组件会返回什么 ReactElement 树即可，至于组件实例的创建、更新和销毁可以放心地交给 React 自动完成。
+
+其次，这种方式可以允许我们自由地组合各种组件，具有极大的灵活性！
+
+### 小结
+
+ReactComponent 的意义在于：
+
+1. 封装 UI 结构树，提高 UI 复用性。
+2. 自由地组合各种逻辑下对应的 UI 结构，具有极大的灵活性。
+
+## 为什么对于渲染在屏幕上的视图需要用三个概念去描述？
+
+要回答这个问题，涉及到 React 渲染的原理，对于下面这样一个常见的 React 用法：
+
+```ts
+ReactDOM.render(
+  {
+    type: Form,
+    props: {
+      isSubmitted: false,
+      buttonText: 'OK!',
+    },
+  },
+  document.getElementById('root'),
+)
+```
+
+它的运行时的过程是这样的：
+
+```ts
+// React: You told me this...
+{
+  type: Form,
+  props: {
+    isSubmitted: false,
+    buttonText: 'OK!'
+  }
+}
+
+// React: ...And Form told me this...
+{
+  type: Button,
+  props: {
+    children: 'OK!',
+    color: 'blue'
+  }
+}
+
+// React: ...and Button told me this! I guess I'm done.
+{
+  type: 'button',
+  props: {
+    className: 'button button-blue',
+    children: {
+      type: 'b',
+      props: {
+        children: 'OK!'
+      }
+    }
+  }
+}
+```
+
+也就是前面提到过的，从根组件出发，遇到函数组件就传入 props 拿到返回的 ReactElement 树；遇到类组件就传入 props 创建其实例，并调用 render 方法拿到返回的 ReactElement 树；遇到 DOM tag element 则停止，最后将所有解析出来的 DOM tag elements 渲染到页面中。这一过程 React 称其为 `reconciliation`。
+
+:::info
+
+原文中对 reconciliation 的概述：
+
+> reconciliation starts when you call ReactDOM.render() or setState(). By the end of the reconciliation, React knows the resulting DOM tree, and a renderer like react-dom or react-native applies the minimal set of changes necessary to update the DOM nodes (or the platform-specific views in case of React Native).
+
+:::
+
+不难发现，这个过程中就正好涉及到了：
+
+1. ReactElement 描述 UI 结构
+2. ReactComponent 封装 ReactElement 树
+3. 创建类组件实例
+
+因此对于渲染在屏幕上的视图需要这三个概念去进行描述。
+
+## 为什么 React 倾向于 immutable？
+
+这与 reconciliation 过程中的 **性能调优** 有关。
+
+当我们的组件树结构变得很庞大很复杂的时候，reconciliation 算法执行的时间肯定是会受到影响的，这时候就需要进行性能调优了。
+
+怎么调优呢？reconciliation 每次都是从根组件出发，自顶向下地遍历整个组件树，如果我们能够明确在遍历某些组件的时候其实这个组件是不需要更新的，那么 reconciliation 算法就可以跳过对该组件的遍历，进而提升算法执行的效率。
+
+何时才算 “明确某些组件是不需要更新的” 呢？回过头看看，组件解析的过程无论是类组件还是函数组件，都是接受传入的 props，返回 ReactElement 树，那么如果 props 不变，是不是就可以保证返回的 ReactElement 树不变了（先不讨论组件内部状态变更引起的更新）？
+
+那如果 props 是 immutable 的，也就是不可变对象，也就意味着在进行 props diff 的时候，只需要简单地进行全等比较或浅层比较即可，无需进行深层比较耗费大量运算时间。因此 React 倾向于使用 immutable 的方式。
+
+这只是其中一个优化场景，reconciliation 的其他优化场景还有很多，这里只举一个例子阐述一下 React 倾向于使用 immutable 规则的原因。
+
 ## 总结
 
-1. 为什么对于渲染在屏幕上的视图需要用三个概念去描述？
+1. ReactElement 的意义是什么？
+
+   - 不需要像面向对象的 UI 编程那样在组件内部保存对相关 DOM 和组件实例的引用。
+   - 用于在 React 自动管理组件的创建、更新和销毁的过程中提供 UI 描述信息。
+   - 父子组件内部之间无关联，可以轻松实现解耦。
+
+2. ReactComponent 的意义是什么？
+
+   - 封装 UI 结构树，提高 UI 复用性。
+   - 自由地组合各种逻辑下对应的 UI 结构，具有极大的灵活性。
+
+3. 为什么对于渲染在屏幕上的视图需要用三个概念去描述？
+
+   - 与 React 的 reconciliation 算法流程有关。
+
+4. 为什么 React 倾向于 immutable？
+
+   - 与 reconciliation 算法的性能调优有关，immutable 的方式可以极大简化 props 的 diff，提升算法运行效率。
