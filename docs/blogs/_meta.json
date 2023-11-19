@@ -2,12 +2,17 @@
   "index",
   {
     "type": "custom-link",
-    "link": "/linux/ssh",
-    "label": "Linux"
+    "link": "/react-source-code/",
+    "label": "React 源码学习"
   },
   {
     "type": "custom-link",
     "link": "/vite/",
     "label": "Vite"
+  },
+  {
+    "type": "custom-link",
+    "link": "/linux/ssh",
+    "label": "Linux"
   }
 ]
