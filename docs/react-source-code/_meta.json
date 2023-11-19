@@ -1,1 +1,11 @@
-["index"]
+[
+  "index",
+  {
+    "type": "divider"
+  },
+  {
+    "type": "dir",
+    "name": "concept-chapter",
+    "label": "概念篇"
+  }
+]
