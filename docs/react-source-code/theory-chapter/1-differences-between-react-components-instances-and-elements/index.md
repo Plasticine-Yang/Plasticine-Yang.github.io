@@ -1,4 +1,4 @@
-# Differences between react components, instances and elements
+# ReactElement、ReactComponent、ReactComponent instance 的区别？
 
 :::tip
 本篇文章来源于 [Dan Abramov](https://twitter.com/dan_abramov) 的 [React Components, Elements, and Instances](https://legacy.reactjs.org/blog/2015/12/18/react-components-elements-and-instances.html)

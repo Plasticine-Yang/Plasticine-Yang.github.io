@@ -5,7 +5,7 @@
   },
   {
     "type": "dir",
-    "name": "concept-chapter",
-    "label": "概念篇"
+    "name": "theory-chapter",
+    "label": "原理篇"
   }
 ]
