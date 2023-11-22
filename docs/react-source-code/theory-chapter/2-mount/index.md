@@ -1,4 +1,4 @@
-# React mount 的简要流程
+# mount 的简要流程
 
 ## 前言
 
