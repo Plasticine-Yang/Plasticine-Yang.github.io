@@ -1,4 +1,4 @@
-# update - 引入内部实例
+# update 的简要流程
 
 ## 前言
 
@@ -6,15 +6,15 @@ React 的一个主要特性就在于可以 re-render 所有元素而不用重新
 
 然而，目前我们的 demo 实现只完成了挂载初始的 jsx，无法完成更新操作，这是因为我们缺少更新操作所需的必要信息，比如完成一次更新，如果是类组件，我们应当复用已创建的实例；此外，还需要知道与每个组件关联的 DOM。
 
-本篇文章就是来探讨一下如何记录这些更新操作所需的必要信息。
+本篇文章就是来探讨一下如何记录这些更新操作所需的必要信息，以及如何利用这些信息去完成更新流程。
 
-## 为什么要引入内部实例？
+## 引入内部实例记录额外信息
 
-本篇的标题是「引入内部实例」，为什么要引入内部实例呢？原有的 `mountComposite` 和 `mountHost` 方式存在什么问题吗？
+为什么要引入内部实例呢？原有的 `mountComposite` 和 `mountHost` 方式存在什么问题吗？
 
 因为我们现在需要记录额外的信息，如果是原来的函数的方式的话，这些额外的信息只能通过闭包的方式去保存，但为了逻辑上更好理解和代码上更好管理，还是认为引入实例的方式更适合。
 
-## 重构已有实现
+### 重构已有实现
 
 明白了引入内部实例的原因后就可以来重构一下已有的实现了，重构的思路是这样的：
 
@@ -23,7 +23,7 @@ React 的一个主要特性就在于可以 re-render 所有元素而不用重新
 
 这样一来我们就能将更新所需的必要信息存储在 CompositeComponent 和 HostComponent 中了。
 
-## instantiateComponent
+### instantiateComponent
 
 将原来的 mount 函数改成 instantiateComponent，从命名上的变化可以看出来，函数的职责从完成挂载这一动作变成了创建内部组件实例。
 
@@ -41,7 +41,7 @@ function instantiateComponent(element) {
 
 接下来再分别实现 CompositeComponent 和 HostComponent。
 
-## CompositeComponent
+### CompositeComponent
 
 ```js
 class CompositeComponent {
@@ -98,7 +98,7 @@ class CompositeComponent {
 
 相对的，用户定义的 jsx 类组件实例则称为 public instances。
 
-## HostComponent
+### HostComponent
 
 接下来再看看 HostComponent 的实现，同样地，将 mountHost 重构为 HostComponent 也是为了记录一些额外的信息，需要记录哪些额外信息呢？
 
@@ -151,7 +151,7 @@ class HostComponent {
 }
 ```
 
-## 内部实例组成的树结构
+### 内部实例组成的树结构
 
 重构完后，举个例子来看看内部实例构成的树结构会是怎样的，比如下面这个 `<App />` jsx：
 
@@ -187,7 +187,7 @@ console.log(internalInstance)
 
 ![internal-instance-demo](./images/internal-instance-demo.png)
 
-## 进一步封装一个语义化的 mount 函数
+### 进一步封装一个语义化的 mount 函数
 
 上面的 demo 中，mount 的过程暴露在外部，使用起来很不语义化，难以阅读，这里我们再做一个小小的优化，把 mount 的细节封装起来，外部只需要传入根组件 ReactElement 以及要挂载的容器节点即可，就类似于 `ReactDOM.mount(<App />, document.querySelector('#root'))`。
 
@@ -218,7 +218,7 @@ const rootEl = document.querySelector('#root')
 mount(appElement, rootEl)
 ```
 
-## 总结
+### 小结
 
 为了为后续更新视图做准备，我们对之前的 demo 进行了重构，重构的目的是将函数实现转成实例方法实现，从而能够在实例中存储一些额外信息用于后续更新视图时进行 diff。
 
@@ -237,3 +237,133 @@ HostComponent:
 - The current element.
 - The DOM node.
 - All child internal instances. Each of them can be either a HostComponent or a CompositeComponent.
+
+## unmount
+
+要实现 update，需要先实现 unmount，因为 diff 出差异时需要卸载无用的节点。那么要如何实现呢？能否直接把 containerNode 的 innerHTML 清空呢？
+
+答案是不行，原因如下：
+
+1. 每个节点可能有自己的事件监听回调，卸载时需要先移除这些事件监听回调；
+2. React 类组件是有 `componentWillUnmount` 生命周期钩子的，需要在卸载之前调用该钩子；
+
+为此，可以大致梳理出一个 unmount 流程主要做的事情：
+
+- 对于 CompositeComponent
+
+  - 调用 `componentWillUnmount` 生命周期钩子（如果有的话）
+  - 调用 renderedComponent 的 unmount 方法，递归地进行 unmount
+
+- 对于 HostComponent
+  - 遍历 renderedChildren，即所有的子内部实例，调用它们的 unmount 方法
+
+这里为了简化，把事件监听回调的移除忽略掉了，只需要关注核心流程即可。
+
+知道了大致思路后，可以看看相应的代码：
+
+```js title="CompositeComponent"
+class CompositeComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedComponent = null
+    this.publicInstance = null
+  }
+
+  // ...
+
+  unmount() {
+    this.publicInstance?.componentWillUnmount?.()
+    this.renderedComponent?.unmount?.()
+  }
+}
+```
+
+```js title="HostComponent"
+class HostComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedChildren = []
+    this.node = null
+  }
+
+  // ...
+
+  unmount() {
+    for (const childComponent of this.renderedChildren) {
+      childComponent.unmount()
+    }
+  }
+}
+```
+
+现在我们的内部实例上有了 unmount 方法，我们还需要提供一个 public API 去调用内部实例的 unmount 方法，并在 unmount 后将 `containerNode.innerHTML` 清空。
+
+```js
+function unmount(containerNode) {
+  const node = containerNode.firstChild
+  const rootComponent = node.__internalInstance
+
+  rootComponent?.unmount()
+  containerNode.innerHTML = ''
+}
+```
+
+值得注意的是，由于 unmount 是一个对外暴露的 API，因此其接受的参数也应当是外部能访问到的，也就是传入一个挂载的容器节点，我能帮你完成卸载里面的 React 组件。
+
+这就涉及到一个从外部数据到内部数据的转换了，我们可以在 mount 的时候将内部实例存储到渲染出的 DOM 上，这样在 unmount 的时候就能够获取到了，也就是这里的 `node.__internalInstance`。还需要注意一个边界场景就是重复 mount 时应当先把已有的节点 unmount。
+
+```js {2-5,12}
+function mount(element, containerNode) {
+  // Destroy any existing tree.
+  if (containerNode.firstChild) {
+    unmount(containerNode)
+  }
+
+  // Create top-level internal instance.
+  const rootComponent = instantiateComponent(element)
+
+  // Mount the top-level component into the container.
+  const node = rootComponent.mount()
+  node.__internalInstance = rootComponent
+
+  containerNode.appendChild(node)
+
+  // Return the public instance it provides.
+  const publicInstance = rootComponent.getPublicInstance()
+  return publicInstance
+}
+```
+
+通过一个 Demo 简单效果：
+
+```js
+function Button() {
+  return {
+    type: 'div',
+    props: {},
+  }
+}
+
+function App() {
+  return {
+    type: Button,
+    props: {},
+  }
+}
+
+const appElement = {
+  type: App,
+  props: {},
+}
+
+const rootEl = document.querySelector('#root')
+mount(appElement, rootEl)
+
+setTimeout(() => {
+  unmount(rootEl)
+}, 3000)
+```
+
+效果是先 mount，然后 3s 后 unmount：
+
+![unmount-demo](./images/unmount-demo.gif)
