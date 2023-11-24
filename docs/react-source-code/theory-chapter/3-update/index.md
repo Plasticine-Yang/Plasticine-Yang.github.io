@@ -367,3 +367,237 @@ setTimeout(() => {
 效果是先 mount，然后 3s 后 unmount：
 
 ![unmount-demo](./images/unmount-demo.gif)
+
+## update
+
+终于要来到我们的 update 流程了！现在我们的 demo 已经支持 mount 和 unmount，一个最简单的 update 流程就是当 props 发生变化时，直接 unmount 整颗树再 mount 即可，但是这种方式毫无意义，没有发挥我们引入的内部实例能够记录额外信息这一特点。
+
+我们应当利用记录的额外信息去尽可能地复用 DOM 和状态来实现 update，避免不必要的运算开销。
+
+为了做到这点，我们需要扩展我们的内部实例方法，新增一个 `receive(nextElement)` 方法，该方法接收更新后的 ReactElement，在方法内部利用实例保存的信息与新的 ReactElement 进行 diff，从而针对性地进行 update，这实际上就是 Virtual DOM 类型前端框架最经典的 diff 算法。
+
+接下来就分 CompositeComponent 和 HostComponent 去介绍如何实现 receive 方法。
+
+### CompositeComponent receive 方法
+
+对于 CompositeComponent，在进行 update 时需要做以下事情：
+
+1. 调用 componentWillUpdate 生命周期钩子（如果有的话）
+2. 用新的 ReactElement 的 props 进行 re-render 获取新的 renderedElement
+   1. 类组件：更新类组件实例的 props 并调用其 render 方法得到新的 renderedElement
+   2. 函数组件：调用函数并传入 props 得到新的 renderedElement
+3. 对比 renderedElement 和传入的 nextElement，未变化时进行复用，变化了则 unmount 再 mount
+
+接下来让我们一步一步实现它们。
+
+---
+
+#### 调用 componentWillUpdate 生命周期钩子
+
+```js
+class CompositeComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedComponent = null
+    this.publicInstance = null
+  }
+
+  // ...
+
+  receive(nextElement) {
+    const type = nextElement.type
+    const publicInstance = this.publicInstance
+
+    if (isClass(type)) {
+      publicInstance.componentWillUpdate?.()
+    }
+  }
+}
+```
+
+---
+
+#### 获取新的 renderedElement
+
+```js
+class CompositeComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedComponent = null
+    this.publicInstance = null
+  }
+
+  // ...
+
+  receive(nextElement) {
+    const publicInstance = this.publicInstance
+    const type = nextElement.type
+    const nextProps = nextElement.props
+
+    let nextRenderedElement
+
+    if (isClass(type)) {
+      publicInstance.componentWillUpdate?.()
+      publicInstance.props = nextProps
+      // re-render ClassComponent
+      nextRenderedElement = publicInstance.render()
+    } else if (typeof type === 'function') {
+      // re-render FunctionComponent
+      nextRenderedElement = type(nextProps)
+    }
+  }
+}
+```
+
+---
+
+#### 对比 renderedElement 和传入的 nextElement
+
+关键在于如何对比 renderedElement 和 nextElement 找出不同不地方。
+
+如果发现可以复用则进行复用，不能复用则需要 remount，有两种情况是需要进行 remount：
+
+1. prevRenderedElement 和 nextRenderedElement 的 type 不同
+2. prevRenderedElement 和 nextRenderedElement 的 key 不同
+
+这里由于只是介绍 update 的简要流程，只讨论 type 不同时进行 remount 的场景，key 不同的场景不深究。
+
+接下来看看 type 对比的场景：将此次的 renderedElement 和上次的 renderedElement 的 type 进行对比（也就是 prevRenderedElement 和 nextRenderedElement），如果没变则可以进行复用，比如：
+
+`<Foo name="foo" />` 变成了 `<Foo name="bar" />`，那么这种情况是可以进行复用的，只需要对上一次 renderedElement 对应的内部实例调用其 receive 方法进行递归更新即可。
+
+```js {12-14,31-36}
+class CompositeComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedComponent = null
+    this.publicInstance = null
+  }
+
+  receive(nextElement) {
+    const publicInstance = this.publicInstance
+    const type = nextElement.type
+
+    // prev
+    const prevRenderedComponent = this.renderedComponent
+    const prevRenderedElement = prevRenderedComponent.currentElement
+
+    // next
+    const nextProps = nextElement.props
+
+    let nextRenderedElement
+
+    if (isClass(type)) {
+      publicInstance.componentWillUpdate?.()
+      publicInstance.props = nextProps
+      // re-render ClassComponent
+      nextRenderedElement = publicInstance.render()
+    } else if (typeof type === 'function') {
+      // re-render FunctionComponent
+      nextRenderedElement = type(nextProps)
+    }
+
+    // If the rendered element type has not changed,
+    // reuse the existing component instance and exit.
+    if (prevRenderedElement.type === nextRenderedElement.type) {
+      prevRenderedComponent.receive(nextRenderedElement)
+      return
+    }
+  }
+}
+```
+
+而如果 type 变了，则无法进行复用，比如：
+
+`<Foo />` 变成 `<Bar />`，进行复用的话是没有任何意义的。
+
+此时需要先 unmount 后再 mount。
+
+```js {40-60}
+class CompositeComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedComponent = null
+    this.publicInstance = null
+  }
+
+  // ...
+
+  receive(nextElement) {
+    const publicInstance = this.publicInstance
+    const type = nextElement.type
+
+    // prev
+    const prevRenderedComponent = this.renderedComponent
+    const prevRenderedElement = prevRenderedComponent.currentElement
+
+    // next
+    const nextProps = nextElement.props
+
+    let nextRenderedElement
+
+    if (isClass(type)) {
+      publicInstance.componentWillUpdate?.()
+      publicInstance.props = nextProps
+      // re-render ClassComponent
+      nextRenderedElement = publicInstance.render()
+    } else if (typeof type === 'function') {
+      // re-render FunctionComponent
+      nextRenderedElement = type(nextProps)
+    }
+
+    // If the rendered element type has not changed,
+    // reuse the existing component instance and exit.
+    if (prevRenderedElement.type === nextRenderedElement.type) {
+      prevRenderedComponent.receive(nextRenderedElement)
+      return
+    }
+
+    // If we reached this point, we need to unmount the previously
+    // mounted component, mount the new one, and swap their nodes.
+
+    // Find the old node because it will need to be replaced.
+    // 这里增加一个 getHostNode 方法是因为无法确保 prevRenderedComponent 一定是 HostComponent
+    // 如果是 HostComponent 则可以直接获取其 node 属性
+    // 如果是 CompositeComponent 则需要递归地向下遍历直到找到 HostComponent 实例再获取其 node 属性
+    const prevNode = prevRenderedComponent.getHostNode()
+
+    // Unmount the old child and mount a new child.
+    prevRenderedComponent.unmount()
+    const nextRenderedComponent = instantiateComponent(nextRenderedElement)
+    const nextNode = nextRenderedComponent.mount()
+
+    // Replace the reference to the child.
+    this.renderedComponent = nextRenderedComponent
+
+    // Replace the old node with the next node.
+    // Note: this is renderer-specific code and
+    // ideally should live outside of CompositeComponent.
+    prevNode.parentNode.replaceChild(nextNode, prevNode)
+  }
+}
+```
+
+对于这里的 `getHostNode` 方法，其实现如下：
+
+```js
+class CompositeComponent {
+  // ...
+
+  getHostNode() {
+    // Ask the rendered component to provide it.
+    // This will recursively drill down any composites.
+    return this.renderedComponent.getHostNode()
+  }
+}
+
+class HostComponent {
+  // ...
+
+  getHostNode() {
+    return this.node
+  }
+}
+```
+
+### HostComponent receive 方法
