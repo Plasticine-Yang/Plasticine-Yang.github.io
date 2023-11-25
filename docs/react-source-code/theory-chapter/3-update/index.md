@@ -643,12 +643,332 @@ class HostComponent {
 }
 ```
 
+---
+
 #### 更新 children
 
-对于 children 的更新就比较复杂了，需要考虑到 children 的新增、替换、移除操作，为了将 diff 计算与操作 DOM 区分开，我们引入一个中间层 -- operationQueue，它记录了对于每个 children 需要进行哪种操作，等 diff 完了之后我们再去遍历 operationQueue 去进行相应 DOM 操作，这样做的好处是可以让 reconciler 和具体渲染环境解耦。
+对于 children 的更新就比较复杂了，需要考虑到 children 的新增、更新、替换（从一种 type 替换为另一种 type，也就是进行 remount）、移除操作，为了将 diff 计算与操作 DOM 区分开，我们引入一个中间层 -- operationQueue，它记录了对于每个 children 需要进行哪种操作，等 diff 完了之后我们再去遍历 operationQueue 去进行相应 DOM 操作，这样做的好处是可以让 reconciler 和具体渲染环境解耦。
 
 首先我们需要获取新旧 children：
 
 ```js
+class HostComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedChildren = []
+    this.node = null
+  }
 
+  // ...
+
+  receive(nextElement) {
+    const node = this.node
+    const prevElement = this.currentElement
+    const prevProps = prevElement.props
+    const nextProps = nextElement.props
+
+    // ...
+
+    // Get prevChildren and nextChildren - array of ReactElement
+    let prevChildren = prevProps.children ?? []
+    let nextChildren = nextProps.children ?? []
+
+    if (!Array.isArray(prevChildren)) {
+      prevChildren = [prevChildren]
+    }
+
+    if (!Array.isArray(nextChildren)) {
+      nextChildren = [nextChildren]
+    }
+
+    // Get prevRenderedChildren and nextRenderedChildren - array of internal instances
+    const prevRenderedChildren = this.renderedChildren
+    const nextRenderedChildren = []
+
+    // As we iterate over children, we will add operation to the array.
+    const operationQueue = []
+  }
+}
 ```
+
+然后是处理新增、更新和替换的场景：
+
+1. 新增：之前没有 mount 过，现在需要 mount
+2. 更新：之前 mount 过，且现在也存在，且 type 没有发生改变，调用 receive 进行更新
+3. 替换：之前 mount 过，且现在也存在，但是 type 改变了，需要 remount
+
+```js
+class HostComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedChildren = []
+    this.node = null
+  }
+
+  // ...
+
+  receive(nextElement) {
+    const node = this.node
+    const prevElement = this.currentElement
+    const prevProps = prevElement.props
+    const nextProps = nextElement.props
+
+    // ...
+
+    // 新增、更新和替换操作
+    for (let i = 0; i < nextChildren.length; i++) {
+      const prevChildElement = prevChildren.at(i)
+      const nextChildElement = nextChildren.at(i)
+      const prevChildComponent = prevRenderedChildren.at(i)
+
+      // 之前没有现在有 - 新增操作
+      // 为新的 ReactElement 创建内部实例
+      if (!prevChildComponent && nextChildElement) {
+        const nextChildComponent = instantiateComponent(nextChildElement)
+        const node = nextChildComponent.mount()
+
+        operationQueue.push({ type: 'ADD', node })
+        nextRenderedChildren.push(nextChildComponent)
+
+        continue
+      }
+
+      // 只在 type 相同时才能进行更新，复用已有的 DOM，否则就进行替换
+      const canUpdate = prevChildElement.type === nextChildElement.type
+
+      // 替换
+      if (!canUpdate) {
+        const prevChildNode = prevChildComponent.getHostNode()
+        prevChildNode.unmount()
+
+        const nextChildComponent = instantiateComponent(nextChildElement)
+        const nextChildNode = nextChildComponent.mount()
+
+        operationQueue.push({ type: 'REPLACE', prevChildNode, nextChildNode })
+        nextRenderedChildren.push(nextChildComponent)
+
+        continue
+      }
+
+      // 更新 - 调用之前的内部实例的 receive 方法，传入新的 ReactElement 即可
+      prevChildComponent.receive(nextChildElement)
+      nextRenderedChildren.push(prevChildComponent)
+    }
+  }
+}
+```
+
+最后是删除操作，即之前 mount 过，现在不存在了，需要 unmount。
+
+```js
+class HostComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedChildren = []
+    this.node = null
+  }
+
+  // ...
+
+  receive(nextElement) {
+    const node = this.node
+    const prevElement = this.currentElement
+    const prevProps = prevElement.props
+    const nextProps = nextElement.props
+
+    // ...
+
+    // 删除
+    for (let i = nextChildren.length; i < prevChildren.length; i++) {
+      const prevChildComponent = prevRenderedChildren.at(i)
+      const node = prevChildComponent.getHostNode()
+
+      // 卸载内部组件实例
+      prevChildComponent?.unmount()
+
+      // 记录操作 - 卸载 DOM
+      operationQueue.push({ type: 'REMOVE', node })
+    }
+  }
+}
+```
+
+经过 reconciler 的运算后，我们得到了需要进行的 DOM 操作队列，接下来就是去消费这个队列：
+
+```js
+class HostComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedChildren = []
+    this.node = null
+  }
+
+  // ...
+
+  receive(nextElement) {
+    const node = this.node
+    const prevElement = this.currentElement
+    const prevProps = prevElement.props
+    const nextProps = nextElement.props
+
+    // ...
+
+    // 消费操作队列，执行 DOM 操作
+    while (operationQueue.length > 0) {
+      const operation = operationQueue.shift()
+
+      switch (operation.type) {
+        case 'ADD':
+          this.node.appendChild(operation.node)
+          break
+
+        case 'REPLACE':
+          this.node.replaceChild(operation.nextChildNode, operation.prevChildNode)
+          break
+
+        case 'REMOVE':
+          this.node.removeChild(operation.node)
+          break
+
+        default:
+          console.warn('unknown operation type')
+          break
+      }
+    }
+  }
+}
+```
+
+### 调用 receive 方法的时机
+
+现在我们的 receive 方法已经实现完了，那么改在哪里调用呢？由于 React 的 reconciliation 是从根组件出发，自顶向下的，因此我们可以把更新的流程也放到从根组件出发。
+
+也就是在外部调用 mount 的时候就可以考虑调用 receive 方法了：
+
+```js {4-11}
+function mount(element, containerNode) {
+  // Check for an existing tree.
+  if (containerNode.firstChild) {
+    const prevNode = containerNode.firstChild
+    const prevRootComponent = prevNode.__internalInstance
+    const prevElement = prevRootComponent.currentElement
+
+    if (prevElement.type === element.type) {
+      prevRootComponent.receive(element)
+      return
+    }
+
+    unmount(containerNode)
+  }
+
+  // Create top-level internal instance.
+  const rootComponent = instantiateComponent(element)
+
+  // Mount the top-level component into the container.
+  const node = rootComponent.mount()
+  node.__internalInstance = rootComponent
+
+  containerNode.appendChild(node)
+
+  // Return the public instance it provides.
+  const publicInstance = rootComponent.getPublicInstance()
+  return publicInstance
+}
+```
+
+## Demo 验证
+
+到这里整个 update 的简要流程就实现完了，接下来通过一个 Demo 验证一下：
+
+```js
+function Button(props) {
+  return {
+    type: 'button',
+    props,
+  }
+}
+
+function Foo() {
+  return {
+    type: 'div',
+    props: {
+      id: 'foo',
+    },
+  }
+}
+
+function App(props) {
+  const { buttonProps, shouldRenderFoo = false } = props
+
+  if (shouldRenderFoo) {
+    return {
+      type: Foo,
+      props: {},
+    }
+  }
+
+  return {
+    type: 'div',
+    props: {
+      id: 'app',
+      children: [
+        {
+          type: Button,
+          props: buttonProps,
+        },
+        {
+          type: Button,
+          props: buttonProps,
+        },
+      ],
+    },
+  }
+}
+
+const appElement = {
+  type: App,
+  props: {
+    buttonProps: {
+      size: 'medium',
+    },
+  },
+}
+
+// first render
+const rootEl = document.querySelector('#root')
+mount(appElement, rootEl)
+
+setTimeout(() => {
+  // update buttonProps
+  const appElement1 = {
+    type: App,
+    props: {
+      buttonProps: {
+        size: 'large',
+      },
+    },
+  }
+  mount(appElement1, rootEl)
+}, 3000)
+
+setTimeout(() => {
+  // replace Button with Foo
+  const appElement2 = {
+    type: App,
+    props: {
+      shouldRenderFoo: true,
+    },
+  }
+  mount(appElement2, rootEl)
+}, 6000)
+```
+
+1. 先进行一次 mount，挂载一个 div，里面有两个 Button 组件；
+2. 3s 后更新 Button 组件的 props
+3. 再 3s 后将 Button 替换为 Foo 组件
+
+效果如下图：
+
+![update-demo](./images/update-demo.gif)
+
+至此我们的原理篇就完结啦！
