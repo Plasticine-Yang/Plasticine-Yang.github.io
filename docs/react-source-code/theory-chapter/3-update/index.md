@@ -601,3 +601,54 @@ class HostComponent {
 ```
 
 ### HostComponent receive 方法
+
+以浏览器 DOM 环境举例，HostComponent 的 receive 方法更新的主要就是 DOM Attributes 以及对 children 进行更新。
+
+#### 更新 DOM Attributes
+
+遍历旧的 props，把不存在于新 props 的那些 props 从 DOM Attributes 中移除。
+
+```js
+class HostComponent {
+  constructor(element) {
+    this.currentElement = element
+    this.renderedChildren = []
+    this.node = null
+  }
+
+  // ...
+
+  receive(nextElement) {
+    const node = this.node
+    const prevElement = this.currentElement
+    const prevProps = prevElement.props
+    const nextProps = nextElement.props
+
+    this.currentElement = nextElement
+
+    // Remove old attributes.
+    for (const propName of Object.keys(prevProps)) {
+      if (propName !== 'children' && !Object.prototype.hasOwnProperty.call(nextProps, propName)) {
+        node.removeAttribute(propName)
+      }
+    }
+
+    // Set next attributes.
+    for (const propName of Object.keys(nextProps)) {
+      if (propName !== 'children') {
+        node.setAttribute(propName, nextProps[propName])
+      }
+    }
+  }
+}
+```
+
+#### 更新 children
+
+对于 children 的更新就比较复杂了，需要考虑到 children 的新增、替换、移除操作，为了将 diff 计算与操作 DOM 区分开，我们引入一个中间层 -- operationQueue，它记录了对于每个 children 需要进行哪种操作，等 diff 完了之后我们再去遍历 operationQueue 去进行相应 DOM 操作，这样做的好处是可以让 reconciler 和具体渲染环境解耦。
+
+首先我们需要获取新旧 children：
+
+```js
+
+```
