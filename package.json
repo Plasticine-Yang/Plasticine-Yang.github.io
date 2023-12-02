@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "rspress": "^1.0.0"
+    "rspress": "^1.7.5"
   },
   "devDependencies": {
     "@types/node": "^16",
