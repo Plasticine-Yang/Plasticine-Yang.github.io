@@ -336,7 +336,7 @@ undefined
 接下来通过两个需求来实战一下 esbuild 的插件开发：
 
 1. 通过 http 加载库
-2. 支持构建 HTML
+2. 自动生成 html 引入产物
 
 ### 通过 http 加载库
 
@@ -555,4 +555,76 @@ Bundle finished!
 
 这样一来就支持对 http 的模块进行 bundle 啦，是不是非常酷炫！
 
-### 支持构建 HTML
+### 自动生成 html 引入产物
+
+背景：
+
+esbuild 打包出来的产物是 js 和 css，并不能直接运行，需要手动创建一个 html 文件去引入这些打包产物后才能使用，现在我们要开发的插件就是自动生成这个 html 文件。
+
+实现思路是利用 `onEnd` 钩子能够从 metafile 中获取到所有产物的信息这一特点来遍历所有产物的构建信息，然后生成相应的 script 和 link 标签去加载它们。比较简单，就不过多赘述，直接看代码吧！
+
+```js
+const fs = require('fs/promises')
+const path = require('path')
+
+module.exports = () => ({
+  name: 'esbuild:html-generator',
+  setup(build) {
+    build.onEnd(async (buildResult) => {
+      if (buildResult.errors.length) {
+        return
+      }
+      const { metafile } = buildResult
+      // 1. 拿到 metafile 后获取所有的 js 和 css 产物路径
+      const scripts = []
+      const links = []
+      if (metafile) {
+        const { outputs } = metafile
+        const assets = Object.keys(outputs)
+
+        assets.forEach((asset) => {
+          if (asset.endsWith('.js')) {
+            scripts.push(createScript(asset))
+          } else if (asset.endsWith('.css')) {
+            links.push(createLink(asset))
+          }
+        })
+      }
+      // 2. 拼接 HTML 内容
+      const templateContent = generateHTML(scripts, links)
+      // 3. HTML 写入磁盘
+      const templatePath = path.join(process.cwd(), 'index.html')
+      await fs.writeFile(templatePath, templateContent)
+    })
+  },
+})
+
+function createScript(src) {
+  return `<script type="module" src="${src}"></script>`
+}
+
+function createLink(src) {
+  return `<link rel="stylesheet" href="${src}"></link>`
+}
+
+function generateHTML(scripts, links) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Esbuild App</title>
+  ${links.join('\n')}
+</head>
+
+<body>
+  <div id="root"></div>
+  ${scripts.join('\n')}
+</body>
+
+</html>
+`.trim()
+}
+```
