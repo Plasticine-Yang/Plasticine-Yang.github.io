@@ -297,4 +297,219 @@ pnpm i @rollup/plugin-node-resolve @rollup/plugin-commonjs
 
 ## 深入理解 rollup 插件机制
 
-TODO
+### rollup 构建流程
+
+当在 cli 中执行 rollup 后，其整个构建流程可以用简化后的代码表示：
+
+```js
+// build 阶段
+const bundle = await rollup.rollup(inputOptions)
+
+// output 阶段
+await Promise.all(outputOptions.map(bundle.write))
+
+// end
+await bundle.close()
+```
+
+也就是主要包括了：
+
+1. build 阶段：创建模块依赖图，初始化各个模块的 AST 以及模块之间的依赖关系
+2. output 阶段：生成输出产物的信息以及将产物写入硬盘
+
+### build 阶段
+
+来看看 build 阶段生成的 RollupBuild 是个什么东西：
+
+```js
+async function build() {
+  const rollupBuild = await rollup.rollup({
+    input: [resolve(__dirname, 'demo.js')],
+  })
+
+  console.log(inspect(rollupBuild, false, 100, true))
+}
+```
+
+输出如下：
+
+```js
+{
+  cache: {
+    modules: [
+      {
+        ast: { ... },
+        attributes: {},
+        code: "export const foo = 'foo'\n",
+        customTransformCache: false,
+        dependencies: [],
+        id: '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/module-foo.js',
+        meta: {},
+        moduleSideEffects: true,
+        originalCode: "export const foo = 'foo'\n",
+        originalSourcemap: null,
+        resolvedIds: [Object: null prototype] {},
+        sourcemapChain: [],
+        syntheticNamedExports: false,
+        transformDependencies: [],
+        transformFiles: undefined
+      },
+      {
+        ast: { ... },
+        attributes: {},
+        code: "import { foo } from './module-foo'\n\nconsole.log(foo)\n",
+        customTransformCache: false,
+        dependencies: [
+          '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/module-foo.js'
+        ],
+        id: '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/demo.js',
+        meta: {},
+        moduleSideEffects: true,
+        originalCode: "import { foo } from './module-foo'\n\nconsole.log(foo)\n",
+        originalSourcemap: null,
+        resolvedIds: [Object: null prototype] {
+          './module-foo': {
+            attributes: {},
+            external: false,
+            id: '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/module-foo.js',
+            meta: {},
+            moduleSideEffects: true,
+            resolvedBy: 'rollup',
+            syntheticNamedExports: false
+          }
+        },
+        sourcemapChain: [],
+        syntheticNamedExports: false,
+        transformDependencies: [],
+        transformFiles: undefined
+      }
+    ],
+    plugins: [Object: null prototype] {}
+  },
+  close: [AsyncFunction: close],
+  closed: false,
+  generate: [AsyncFunction: generate],
+  watchFiles: [Getter],
+  write: [AsyncFunction: write]
+}
+```
+
+可以看到，RollupBuild 是一个记录了各个模块的信息以及依赖关系，并没有生成产物也没有写入磁盘，如果需要完成这两步，则涉及到 output 阶段的 API。
+
+### output 阶段
+
+output 阶段的 API 主要包括 RollupBuild 对象的 generate 和 write 方法。
+
+generate 方法调用后会得到一个 RollupOutput 类型的对象，其记录了输出内容的相关信息，实际上 write 方法也能得到 RollupOutput，只是前者不会写入磁盘，后者会写入磁盘。
+
+下面通过一个 demo 看看 RollupOutput 的结构。
+
+```js title="generate"
+async function build() {
+  const rollupBuild = await rollup.rollup({
+    input: [resolve(__dirname, 'demo.js')],
+  })
+
+  const rollupOutput = await rollupBuild.generate({
+    format: 'esm',
+  })
+
+  console.log(inspect(rollupOutput, false, 100, true))
+}
+```
+
+```js
+{
+  output: [
+    {
+      exports: [],
+      facadeModuleId: '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/demo.js',
+      isDynamicEntry: false,
+      isEntry: true,
+      isImplicitEntry: false,
+      moduleIds: [
+        '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/module-foo.js',
+        '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/demo.js'
+      ],
+      name: 'demo',
+      type: 'chunk',
+      dynamicImports: [],
+      fileName: 'demo.js',
+      implicitlyLoadedBefore: [],
+      importedBindings: {},
+      imports: [],
+      modules: [Object: null prototype] {
+        '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/module-foo.js': {
+          code: [Getter],
+          originalLength: 25,
+          removedExports: [],
+          renderedExports: [ 'foo' ],
+          renderedLength: 18
+        },
+        '/Users/root/code/projects/vite-learning/demos/rollup-startup/src/what-does-build-phase-do/demo.js': {
+          code: [Getter],
+          originalLength: 53,
+          removedExports: [],
+          renderedExports: [],
+          renderedLength: 17
+        }
+      },
+      referencedFiles: [],
+      code: "const foo = 'foo';\n\nconsole.log(foo);\n",
+      map: null,
+      preliminaryFileName: 'demo.js',
+      sourcemapFileName: null
+    }
+  ]
+}
+```
+
+了解完 rollup 构建流程的两大阶段后就可以开始探索插件机制了，插件的各种钩子就是作用于这两大阶段的。
+
+### 插件 hook 的类型
+
+#### 按构建阶段分类
+
+按照 rollup 构建流程的两大阶段，插件 hook 的类型也可以对应分为两类：
+
+- build hook: 作用于 build 阶段的 hook，对代码的操作粒度为 **模块级别**，即单文件级别
+- output hook: 作用于 output 阶段的 hook，对代码的操作粒度为 **chunk 级别**（一个 chunk 是多个模块打包到一个文件的产物）
+
+#### 按执行方式分类
+
+按执行方式大致可以分为以下几类：
+
+- Async & Sync
+- Parallel & Sequential: 相互之间无依赖关系的 hook 可以通过并发的方式执行，比如 `buildStart`；有依赖关系的则只能串行执行，比如 `transform`
+- First: 有多个插件实现了某个 hook 时，会依次运行，直到其中一个 hook 返回非空值时停止，比如 `resolveId`
+
+### build 阶段 hooks 工作流
+
+build 阶段的 hook 以及相应的工作流如下图所示：
+
+![build-phase-workflow](./images/build-phase-workflow.jpg)
+
+这里解释几个重点常用的 hook 的作用：
+
+- resolveId: 解析文件路径，比如导入某个 npm 包，我们可以自定义解析到具体的某个 node_modules 里该包的路径
+- load: 根据解析到的文件路径去加载对应的内容
+- transform: 对 load 加载完成的模块内容进行转换，比如调用 babel 进行转译
+- moduleParsed: 传入所有的 import 代码
+  - 静态 import，调用 resolveId
+  - 动态 import，调用 resolveDynamicImport，解析成功则继续走 load 的流程，否则降级到用 resolveId 兜底处理
+
+:::tip
+对于配置了 external 的 id，不会执行 load 和 transform hooks。
+:::
+
+### output 阶段 hooks 工作流
+
+output 阶段的 hook 以及相应的工作流如下图所示：
+
+![legends](./images/legends.jpg)
+![output-phase-workflow](./images/output-phase-workflow.jpg)
+
+- outputOptions: 用于对 output 配置进行转换
+- banner, footer, intro, outro: 往打包产物的相应位置插入自定义内容，比如协议声明、作者介绍、项目介绍等等
+- renderChunk: 自定义操作每个生成的 chunk
+- generateBundle: 入参是所有的 chunk 和 assets，可以自行决定是否删除掉某些 chunk 或 asset
