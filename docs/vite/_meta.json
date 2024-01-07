@@ -1,1 +1,10 @@
-["index", "pre-build", "double-engine", "esbuild/index", "rollup/index", "plugin/index", "hmr-api-usage/index"]
+[
+  "index",
+  "pre-build",
+  "double-engine",
+  "esbuild/index",
+  "rollup/index",
+  "plugin/index",
+  "hmr-api-usage/index",
+  "code-splitting/index"
+]
