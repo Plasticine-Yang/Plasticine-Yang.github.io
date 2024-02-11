@@ -1,0 +1,12 @@
+[
+  {
+    "type": "dir",
+    "name": "root",
+    "label": "root"
+  },
+  {
+    "type": "dir",
+    "name": "compilerOptions",
+    "label": "compilerOptions"
+  }
+]

@@ -1,52 +1,10 @@
 import { Tab, Tabs } from 'rspress/theme'
 
-# tsconfig
+# esModuleInterop
 
-## 简介
+## 作用
 
-`tsconfig.json` 中的配置项超过 100 项，每个逐个看不利于理解和记忆，但官方将这些配置项分为四个大类：
-
-- `root fields`: 让 TypeScript 知道要处理哪些文件
-- `compilerOptions`: 编译相关的配置项，也是日常开发中最常接触的
-- `watchOptions`: watch mode 相关配置项
-- `typeAcquisition`: 用于调整类型添加到 JavaScript 项目的方式
-
-本文会梳理一些我日常开发中经常用到的配置项的功能。
-
-## root fields
-
-### extends
-
-用于继承已有的 `tsconfig.json` 文件中的配置，路径解析算法与 Node.js 的标准一致，这意味着既可以使用相对路径也可以直接使用 npm 包名的方式，使用 npm 包的时候默认会消费包内的 `tsconfig.json`，当有多个配置文件时也可以手动指定。
-
-<Tabs>
-  <Tab label="packages/shared">
-
-```shell
-shared
-├── package.json
-└── tsconfig.json
-```
-
-  </Tab>
-
-  <Tab label="packages/foo/tsconfig.json">
-
-```json
-{
-  // "extends": ["shared"]
-  "extends": ["shared/tsconfig.json"]
-}
-```
-
-  </Tab>
-</Tabs>
-
-## compilerOptions
-
-### esModuleInterop
-
-**用于解决 ESModule 通过 default import 和 namespace import 导入 CommonJS 模块时的兼容性问题**
+**[esModuleInterop](https://www.typescriptlang.org/tsconfig#esModuleInterop) 用于解决 ESModule 通过 default import 和 namespace import 导入 CommonJS 模块时的兼容性问题**
 
 :::tip
 
@@ -54,7 +12,7 @@ shared
 
 :::
 
-#### 场景介绍
+## 场景介绍
 
 场景：当我们使用 ESModule import 导入一个 CommonJS 模块，并且想把 ESModule 编译成 CommonJS 时会存在一些兼容性问题，而 `esModuleInterop` 则是通过 **增加一些运行时代码去解决这些兼容性问题的**，下面通过一个 Demo 演示一下：
 
@@ -99,7 +57,7 @@ foo.default = {
 module.exports = foo
 ```
 
-#### 原生 Node.js 角度分析
+## 原生 Node.js 角度分析
 
 在 CommonJS 规范的角度来看：
 
@@ -165,7 +123,7 @@ console.log(bar, baz, bax)
 
 ![use-case-2-mjs](./images/use-case-2-mjs.png)
 
-#### tsc 角度分析
+## tsc 角度分析
 
 那么如果是运行经过 tsc 编译后的结果呢？
 
@@ -193,7 +151,7 @@ foo()
 
 但是在 ESModule 的规范里，`import * as foo` 这样的 namespace import 语法得到的 foo 应当是一个 object，这里却得到了一个函数，并且可以直接调用，不符合规范。
 
-#### esModuleInterop 做了什么？
+## esModuleInterop 做了什么？
 
 理解了冲突后，接下来就看看 esModuleInterop 是如何解决这一冲突的吧！
 
@@ -225,7 +183,7 @@ foo()
 
 这符合 ESModule namespace import 规范要求的导入的模块是一个对象，因此把它当成函数执行时会报错，符合预期。
 
-#### 总结
+## 总结
 
 `esModuleInterop` 可以解决 ESModule 中导入 CommonJS 时的 default import 和 namespace import 冲突，named import 则不受影响。
 
