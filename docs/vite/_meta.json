@@ -6,5 +6,10 @@
   "rollup/index",
   "plugin/index",
   "hmr-api-usage/index",
-  "code-splitting/index"
+  "code-splitting/index",
+  {
+    "type": "dir",
+    "name": "mini-vite",
+    "label": "mini vite"
+  }
 ]
